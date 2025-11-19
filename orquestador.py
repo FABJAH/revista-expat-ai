@@ -40,7 +40,7 @@ if __name__ == "__main__":
     pregunta = input("¿Qué necesitas saber?\n")
     categoria, resultados = procesar_pregunta(pregunta)
 
-    print(f"\nCategoría detectada: {categoria}")s
+    print(f"\nCategoría detectada: {categoria}")
     if categoria == "Legal and Financial":
         print(bot_legal.responder_consulta(pregunta, resultados))
     elif categoria == "Accommodation":
