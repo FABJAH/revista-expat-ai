@@ -3,11 +3,11 @@ from orquestador import procesar_pregunta  # usa tu función existente
 
 app = Flask(__name__)
 
-@app.get("/")
+@app.route("/", methods=["GET"])
 def home():
     return "Barcelona Metropolitan Bots OK"
 
-@app.post("/consulta")
+@app.route("/consulta", methods=["POST"])
 def consulta():
     data = request.get_json()
     pregunta = data.get("pregunta", "").strip()
