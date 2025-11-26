@@ -1,0 +1,74 @@
+from .response_format import make_standard_response
+import unicodedata
+
+
+def _normalize(s):
+    if not s:
+        return ""
+    s = str(s).strip()
+    s = unicodedata.normalize('NFKD', s)
+    s = ''.join(c for c in s if not unicodedata.combining(c))
+    return s.lower()
+
+
+def responder_consulta(pregunta, anunciantes):
+    """Responde consultas sociales/culturales con formato estándar.
+
+    - Filtra por términos relevantes (evento, asociación, restaurante, actividad).
+    - Añade FAQs por defecto si faltan.
+    - Devuelve JSON estandarizado y texto bilingüe.
+    """
+    pregunta_norm = _normalize(pregunta or "")
+
+    keywords = [
+        "expat",
+        "expats",
+        "asociacion",
+        "asociación",
+        "evento",
+        "restaurante",
+        "actividad",
+        "ocio",
+        "evento",
+        "meetup",
+        "evento",
+        "cultural",
+        "festival",
+    ]
+
+    matching = []
+    others = []
+    for a in anunciantes or []:
+        combined = ' '.join(
+            [str(a.get(k, '')) for k in ['nombre', 'descripcion', 'ubicacion', 'perfil']]
+        )
+        combined_norm = _normalize(combined)
+
+        found = False
+        for kw in keywords:
+            if kw in pregunta_norm or kw in combined_norm:
+                found = True
+                break
+
+        if found:
+            matching.append(a)
+        else:
+            others.append(a)
+
+    selected = matching if matching else others
+
+    # Añadir FAQ genéricas si no vienen en los datos
+    for a in selected:
+        if not a.get('faq'):
+            a['faq'] = [
+                {
+                    "q": "¿Cómo me apunto al evento?",
+                    "a": "Consulta el contacto del organizador para inscribirte o reserva mediante su web."
+                },
+                {
+                    "q": "¿Hay actividades para familias?",
+                    "a": "Depende del evento; revisa la descripción o pregunta al organizador."
+                }
+            ]
+
+    return make_standard_response("Social and Cultural", selected, pregunta)

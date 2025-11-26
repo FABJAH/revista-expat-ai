@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from orquestador import procesar_pregunta  # usa tu función existente
+from backend.orquestador import procesar_pregunta  # usa tu función existente
 
 app = Flask(__name__)
 

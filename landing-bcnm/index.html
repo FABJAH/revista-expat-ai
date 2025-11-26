@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Barcelona Metropolitan Bots</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: #f4f4f4; color: #111; }
+    .container { max-width: 800px; margin: auto; padding: 24px; background: white; box-shadow: 0 0 12px rgba(0,0,0,0.1); }
+    h1 { font-size: 2rem; margin-bottom: 0.5em; }
+    h2 { margin-top: 2em; }
+    img { width: 100%; border-radius: 8px; margin-bottom: 16px; }
+    textarea { width: 100%; height: 100px; font-size: 1rem; padding: 8px; margin-top: 8px; }
+    button { padding: 10px 16px; margin: 6px 4px; border: none; border-radius: 6px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
+    .response { margin-top: 16px; background: #eef; padding: 12px; border-radius: 6px; }
+    pre { background: #f6f8fa; padding: 12px; overflow-x: auto; font-size: 0.9rem; }
+    footer { margin-top: 40px; font-size: 0.9rem; text-align: center; color: #555; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Barcelona Metropolitan Bots</h1>
+    <p>Tu asistente digital para expats en Barcelona. Haz clic o escribe tu consulta.</p>
+
+    <!-- Banner principal de Canva -->
+    <img src="banner-principal.jpeg" alt="BCN Metropolitan Banner">
+
+    <!-- Botones conectados al backend -->
+    <div>
+      <button onclick="consultar('Quiero anunciarme en la revista')">📢 Quiero anunciarme</button>
+      <button onclick="consultar('Busco piso en Barcelona')">🏠 Alojamiento</button>
+      <button onclick="consultar('Quiero tramitar el NIE')">⚖️ Legal</button>
+      <button onclick="consultar('Necesito seguro médico')">❤️ Salud</button>
+      <button onclick="consultar('Quiero aprender catalán')">📚 Educación</button>
+      <button onclick="consultar('Busco empleo')">💼 Trabajo</button>
+      <button onclick="consultar('Eventos para expats')">🎉 Social</button>
+    </div>
+
+    <!-- Campo de texto libre -->
+    <h2>Consulta personalizada</h2>
+    <textarea id="pregunta" placeholder="Escribe tu pregunta aquí..."></textarea>
+    <button onclick="enviarConsulta()">Enviar consulta</button>
+
+    <!-- Respuesta del bot -->
+    <div class="response" id="respuesta"></div>
+    <details>
+      <summary>Ver JSON completo</summary>
+      <pre id="json"></pre>
+    </details>
+
+    <!-- Testimonios y contacto -->
+    <img src="testimonios.png" alt="Opiniones y consultas">
+    <img src="contacto.png" alt="Contacto y ubicación">
+
+    <footer>
+      BCN Metropolitan Magazine · fabio@barcelona-metropolitan.com · Barcelona, España
+    </footer>
+  </div>
+
+  <script>
+    const endpoint = "https://metropolitan-bots.onrender.com/consulta";
+
+    async function consultar(pregunta) {
+      const r = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pregunta })
+      });
+      const data = await r.json();
+      const es = data?.mensaje?.es || "Respuesta en español no disponible.";
+      const en = data?.mensaje?.en || "English response not available.";
+      document.getElementById("respuesta").innerHTML = `
+        <p><strong>ES:</strong> ${es}</p>
+        <p><strong>EN:</strong> ${en}</p>
+      `;
+      document.getElementById("json").textContent = JSON.stringify(data, null, 2);
+    }
+
+    function enviarConsulta() {
+      const pregunta = document.getElementById("pregunta").value.trim();
+      if (pregunta) consultar(pregunta);
+    }
+
+    // Auto-consulta desde URL
+    const urlP = new URLSearchParams(location.search).get("p");
+    if (urlP) consultar(urlP);
+  </script>
+</body>
+</html>
