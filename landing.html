@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Revista Expats - Landing (Prueba API)</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Helvetica,Arial;margin:24px}
+    label,input,select,button{display:block;margin:8px 0}
+    #result{white-space:pre-wrap;border:1px solid #ddd;padding:12px;margin-top:12px}
+    .gallery{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .card{width:200px;border:1px solid #eee;padding:8px;border-radius:6px;text-align:center;background:#fff}
+    .card img{max-width:100%;height:150px;object-fit:cover;border-radius:4px;cursor:pointer}
+    .card small{display:block;margin-top:6px;color:#666}
+  </style>
+</head>
+<body>
+  <h1>Landing — Prueba API</h1>
+  <p>Introduce una pregunta y pulsa <strong>Consultar</strong>. La página llamará a <code>http://127.0.0.1:8000/consulta</code>.</p>
+
+  <label for="pregunta">Pregunta</label>
+  <input id="pregunta" type="text" value="¿Dónde puedo alquilar un apartamento en Barcelona?" style="width:100%" />
+
+  <label for="language">Idioma</label>
+  <select id="language">
+    <option value="es">Español</option>
+    <option value="en">English</option>
+  </select>
+
+  <button id="consultar">Consultar</button>
+  <label><input type="checkbox" id="autoSend" /> Enviar automáticamente al seleccionar una imagen</label>
+
+  <div id="status" aria-live="polite" style="margin-top:8px;color:#444"></div>
+  <div id="result">Aquí aparecerá la respuesta</div>
+  <div id="parsed" style="margin-top:12px"></div>
+
+  <h2>Galería de anunciantes (clic para probar)</h2>
+  <div class="gallery" id="gallery">
+    <div class="card"><img src="landi/1.png" alt="W Hotel" data-name="W Hotel" data-category="Accommodation" /><small>W Hotel</small></div>
+    <div class="card"><img src="landi/2.png" alt="Enjoy Apartments Barcelona" data-name="Enjoy Apartments Barcelona" data-category="Accommodation" /><small>Enjoy Apartments</small></div>
+    <div class="card"><img src="landi/3.png" alt="Hotel Novotel" data-name="Hotel Novotel Barcelona City" data-category="Accommodation" /><small>Hotel Novotel</small></div>
+    <div class="card"><img src="landi/4.png" alt="Restaurante Ejemplo" data-name="Restaurante Ejemplo" data-category="Restaurants" /><small>Restaurante</small></div>
+    <div class="card"><img src="landi/5.png" alt="Consultoria Legal" data-name="Consultoria Legal" data-category="Legal and Financial" /><small>Legal</small></div>
+    <div class="card"><img src="landi/6.png" alt="Centro Salud" data-name="Centro Salud" data-category="Healthcare" /><small>Healthcare</small></div>
+    <div class="card"><img src="landi/7.png" alt="Tienda Local" data-name="Tienda Local" data-category="Retail" /><small>Retail</small></div>
+  </div>
+
+  <script>
+    const consultarBtn = document.getElementById('consultar');
+    const preguntaInput = document.getElementById('pregunta');
+    const languageSelect = document.getElementById('language');
+    const resultDiv = document.getElementById('result');
+    const statusDiv = document.getElementById('status');
+
+    async function consulta() {
+      const pregunta = preguntaInput.value.trim();
+      const language = languageSelect.value;
+      if (!pregunta) {
+        statusDiv.textContent = 'Escribe una pregunta antes de consultar.';
+        return;
+      }
+
+      statusDiv.textContent = 'Enviando petición…';
+      resultDiv.textContent = '';
+
+      try {
+        const res = await fetch('http://127.0.0.1:8000/consulta', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ pregunta, language })
+        });
+
+        const bodyText = await res.text();
+        // Intentar parsear JSON para formatearlo, si no, mostrar texto
+        let pretty = bodyText;
+        let parsed = null;
+        try { parsed = JSON.parse(bodyText); pretty = JSON.stringify(parsed, null, 2); } catch(e){}
+
+        // Mostrar código de estado y body formateado
+        resultDiv.textContent = `HTTP ${res.status} ${res.statusText}\n\n${pretty}`;
+        statusDiv.textContent = 'Petición completada.';
+
+        // Mostrar respuesta parseada en formato legible
+        const parsedDiv = document.getElementById('parsed');
+        parsedDiv.innerHTML = '';
+        if (parsed) {
+          const h = document.createElement('div');
+          h.innerHTML = `<strong>Agente:</strong> ${parsed.agente} &nbsp; <strong>Confidence:</strong> ${parsed.confidence}`;
+          parsedDiv.appendChild(h);
+
+          if (parsed.json && parsed.json.opciones && parsed.json.opciones.length) {
+            const list = document.createElement('div');
+            list.style.display = 'grid';
+            list.style.gridTemplateColumns = 'repeat(auto-fit,minmax(240px,1fr))';
+            list.style.gap = '12px';
+            parsed.json.opciones.forEach(opt => {
+              const card = document.createElement('div');
+              card.style.border = '1px solid #eee';
+              card.style.padding = '8px';
+              card.style.borderRadius = '6px';
+              card.style.background = '#fafafa';
+              card.innerHTML = `<strong>${opt.nombre}</strong><br/><small>${opt.descripcion || ''}</small><br/>Contacto: ${opt.contacto || 'N/A'}`;
+              if (opt.faq && opt.faq.length) {
+                const fa = document.createElement('div');
+                fa.style.marginTop = '8px';
+                fa.innerHTML = '<em>FAQ:</em>' + opt.faq.map(q=>`<div>Q: ${q.q}<br/>A: ${q.a}</div>`).join('');
+                card.appendChild(fa);
+              }
+              list.appendChild(card);
+            });
+            parsedDiv.appendChild(list);
+          }
+        }
+      } catch (err) {
+        statusDiv.textContent = 'Error en la petición: ' + err.message;
+        resultDiv.textContent = '';
+      }
+    }
+
+    consultarBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      consulta();
+    });
+
+    // Galería: al clicar imagen se rellena la pregunta y opcionalmente se envía
+    document.getElementById('gallery').addEventListener('click', (ev) => {
+      const img = ev.target.closest('img');
+      if (!img) return;
+      const name = img.dataset.name || img.alt || '';
+      const category = img.dataset.category || '';
+      // Rellenar la pregunta con un texto útil para probar el bot
+      preguntaInput.value = `Quiero información sobre ${name} (${category})`;
+      statusDiv.textContent = `Pregunta rellenada por imagen: ${name}`;
+      if (document.getElementById('autoSend').checked) consulta();
+    });
+
+    // Añadir manejadores de error para detectar recursos que fallen (imágenes, scripts, hojas)
+    function reportResourceFailure(msg) {
+      const prev = document.getElementById('resourceErrors');
+      if (!prev) {
+        const el = document.createElement('div');
+        el.id = 'resourceErrors';
+        el.style.marginTop = '12px';
+        el.style.color = '#b00';
+        el.innerHTML = '<strong>Errores de recursos detectados:</strong><br/>' + msg;
+        statusDiv.parentNode.insertBefore(el, resultDiv);
+      } else {
+        prev.innerHTML += '<br/>' + msg;
+      }
+      console.warn('Resource failure:', msg);
+    }
+
+    // Capturar errores globales (incluye recursos como imágenes/hojas/scripts)
+    window.addEventListener('error', function (ev) {
+      try {
+        if (ev.target && (ev.target.tagName === 'IMG' || ev.target.tagName === 'LINK' || ev.target.tagName === 'SCRIPT')) {
+          const src = ev.target.src || ev.target.href || ev.filename || '<unknown>';
+          reportResourceFailure(`Fallo carga recurso: ${src}`);
+        } else {
+          // errores JS normales
+          reportResourceFailure(`Error JS: ${ev.message} (${ev.filename || ''}:${ev.lineno || ''})`);
+        }
+      } catch (e) { console.error(e); }
+    }, true);
+
+    // Capturar rejection de fetch no manejados
+    window.addEventListener('unhandledrejection', function (ev) {
+      reportResourceFailure(`Unhandled promise rejection: ${ev.reason && ev.reason.message ? ev.reason.message : JSON.stringify(ev.reason)}`);
+    });
+
+    // Añadir onerror a todas las imágenes para detectar fallos concretos
+    document.querySelectorAll('img').forEach(img => {
+      img.addEventListener('error', (e) => {
+        const src = e.target && (e.target.currentSrc || e.target.src) || '<unknown>';
+        reportResourceFailure(`Image load error: ${src}`);
+      });
+    });
+  </script>
+</body>
+</html>

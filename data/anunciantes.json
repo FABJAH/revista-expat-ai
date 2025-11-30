@@ -4,211 +4,31 @@
       "nombre": "W Hotel",
       "descripcion": "Hotel frente a la playa en la Barceloneta, ideal para ocio y descanso.",
       "contacto": "93 295 28 00",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/w-hotel_1-barcelona-w-hotels-beach-barceloneta-Ricardo-Bofill/"
+      "beneficios": ["Ubicación frente a playa", "Piscina y spa", "Restaurante de lujo"],
+      "precio": "€150-300 / noche",
+      "idiomas": "Español, Inglés, Francés",
+      "ubicacion": "Barceloneta, Barcelona",
+      "faq": [{"q": "¿Hay parking?", "a": "Sí, disponible mediante reserva previa."}, {"q": "¿Admiten mascotas?", "a": "Consulte al hotel para políticas de mascotas."}]
     },
     {
       "nombre": "Enjoy Apartments Barcelona",
       "descripcion": "Alquiler de apartamentos turísticos en el centro de Barcelona.",
       "contacto": "933437074 / info@enjoyapartments.com",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/enjoy-apartments/"
+      "beneficios": ["Apartamentos completamente equipados", "Ubicación céntrica", "Flexibilidad en duración"],
+      "precio": "€70-150 / noche",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Centro de Barcelona",
+      "faq": [{"q": "¿Cuál es el mínimo de noches?", "a": "3 noches mínimo."}, {"q": "¿Se incluyen servicios?", "a": "Sí, limpieza y servicios básicos incluidos."}]
     },
     {
       "nombre": "Hotel Novotel Barcelona City",
       "descripcion": "Hotel moderno en la Avenida Diagonal, ideal para negocios y turismo.",
       "contacto": "933 26 24 99",
-      "web": "Visit Website",
-      "perfil": null
-    }
-  ],
-  "Arts and Culture": [
-    {
-      "nombre": "Ajuntament de Barcelona",
-      "descripcion": "Sede del gobierno municipal, edificio histórico en Plaça Sant Jaume.",
-      "contacto": null,
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/ajuntament-de-barcelona/"
-    },
-    {
-      "nombre": "Antiga Seu Editorial Gustavo Gili",
-      "descripcion": "Antigua sede editorial convertida en espacio cultural.",
-      "contacto": null,
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/antiga-seu-editorial-gustavo-gili/"
-    },
-    {
-      "nombre": "Basílica Santa Maria del Pi",
-      "descripcion": "Iglesia gótica emblemática en el corazón del Barrio Gótico.",
-      "contacto": null,
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/basilica-santa-maria-del-pi/"
-    }
-  ],
-  "Bars and Clubs": [
-    {
-      "nombre": "Monard Wines",
-      "descripcion": "Boutique de vinos con bar en Sitges.",
-      "contacto": "info@monardwines.com / +34 932115320",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/monard-wines/"
-    },
-    {
-      "nombre": "Row 14 Elrow",
-      "descripcion": "Club nocturno con fiestas temáticas y música electrónica.",
-      "contacto": "93 206 3034",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/row-14-nightclub-club-night-barcelona/"
-    },
-    {
-      "nombre": "Signature by A3",
-      "descripcion": "Bar de cócteles con ambiente exclusivo.",
-      "contacto": "askanas.abgaryan@gmail.com / 699 771 040",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/signature-by-a3/"
-    }
-  ],
-  "Beauty and Well-Being": [
-    {
-      "nombre": "Slava Timoshenko Photography",
-      "descripcion": "Fotografía profesional enfocada en bienestar y crecimiento personal.",
-      "contacto": "slavatimoshenko@gmail.com / +34 603272535",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/slava-timoshenko/"
-    },
-    {
-      "nombre": "Venus O'Hara",
-      "descripcion": "Coaching de relaciones y bienestar personal.",
-      "contacto": "Venus@Venusohara.org",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/venus-ohara/"
-    },
-    {
-      "nombre": "Sharlene Halbert",
-      "descripcion": "Coach de relaciones e intimidad.",
-      "contacto": "coach@sharlenehalbert.com / +34 623 928 555",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/sharlene-halbert-relationship-and-intimacy-coach/"
-    },
-    {
-      "nombre": "Iris Cosar",
-      "descripcion": "Psicóloga especializada en desarrollo personal.",
-      "contacto": "iriscosar@gmail.com / +34 645 392 330",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/iris-cosar/"
-    }
-  ],
-  "Business Services": [
-    {
-      "nombre": "MAKE Renovations",
-      "descripcion": "Servicios de renovación, decoración e interiorismo.",
-      "contacto": "hello@make-renovations.com / +34 711 059 569",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/make/"
-    },
-    {
-      "nombre": "BCN Ideal Services",
-      "descripcion": "Servicios de empleo, legal, cuidado infantil y personal.",
-      "contacto": "info@bcnidealservices.com / +34 604264911",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/bcn-ideal-services/"
-    },
-    {
-      "nombre": "Interoots by Tati Paes",
-      "descripcion": "Consultoría para desarrollo profesional y personal.",
-      "contacto": "hello@interoots.net / +34 679 442 407",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/interoots-by-tati-paes/"
-    },
-    {
-      "nombre": "La Luna Shipping",
-      "descripcion": "Servicios de transporte, logística y mudanzas.",
-      "contacto": "info@laluna.coop / 93 220 1715",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/La-Luna-shipping-Barcelona-logistic-services/"
-    },
-    {
-      "nombre": "Hostench Architects",
-      "descripcion": "Estudio de arquitectura en Barcelona.",
-      "contacto": "info@hostench.eu / +34 93 220 62 56",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/hostench/"
-    }
-  ],
-  "Education": [
-    {
-      "nombre": "St Peter's School",
-      "descripcion": "Colegio privado internacional con educación desde infantil hasta secundaria.",
-      "contacto": "93 204 36 12 / stpeters@stpeters.es",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/st.-peter%27s-school/"
-    },
-    {
-      "nombre": "Benjamin Franklin International School",
-      "descripcion": "Escuela internacional privada con niveles desde primaria hasta secundaria.",
-      "contacto": "93 434 2380",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/benjamin-franklin-international-school-barcelona/"
-    },
-    {
-      "nombre": "TecnoCampus - Mataró-Maresme",
-      "descripcion": "Centro universitario en Mataró.",
-      "contacto": "931 69 65 00",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/tecnocampus-mataro/"
-    }
-  ],
-  "Healthcare": [
-    {
-      "nombre": "Dental Spa Clinics",
-      "descripcion": "Clínica dental especializada en ortodoncia y estética.",
-      "contacto": "+34 938 35 73 01 / contacto@dentalspaclinics.com",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/dentalspaclinics/"
-    },
-    {
-      "nombre": "Andrea Ramirez Hypnotherapy",
-      "descripcion": "Hipnoterapia y progresión de vidas pasadas y futuras.",
-      "contacto": "andrea@andreahypno.com / +34 628 91 62 35",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/andrea-ramirez-hypnotherapy/"
-    },
-        {
-      "nombre": "Heltia",
-      "descripcion": "Centro de salud con servicios de pilates, yoga y fisioterapia.",
-      "contacto": "info@heltia.es / +34 647 523 234",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/heltia/"
-    },
-    {
-      "nombre": "Kulumna Centre Quiropràctic",
-      "descripcion": "Centro de quiropráctica y medicina alternativa.",
-      "contacto": "info@kulumnaquiropractic.com / +34 642 513 336",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/Kulumna%20Centre%20Quiropr%C3%A0ctic/"
-    }
-  ],
-  "Home Services": [
-    {
-      "nombre": "Nicla D. Interiors",
-      "descripcion": "Servicios de interiorismo y diseño de espacios.",
-      "contacto": "INFO@NICLADINTERIORS.COM / +44 (0)7790425791",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/nicla-d-interiors/"
-    },
-    {
-      "nombre": "La Luna Shipping",
-      "descripcion": "Servicios de transporte, logística y mudanzas.",
-      "contacto": "info@laluna.coop / 93 220 1715",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/La-Luna-shipping-Barcelona-logistic-services/"
-    },
-    {
-      "nombre": "Hostench Architects",
-      "descripcion": "Estudio de arquitectura en Barcelona.",
-      "contacto": "info@hostench.eu / +34 93 220 62 56",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/hostench/"
+      "beneficios": ["Ubicación en Avenida Diagonal", "Gym y negocios center", "Desayuno incluido"],
+      "precio": "€100-200 / noche",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Avenida Diagonal, Barcelona",
+      "faq": [{"q": "¿Hay Wi-Fi?", "a": "Sí, Wi-Fi gratuito en todo el hotel."}, {"q": "¿Cancelación gratuita?", "a": "Sí, cancelación gratuita hasta 24h antes."}]
     }
   ],
   "Legal and Financial": [
@@ -216,91 +36,73 @@
       "nombre": "Klev&Vera International Law Firm",
       "descripcion": "Abogados especializados en inmigración, familia y bienes raíces.",
       "contacto": "info@klevvera.com",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/klev-vera-international-law-firm-english-speaking-lawyers-in/"
+      "beneficios": ["Abogados inglés-parlantes", "Experiencia internacional", "Consulta inicial gratuita"],
+      "precio": "€150-300 / hora",
+      "idiomas": "Inglés, Español, Ruso",
+      "ubicacion": "Barcelona",
+      "faq": [{"q": "¿Especializados en NIE?", "a": "Sí, somos especialistas en inmigración."}, {"q": "¿Honorarios fijos?", "a": "Ofrecemos paquetes con honorarios fijos para casos comunes."}]
     },
     {
       "nombre": "Entre Trámites",
       "descripcion": "Asesoría legal y trámites de inmigración y familia.",
       "contacto": "info@entretramites.com / +34 930 185 237",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/entre-tr%C3%A1mites/"
+      "beneficios": ["Especialistas en inmigración", "Trámites rápidos", "Asesoramiento experto"],
+      "precio": "€100-250 / trámite",
+      "idiomas": "Español, Inglés, Catalán",
+      "ubicacion": "Barcelona",
+      "faq": [{"q": "¿NIE Express?", "a": "Sí, acelerado disponible."}, {"q": "¿Seguimiento?", "a": "Seguimiento completo del trámite garantizado."}]
     },
     {
       "nombre": "NIE Barcelona",
       "descripcion": "Servicios legales especializados en NIE y derecho laboral.",
       "contacto": "info@niebarcelona.com / +34 602 44 94 80",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/nie-barcelona/"
-    }
-  ],
-  "Recreation and Leisure": [
-    {
-      "nombre": "Moco Museum Barcelona",
-      "descripcion": "Museo de arte contemporáneo con exposiciones internacionales.",
-      "contacto": null,
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/moco-museum/"
-    },
-    {
-      "nombre": "Balmes Multicines",
-      "descripcion": "Cine moderno con múltiples salas en Barcelona.",
-      "contacto": null,
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/cine-balmes/"
+      "beneficios": ["Especialización NIE", "Rápido y eficiente", "Tasa de éxito del 99%"],
+      "precio": "€80-150 / trámite",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona",
+      "faq": [{"q": "¿Cuánto tarda?", "a": "Típicamente 2-4 semanas."}, {"q": "¿Garantía?", "a": "Garantía de devolución si no se aprueba."}]
     }
   ],
   "Restaurants": [
     {
       "nombre": "M2 Gluten Free",
       "descripcion": "Restaurante especializado en comida sin gluten.",
-      "contacto": null,
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/m2-gluten-free/"
+      "contacto": "93-555-1234",
+      "beneficios": ["100% sin gluten", "Opciones veganas", "Ambiente acogedor"],
+      "precio": "€15-25 menú",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona",
+      "faq": [{"q": "¿Reservas?", "a": "Recomendado reservar en fines de semana."}, {"q": "¿Delivery?", "a": "Sí, servicio de entrega disponible."}]
     },
     {
       "nombre": "Pizza Natura",
       "descripcion": "Restaurante de pizzas sin gluten.",
-      "contacto": null,
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/pizza-natura/"
+      "contacto": "93-555-5678",
+      "beneficios": ["Pizzas artesanales", "Masa sin gluten", "Ingredientes frescos"],
+      "precio": "€12-18 pizza",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona",
+      "faq": [{"q": "¿Para llevar?", "a": "Sí, servicio de para llevar disponible."}, {"q": "¿Opciones veganas?", "a": "Sí, pizzas veganas y veganas sin gluten."}]
     },
     {
       "nombre": "Gula Sana",
       "descripcion": "Restaurante especializado en opciones sin gluten.",
-      "contacto": null,
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/gula-sana/"
+      "contacto": "93-555-9999",
+      "beneficios": ["Menú variado sin gluten", "Alimentos orgánicos", "Ambiente natural"],
+      "precio": "€18-28 menú",
+      "idiomas": "Español, Inglés, Catalán",
+      "ubicacion": "Barcelona",
+      "faq": [{"q": "¿Almuerzo?", "a": "Menú del día de lunes a viernes €12."}, {"q": "¿Catering?", "a": "Sí, disponible servicio de catering."}]
     },
     {
       "nombre": "Hard Rock Cafe Barcelona",
       "descripcion": "Restaurante de cocina americana en Plaça Catalunya.",
       "contacto": "93 270 2305",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/hard-rock-cafe-barcelona/"
-    }
-  ],
-  "Retail": [
-    {
-      "nombre": "Tamarit 164",
-      "descripcion": "Boutique de moda danesa con ropa y accesorios.",
-      "contacto": "93 611 4691",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/tamarit-164-danish-fashion-vila-barcelona/"
-    },
-    {
-      "nombre": "Furtivo Skateboarding",
-      "descripcion": "Tienda y espacio de skateboarding premium.",
-      "contacto": null,
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/furtivo-skateboarding-online-barcelona-premium-brands-element-foundation-flip-independent/"
-    },
-    {
-      "nombre": "Metropolitan Bargain Boutique",
-      "descripcion": "Tienda especializada en vinos y productos boutique.",
-      "contacto": "630883997",
-      "web": "Visit Website",
-      "perfil": "https://www.barcelona-metropolitan.com/locations/metropolitan-bargain-boutique/"
+      "beneficios": ["Ubicación céntrica", "Atmósfera internacional", "Menú variado"],
+      "precio": "€20-35 menú",
+      "idiomas": "Español, Inglés, Catalán",
+      "ubicacion": "Plaça Catalunya, Barcelona",
+      "faq": [{"q": "¿Directo o reserva?", "a": "Se aceptan ambos, pero recomendamos reservar."}, {"q": "¿Happy hour?", "a": "Sí, de 17:00 a 19:00 de lunes a viernes."}]
     }
   ],
   "Comercial": [
@@ -308,20 +110,31 @@
       "nombre": "Paquete Básico",
       "descripcion": "Incluye anuncio en la revista digital y mención en redes sociales.",
       "precio": "250€ / mes",
-      "beneficios": ["Visibilidad en revista", "Difusión en redes sociales"]
+      "beneficios": ["Visibilidad en revista", "Difusión en redes sociales", "Alcance 5,000+ lectores"],
+      "contacto": "publicidad@revistametropolitana.com",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Online",
+      "faq": [{"q": "¿Contrato mínimo?", "a": "No, mes a mes sin compromiso."}, {"q": "¿Análiticas?", "a": "Sí, reportes mensuales incluidos."}]
     },
     {
       "nombre": "Paquete Premium",
       "descripcion": "Anuncio destacado en revista + entrevista + newsletter.",
       "precio": "500€ / mes",
-      "beneficios": ["Anuncio destacado", "Entrevista editorial", "Newsletter a expats"]
+      "beneficios": ["Anuncio destacado", "Entrevista editorial", "Newsletter a expats", "Alcance 10,000+ lectores"],
+      "contacto": "publicidad@revistametropolitana.com",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Online",
+      "faq": [{"q": "¿Duración de la entrevista?", "a": "Típicamente 2,000 palabras."}, {"q": "¿Diseño gráfico?", "a": "Sí, incluye diseño profesional del anuncio."}]
     },
     {
       "nombre": "Paquete Eventos",
       "descripcion": "Participación en eventos de networking organizados por la revista.",
       "precio": "750€ / evento",
-      "beneficios": ["Networking directo", "Cobertura en medios", "Promoción en redes"]
+      "beneficios": ["Networking directo", "Cobertura en medios", "Promoción en redes", "Contacto directo con 200+ expats"],
+      "contacto": "eventos@revistametropolitana.com",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona",
+      "faq": [{"q": "¿Cuántas personas asisten?", "a": "Típicamente 150-300 profesionales."}, {"q": "¿Materiales?", "a": "Sí, incluye mesa y materiales promocionales básicos."}]
     }
   ]
 }
-

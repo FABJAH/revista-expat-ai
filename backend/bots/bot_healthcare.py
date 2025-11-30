@@ -12,27 +12,24 @@ def _normalize(s):
 
 
 def responder_consulta(pregunta, anunciantes):
-    """Responde consultas de salud con formato estándar.
+    """Responde consultas educativas con formato estándar.
 
-    - Filtra por términos relevantes (médico, clínica, dentista, seguro).
+    - Filtra por términos relevantes (escuela, curso, idiomas, universidad, academia).
     - Añade FAQs por defecto si faltan.
     - Devuelve JSON estandarizado y texto bilingüe.
     """
     pregunta_norm = _normalize(pregunta or "")
 
     keywords = [
-        "medico",
-        "médico",
-        "doctor",
-        "clinica",
-        "clínica",
-        "dentista",
-        "seguro",
-        "salud",
-        "hospital",
-        "clinic",
-        "health",
-        "insurance",
+        "escuela",
+        "colegio",
+        "universidad",
+        "curso",
+        "idiomas",
+        "academia",
+        "language",
+        "course",
+        "training",
     ]
 
     matching = []
@@ -60,14 +57,8 @@ def responder_consulta(pregunta, anunciantes):
     for a in selected:
         if not a.get('faq'):
             a['faq'] = [
-                {
-                    "q": "¿Cómo pido una cita?",
-                    "a": "Contacta al número o correo del proveedor; muchos aceptan cita online."
-                },
-                {
-                    "q": "¿Cubre mi seguro la consulta?",
-                    "a": "Depende de tu póliza; consulta con tu aseguradora o con el centro médico."
-                }
+                {"q": "¿Hay certificación?", "a": "Consulta con el proveedor si emiten certificado al terminar."},
+                {"q": "¿Hay clases online?", "a": "Muchos cursos ofrecen modalidad presencial y online; pregunta al anunciante."}
             ]
 
-    return make_standard_response("Healthcare", selected, pregunta)
+    return make_standard_response("Education", selected, pregunta)

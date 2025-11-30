@@ -1,89 +1,225 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <title>Barcelona Metropolitan Bots</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: #f4f4f4; color: #111; }
-    .container { max-width: 800px; margin: auto; padding: 24px; background: white; box-shadow: 0 0 12px rgba(0,0,0,0.1); }
-    h1 { font-size: 2rem; margin-bottom: 0.5em; }
-    h2 { margin-top: 2em; }
-    img { width: 100%; border-radius: 8px; margin-bottom: 16px; }
-    textarea { width: 100%; height: 100px; font-size: 1rem; padding: 8px; margin-top: 8px; }
-    button { padding: 10px 16px; margin: 6px 4px; border: none; border-radius: 6px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
-    .response { margin-top: 16px; background: #eef; padding: 12px; border-radius: 6px; }
-    pre { background: #f6f8fa; padding: 12px; overflow-x: auto; font-size: 0.9rem; }
-    footer { margin-top: 40px; font-size: 0.9rem; text-align: center; color: #555; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCN Metropolitan - Revista Digital para Expatriados</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h1>Barcelona Metropolitan Bots</h1>
-    <p>Tu asistente digital para expats en Barcelona. Haz clic o escribe tu consulta.</p>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>BCN Metropolitan</h1>
+                <span>Revista Digital para Expatriados</span>
+            </div>
+            <nav class="nav">
+                <a href="#servicios">Servicios</a>
+                <a href="#chat">Chat</a>
+                <a href="#contacto">Contacto</a>
+            </nav>
+        </div>
+    </header>
 
-    <!-- Banner principal de Canva -->
-    <img src="banner-principal.jpeg" alt="BCN Metropolitan Banner">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Tu Asistente Digital en Barcelona</h2>
+            <p>12 servicios especializados para expatriados - Respuestas en español e inglés</p>
+            <div class="search-box">
+                <input type="text" id="global-search" placeholder="Pregunta sobre alojamiento, restaurantes, legal...">
+                <button onclick="searchGlobal()">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </div>
+        </div>
+    </section>
 
-    <!-- Botones conectados al backend -->
-    <div>
-      <button onclick="consultar('Quiero anunciarme en la revista')">📢 Quiero anunciarme</button>
-      <button onclick="consultar('Busco piso en Barcelona')">🏠 Alojamiento</button>
-      <button onclick="consultar('Quiero tramitar el NIE')">⚖️ Legal</button>
-      <button onclick="consultar('Necesito seguro médico')">❤️ Salud</button>
-      <button onclick="consultar('Quiero aprender catalán')">📚 Educación</button>
-      <button onclick="consultar('Busco empleo')">💼 Trabajo</button>
-      <button onclick="consultar('Eventos para expats')">🎉 Social</button>
-    </div>
+    <!-- 12 Bots Section -->
+    <section id="servicios" class="services-section">
+        <div class="container">
+            <h2 class="section-title">Nuestros 12 Servicios Especializados</h2>
+            <p class="section-subtitle">Haz clic en cualquier servicio para consultar con nuestro asistente</p>
 
-    <!-- Campo de texto libre -->
-    <h2>Consulta personalizada</h2>
-    <textarea id="pregunta" placeholder="Escribe tu pregunta aquí..."></textarea>
-    <button onclick="enviarConsulta()">Enviar consulta</button>
+            <div class="services-grid">
+                <!-- Servicio 1: Alojamiento -->
+                <div class="service-card" data-service="Accommodation">
+                    <div class="service-icon">🏠</div>
+                    <h3>Alojamiento</h3>
+                    <p>Hoteles, apartamentos y viviendas en Barcelona</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
 
-    <!-- Respuesta del bot -->
-    <div class="response" id="respuesta"></div>
-    <details>
-      <summary>Ver JSON completo</summary>
-      <pre id="json"></pre>
-    </details>
+                <!-- Servicio 2: Arte y Cultura -->
+                <div class="service-card" data-service="Arts and Culture">
+                    <div class="service-icon">🎨</div>
+                    <h3>Arte & Cultura</h3>
+                    <p>Museos, galerías y eventos culturales</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
 
-    <!-- Testimonios y contacto -->
-    <img src="testimonios.png" alt="Opiniones y consultas">
-    <img src="contacto.png" alt="Contacto y ubicación">
+                <!-- Servicio 3: Bares y Clubs -->
+                <div class="service-card" data-service="Bars and Clubs">
+                    <div class="service-icon">🍸</div>
+                    <h3>Bares & Clubs</h3>
+                    <p>Vida nocturna y entretenimiento</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
 
-    <footer>
-      BCN Metropolitan Magazine · fabio@barcelona-metropolitan.com · Barcelona, España
+                <!-- Servicio 4: Belleza y Bienestar -->
+                <div class="service-card" data-service="Beauty and Well-Being">
+                    <div class="service-icon">💅</div>
+                    <h3>Belleza & Bienestar</h3>
+                    <p>Spas, centros de belleza y wellness</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
+
+                <!-- Servicio 5: Negocios -->
+                <div class="service-card" data-service="Business Services">
+                    <div class="service-icon">💼</div>
+                    <h3>Negocios</h3>
+                    <p>Servicios corporativos y asesoría</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
+
+                <!-- Servicio 6: Educación -->
+                <div class="service-card" data-service="Education">
+                    <div class="service-icon">🎓</div>
+                    <h3>Educación</h3>
+                    <p>Escuelas, cursos y formación</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
+
+                <!-- Servicio 7: Salud -->
+                <div class="service-card" data-service="Healthcare">
+                    <div class="service-icon">🏥</div>
+                    <h3>Salud</h3>
+                    <p>Médicos, hospitales y seguros</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
+
+                <!-- Servicio 8: Servicios Hogar -->
+                <div class="service-card" data-service="Home Services">
+                    <div class="service-icon">🏡</div>
+                    <h3>Servicios Hogar</h3>
+                    <p>Reparaciones, limpieza y mudanzas</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
+
+                <!-- Servicio 9: Legal y Financiero -->
+                <div class="service-card" data-service="Legal and Financial">
+                    <div class="service-icon">⚖️</div>
+                    <h3>Legal & Financiero</h3>
+                    <p>Abogados, bancos y trámites</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
+
+                <!-- Servicio 10: Ocio -->
+                <div class="service-card" data-service="Recreation and Leisure">
+                    <div class="service-icon">🎯</div>
+                    <h3>Ocio & Recreación</h3>
+                    <p>Deportes, gimnasios y actividades</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
+
+                <!-- Servicio 11: Restaurantes -->
+                <div class="service-card" data-service="Restaurants">
+                    <div class="service-icon">🍽️</div>
+                    <h3>Restaurantes</h3>
+                    <p>Gastronomía y recomendaciones</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
+
+                <!-- Servicio 12: Compras -->
+                <div class="service-card" data-service="Retail">
+                    <div class="service-icon">🛍️</div>
+                    <h3>Compras & Retail</h3>
+                    <p>Tiendas y centros comerciales</p>
+                    <button class="service-btn">Consultar</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Respuestas de Servicios -->
+    <section id="service-responses" class="service-responses-section" style="display:none;">
+        <div class="container">
+            <h2>Resultados de Consulta</h2>
+            <div id="service-responses-content"></div>
+        </div>
+    </section>
+    <!-- Chat Section -->
+    <section id="chat" class="chat-section">
+        <div class="container">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h3>Asistente BCN Metropolitan</h3>
+                    <div class="language-toggle">
+                        <button class="lang-btn active" data-lang="es">ES</button>
+                        <button class="lang-btn" data-lang="en">EN</button>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message bot-message">
+                        <div class="message-content">
+                            <p>¡Hola! Soy tu asistente para expatriados en Barcelona. Tengo 12 servicios especializados para ayudarte. ¿En qué puedo asistirte hoy?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="quick-questions">
+                        <button class="quick-btn" data-question="Busco hotel en Barcelona">🏠 Alojamiento</button>
+                        <button class="quick-btn" data-question="Recomiéndame restaurantes">🍽️ Restaurantes</button>
+                        <button class="quick-btn" data-question="Necesito abogado para NIE">⚖️ Legal</button>
+                    </div>
+
+                    <div class="chat-input">
+                        <input type="text" id="chat-input" placeholder="Escribe tu pregunta aquí...">
+                        <button id="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contacto" class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>BCN Metropolitan</h4>
+                    <p>Tu revista digital para la comunidad expatriada en Barcelona</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <p>📧 info@bcnmetropolitan.com</p>
+                    <p>📞 +34 123 456 789</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Servicios</h4>
+                    <ul>
+                        <li><a href="#" data-service="Accommodation">Alojamiento</a></li>
+                        <li><a href="#" data-service="Restaurants">Restaurantes</a></li>
+                        <li><a href="#" data-service="Legal and Financial">Legal</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 BCN Metropolitan Bots. Todos los derechos reservados.</p>
+            </div>
+        </div>
     </footer>
-  </div>
 
-  <script>
-    const endpoint = "https://metropolitan-bots.onrender.com/consulta";
-
-    async function consultar(pregunta) {
-      const r = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pregunta })
-      });
-      const data = await r.json();
-      const es = data?.mensaje?.es || "Respuesta en español no disponible.";
-      const en = data?.mensaje?.en || "English response not available.";
-      document.getElementById("respuesta").innerHTML = `
-        <p><strong>ES:</strong> ${es}</p>
-        <p><strong>EN:</strong> ${en}</p>
-      `;
-      document.getElementById("json").textContent = JSON.stringify(data, null, 2);
-    }
-
-    function enviarConsulta() {
-      const pregunta = document.getElementById("pregunta").value.trim();
-      if (pregunta) consultar(pregunta);
-    }
-
-    // Auto-consulta desde URL
-    const urlP = new URLSearchParams(location.search).get("p");
-    if (urlP) consultar(urlP);
-  </script>
+    <script src="script.js"></script>
 </body>
 </html>
