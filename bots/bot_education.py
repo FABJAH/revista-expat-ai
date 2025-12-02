@@ -1,14 +1,5 @@
 from .response_format import make_standard_response
-import unicodedata
-
-
-def _normalize(s):
-    if not s:
-        return ""
-    s = str(s).strip()
-    s = unicodedata.normalize('NFKD', s)
-    s = ''.join(c for c in s if not unicodedata.combining(c))
-    return s.lower()
+from .utils import normalize
 
 
 def responder_consulta(pregunta, anunciantes):
@@ -18,7 +9,7 @@ def responder_consulta(pregunta, anunciantes):
     - Añade FAQs por defecto si faltan.
     - Devuelve JSON estandarizado y texto bilingüe.
     """
-    pregunta_norm = _normalize(pregunta or "")
+    pregunta_norm = normalize(pregunta or "")
 
     keywords = [
         "escuela",
@@ -32,24 +23,15 @@ def responder_consulta(pregunta, anunciantes):
         "training",
     ]
 
-    matching = []
-    others = []
+    matching, others = [], []
     for a in anunciantes or []:
         combined = ' '.join(
             [str(a.get(k, '')) for k in ['nombre', 'descripcion', 'ubicacion', 'perfil']]
         )
-        combined_norm = _normalize(combined)
+        combined_norm = normalize(combined)
 
-        found = False
-        for kw in keywords:
-            if kw in pregunta_norm or kw in combined_norm:
-                found = True
-                break
-
-        if found:
-            matching.append(a)
-        else:
-            others.append(a)
+        found = any(kw in pregunta_norm or kw in combined_norm for kw in keywords)
+        (matching if found else others).append(a)
 
     selected = matching if matching else others
 

@@ -16,7 +16,7 @@
 </head>
 <body>
   <h1>Landing — Prueba API</h1>
-  <p>Introduce una pregunta y pulsa <strong>Consultar</strong>. La página llamará a <code>http://127.0.0.1:8000/consulta</code>.</p>
+  <p>Introduce una pregunta y pulsa <strong>Consultar</strong>. La página llamará a <code>http://127.0.0.1:5000/api/query</code>.</p>
 
   <label for="pregunta">Pregunta</label>
   <input id="pregunta" type="text" value="¿Dónde puedo alquilar un apartamento en Barcelona?" style="width:100%" />
@@ -64,12 +64,12 @@
       resultDiv.textContent = '';
 
       try {
-        const res = await fetch('http://127.0.0.1:8000/consulta', {
+        const res = await fetch('http://127.0.0.1:5000/api/query', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ pregunta, language })
+          body: JSON.stringify({ question: pregunta, language })
         });
 
         const bodyText = await res.text();

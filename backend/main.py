@@ -1,31 +1,34 @@
+# backend/main.py
 from fastapi import FastAPI
 from pydantic import BaseModel
-from sistema_principal import SistemaCompletoRevista
-from orquestador import base_datos
+from fastapi.middleware.cors import CORSMiddleware
 
-# Inicializar FastAPI y el sistema de agentes
+from bots.orchestrator import Orchestrator
+
 app = FastAPI(title="BCN Metropolitan Bots API")
 
-# Instanciar el sistema con la base de datos
-sistema = SistemaCompletoRevista(base_datos)
+# CORS para que tu frontend pueda llamar a la API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # ajusta a tu dominio en producción
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Modelo de entrada para la consulta
+# Instanciar el orquestador con datos
+orchestrator = Orchestrator()
+
 class Consulta(BaseModel):
     pregunta: str
+    language: str | None = None
 
-# Endpoint principal para recibir preguntas
-@app.post("/consulta")
-async def consulta_usuario(body: Consulta):
-    resultado = sistema.procesar_mensaje(body.pregunta)
-    return resultado
-
-# Endpoint de prueba para verificar que el servidor está activo
 @app.get("/health")
-async def health():
+def health():
     return {"status": "ok", "message": "BCN Metropolitan Bots API funcionando"}
 
-# Ejemplo de prueba local
-if __name__ == "__main__":
-    mensaje = "Quiero anunciar mi negocio en la revista"
-    respuesta = sistema.procesar_mensaje(mensaje)
-    print("\nRespuesta final:", respuesta)
+@app.post("/consulta")
+def consulta(body: Consulta):
+    result = orchestrator.process_query(body.pregunta)
+    # Agregar el idioma solicitado si quieres afectar el texto; por ahora devolvemos tal cual
+    return result

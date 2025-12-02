@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Prueba de Conexión</title>
+</head>
+<body>
+    <h1>Página de Prueba de Conexión</h1>
+    <button id="testButton">Probar Conexión</button>
+    <p>Resultado: <strong id="result">Pendiente...</strong></p>
+
+    <script>
+        document.getElementById('testButton').addEventListener('click', async () => {
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = 'Intentando conectar...';
+            try {
+                const response = await fetch('http://127.0.0.1:5000/test');
+                const data = await response.json();
+                resultElement.textContent = data.message;
+                resultElement.style.color = 'green';
+            } catch (error) {
+                resultElement.textContent = 'FALLO LA CONEXIÓN. Error: ' + error.message;
+                resultElement.style.color = 'red';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,24 +1,38 @@
 from flask import Flask, request, jsonify
-from backend.orquestador import procesar_pregunta  # usa tu función existente
+from flask_cors import CORS
+from bots.orchestrator import Orchestrator
 
+# Inicializa la aplicación Flask
 app = Flask(__name__)
+# Habilita CORS para permitir que el frontend (desde cualquier origen) se comunique con esta API.
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-@app.route("/", methods=["GET"])
-def home():
-    return "Barcelona Metropolitan Bots OK"
+# Crea una única instancia del Orchestrator para que la base de datos
+# se cargue solo una vez al iniciar el servidor.
+try:
+    orchestrator = Orchestrator()
+    print("✅ Orquestador inicializado correctamente.")
+except Exception as e:
+    print("===================================================")
+    print(f"❌ ERROR FATAL: No se pudo inicializar el Orquestador.")
+    print(f"Causa: {e}")
+    raise SystemExit("El servidor no puede arrancar sin el Orquestador. Revisa el error de arriba.")
 
-@app.route("/consulta", methods=["POST"])
-def consulta():
+@app.route('/api/query', methods=['POST'])
+def handle_query():
+    if not orchestrator:
+        return jsonify({"error": "El servidor no está configurado correctamente."}), 500
+
     data = request.get_json()
-    pregunta = data.get("pregunta", "").strip()
-    if not pregunta:
-        return jsonify({"error": "Falta 'pregunta'"}), 400
+    question = data.get('question')
 
-    categoria, resultados = procesar_pregunta(pregunta)
-    return jsonify({
-        "categoria": categoria,
-        "resultados": resultados
-    })
+    if not question:
+        return jsonify({"error": "La pregunta no puede estar vacía."}), 400
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    # Procesa la pregunta usando el orquestador y devuelve la respuesta
+    response = orchestrator.process_query(question)
+    return jsonify(response)
+
+if __name__ == '__main__':
+    # Ejecuta la aplicación en modo de depuración para facilitar el desarrollo
+    app.run(debug=True, port=5000)
