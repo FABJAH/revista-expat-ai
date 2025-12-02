@@ -1,8 +1,7 @@
-from .response_format import make_standard_response
 from .utils import normalize
 
 
-def responder_consulta(pregunta, anunciantes):
+def responder_consulta(pregunta, anunciantes, language="en"):
     """Responde consultas de alojamiento con formato estándar.
 
     - Filtra por términos relevantes (hotel, apartamento, alquiler, piso...)
@@ -36,18 +35,14 @@ def responder_consulta(pregunta, anunciantes):
 
     selected = matching if matching else others
 
-    # Añadir FAQ genéricas si no vienen en los datos
-    for a in selected:
-        if not a.get('faq'):
-            a['faq'] = [
-                {
-                    "q": "¿Cuál es el horario de check-in?",
-                    "a": "El horario de entrada suele ser a partir de las 14:00, confirme con el anunciante."
-                },
-                {
-                    "q": "¿Cuál es la política de cancelación?",
-                    "a": "Depende del proveedor; consulte las condiciones al reservar."
-                }
-            ]
+    # Extraer puntos clave de los 2 mejores resultados
+    key_points = []
+    for advertiser in selected[:2]:
+        point = {
+            "nombre": advertiser.get("nombre"),
+            "descripcion": advertiser.get("descripcion"),
+            "beneficios": advertiser.get("beneficios", [])
+        }
+        key_points.append(point)
 
-    return make_standard_response("Accommodation", selected, pregunta)
+    return {"key_points": key_points, "json_data": selected}

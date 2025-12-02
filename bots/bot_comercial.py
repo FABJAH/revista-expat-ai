@@ -1,8 +1,7 @@
-from .response_format import make_standard_response
 from .utils import normalize
 
 
-def responder_consulta(pregunta, paquetes):
+def responder_consulta(pregunta, paquetes, language="en"):
     """Responde consultas comerciales/publicidad con formato estándar.
 
     - Filtra paquetes por términos relevantes (publicidad, paquete, campaña, media kit).
@@ -38,22 +37,14 @@ def responder_consulta(pregunta, paquetes):
 
     selected = matching if matching else others
 
-    # Añadir FAQ genéricas si no vienen en los datos
-    for p in selected:
-        if not p.get('faq'):
-            p['faq'] = [
-                {
-                    "q": "¿Qué incluye el paquete?",
-                    "a": "Descripción de espacios, duración y formatos incluidos; consultar detalles con el equipo comercial."
-                },
-                {
-                    "q": "¿Cuál es el plazo de contratación?",
-                    "a": "Depende del paquete; normalmente se requieren 7-14 días hábiles para preparar la campaña."
-                },
-                {
-                    "q": "¿Podéis personalizar una propuesta?",
-                    "a": "Sí, ofrecemos propuestas personalizadas según objetivos y presupuesto."
-                }
-            ]
+    # Extraer puntos clave de los 2 mejores resultados
+    key_points = []
+    for advertiser in selected[:2]:
+        point = {
+            "nombre": advertiser.get("nombre"),
+            "descripcion": advertiser.get("descripcion"),
+            "beneficios": advertiser.get("beneficios", [])
+        }
+        key_points.append(point)
 
-    return make_standard_response("Comercial", selected, pregunta)
+    return {"key_points": key_points, "json_data": selected}

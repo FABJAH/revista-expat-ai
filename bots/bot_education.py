@@ -1,8 +1,7 @@
-from .response_format import make_standard_response
 from .utils import normalize
 
 
-def responder_consulta(pregunta, anunciantes):
+def responder_consulta(pregunta, anunciantes, language="en"):
     """Responde consultas educativas con formato estándar.
 
     - Filtra por términos relevantes (escuela, curso, idiomas, universidad, academia).
@@ -43,4 +42,4 @@ def responder_consulta(pregunta, anunciantes):
                 {"q": "¿Hay clases online?", "a": "Muchos cursos ofrecen modalidad presencial y online; pregunta al anunciante."}
             ]
 
-    return make_standard_response("Education", selected, pregunta)
+    return make_standard_response("Education", selected, pregunta, language)

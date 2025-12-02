@@ -1,8 +1,7 @@
-from .response_format import make_standard_response
 from .utils import normalize
 
 
-def responder_consulta(pregunta, anunciantes):
+def responder_consulta(pregunta, anunciantes, language="en"):
     """Responde consultas legales/financieras con formato estándar.
 
     - Filtra anunciantes por coincidencia de términos (NIE, residencia, impuestos, banco, abogado).
@@ -24,12 +23,14 @@ def responder_consulta(pregunta, anunciantes):
 
     selected = matching if matching else others
 
-    # Añadir FAQ genéricas si no vienen en los datos
-    for a in selected:
-        if not a.get('faq'):
-            a['faq'] = [
-                {"q": "¿Cómo solicito un NIE?", "a": "Solicita cita en la oficina de extranjería o tramite online."},
-                {"q": "¿Necesito un abogado para residencia?", "a": "Depende de la complejidad; un profesional puede ayudar con documentación."}
-            ]
+    # Extraer puntos clave de los 2 mejores resultados
+    key_points = []
+    for advertiser in selected[:2]:
+        point = {
+            "nombre": advertiser.get("nombre"),
+            "descripcion": advertiser.get("descripcion"),
+            "beneficios": advertiser.get("beneficios", [])
+        }
+        key_points.append(point)
 
-    return make_standard_response("Legal and Financial", selected, pregunta)
+    return {"key_points": key_points, "json_data": selected}

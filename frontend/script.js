@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const serviceCards = document.querySelectorAll('.service-card');
 
-    const API_URL = 'http://127.0.0.1:5000/api/query';
+    const API_URL = 'http://127.0.0.1:8000/api/query';
 
     // --- Lógica del Chat ---
 
@@ -29,10 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const thinkingMessage = addMessage('...', 'bot');
 
         try {
+            // Detecta el idioma del navegador (ej. "es-ES", "en-US") y toma solo las dos primeras letras.
+            const lang = navigator.language.split('-')[0];
+
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question }),
+                // Enviamos la pregunta y el idioma detectado
+                body: JSON.stringify({ question, language: lang }),
             });
 
             if (!response.ok) {
@@ -83,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Resultados en formato de tarjeta
-        if (data.json && data.json.length > 0) {
+        if (Array.isArray(data.json) && data.json.length > 0) { // Ahora data.json es directamente el array
             const resultsContainer = document.createElement('div');
             resultsContainer.className = 'results-container';
             data.json.forEach(item => {

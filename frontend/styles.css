@@ -245,6 +245,36 @@ body {
     border-bottom-left-radius: 5px;
 }
 
+/* --- Estilos para las tarjetas de resultados del Bot --- */
+.bot-message .friendly-text {
+    margin-bottom: 15px; /* Espacio debajo del texto amigable */
+}
+
+.results-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Espacio entre cada tarjeta de resultado */
+}
+
+.result-card {
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    transition: box-shadow 0.2s;
+}
+
+.result-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.result-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+/* --- Fin de estilos para tarjetas --- */
+
 .chat-input-container {
     padding: 15px;
     border-top: 1px solid var(--border-color);

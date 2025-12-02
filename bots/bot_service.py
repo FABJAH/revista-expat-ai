@@ -1,7 +1,6 @@
-from .response_format import make_standard_response
 
 
-def responder_consulta(pregunta, anunciantes=None):
+def responder_consulta(pregunta, anunciantes=None, language="en"):
     """
     Responde a consultas sobre el servicio de creación de bots para anunciantes.
     """
@@ -27,4 +26,14 @@ def responder_consulta(pregunta, anunciantes=None):
         }
     ]
 
-    return make_standard_response("BotService", info_servicio, pregunta)
+    # Extraer puntos clave de los 2 mejores resultados
+    key_points = []
+    for advertiser in info_servicio[:2]:
+        point = {
+            "nombre": advertiser.get("nombre"),
+            "descripcion": advertiser.get("descripcion"),
+            "beneficios": advertiser.get("beneficios", [])
+        }
+        key_points.append(point)
+
+    return {"key_points": key_points, "json_data": info_servicio}

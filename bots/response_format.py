@@ -12,7 +12,7 @@ def _normalize_text(s):
     return s
 
 
-def make_standard_response(categoria, anunciantes, pregunta=None):
+def make_standard_response(categoria, anunciantes, pregunta=None, language="en"):
     """
     Devuelve un dict con la estructura solicitada y un texto amigable bilingüe.
 
@@ -34,54 +34,21 @@ def make_standard_response(categoria, anunciantes, pregunta=None):
         }
         opciones.append(opcion)
 
-    json_resp = {
-        "categoria": categoria,
-        "opciones": opciones
-    }
-
-    # Texto amigable bilingüe
+    # Generar el mensaje amigable en el idioma correcto
+    friendly_text = ""
     if not opciones:
-        text_es = "No se encontraron coincidencias para tu búsqueda."
-        text_en = "No matches were found for your search."
-        text = f"ES: {text_es}\nEN: {text_en}"
-        return {"json": json_resp, "text": text}
+        if language == "es":
+            friendly_text = "Lo siento, no se encontraron coincidencias para tu búsqueda en esta categoría."
+        else: # Default a inglés
+            friendly_text = "Sorry, no matches were found for your search in this category."
+    else:
+        if language == "es":
+            friendly_text = f"Aquí tienes algunos anunciantes de {categoria} que podrían interesarte. Si necesitas más información de otros lugares, puedes utilizar Google u otra plataforma mientras actualizamos nuestra base de datos."
+        else:
+            friendly_text = f"Here are some {categoria} advertisers that might interest you. If you need more information about other places, you can use Google or another platform while we update our database."
 
-    # Construir resumen en español
-    lines_es = [f"Categoría detectada: {categoria}"]
-    if pregunta:
-        lines_es.append(f"Consulta: {pregunta}")
-    lines_es.append("Resultados:")
-    for opt in opciones:
-        lines_es.append(f"- {opt['nombre']}: {opt['descripcion']}")
-        if opt['beneficios']:
-            lines_es.append(f"  Beneficios: {', '.join([str(b) for b in opt['beneficios']])}")
-        if opt['precio']:
-            lines_es.append(f"  Precio: {opt['precio']}")
-        if opt['contacto']:
-            lines_es.append(f"  Contacto: {opt['contacto']}")
-        if opt['idiomas']:
-            lines_es.append(f"  Idiomas: {opt['idiomas']}")
-        if opt['ubicacion']:
-            lines_es.append(f"  Ubicación: {opt['ubicacion']}")
-
-    # Construir resumen en inglés (simple, literal)
-    lines_en = [f"Category detected: {categoria}"]
-    if pregunta:
-        lines_en.append(f"Query: {pregunta}")
-    lines_en.append("Results:")
-    for opt in opciones:
-        lines_en.append(f"- {opt['nombre']}: {opt['descripcion']}")
-        if opt['beneficios']:
-            lines_en.append(f"  Benefits: {', '.join([str(b) for b in opt['beneficios']])}")
-        if opt['precio']:
-            lines_en.append(f"  Price: {opt['precio']}")
-        if opt['contacto']:
-            lines_en.append(f"  Contact: {opt['contacto']}")
-        if opt['idiomas']:
-            lines_en.append(f"  Languages: {opt['idiomas']}")
-        if opt['ubicacion']:
-            lines_en.append(f"  Location: {opt['ubicacion']}")
-
-    text = "ES:\n" + "\n".join(lines_es) + "\n\nEN:\n" + "\n".join(lines_en)
-
-    return {"json": json_resp, "text": text}
+    # Devolvemos el mensaje amigable y la lista de opciones directamente
+    return {
+        "friendly": friendly_text,
+        "json": opciones # Aseguramos que sea la lista de anunciantes directamente
+    }

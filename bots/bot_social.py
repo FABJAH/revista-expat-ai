@@ -1,8 +1,7 @@
-from .response_format import make_standard_response
 from .utils import normalize
 
 
-def responder_consulta(pregunta, anunciantes):
+def responder_consulta(pregunta, anunciantes, language="en"):
     """Responde consultas sociales/culturales con formato estándar.
 
     - Filtra por términos relevantes (evento, asociación, restaurante, actividad).
@@ -36,18 +35,14 @@ def responder_consulta(pregunta, anunciantes):
 
     selected = matching if matching else others
 
-    # Añadir FAQ genéricas si no vienen en los datos
-    for a in selected:
-        if not a.get('faq'):
-            a['faq'] = [
-                {
-                    "q": "¿Cómo me apunto al evento?",
-                    "a": "Consulta el contacto del organizador para inscribirte o reserva mediante su web."
-                },
-                {
-                    "q": "¿Hay actividades para familias?",
-                    "a": "Depende del evento; revisa la descripción o pregunta al organizador."
-                }
-            ]
+    # Extraer puntos clave de los 2 mejores resultados
+    key_points = []
+    for advertiser in selected[:2]:
+        point = {
+            "nombre": advertiser.get("nombre"),
+            "descripcion": advertiser.get("descripcion"),
+            "beneficios": advertiser.get("beneficios", [])
+        }
+        key_points.append(point)
 
-    return make_standard_response("Social and Cultural", selected, pregunta)
+    return {"key_points": key_points, "json_data": selected}

@@ -1,9 +1,7 @@
 # bots/bot_healthcare.py
-from .response_format import make_standard_response
 from .utils import normalize
 
-def responder_consulta(pregunta, anunciantes):
-    """Responde consultas de salud con formato estándar."""
+def responder_consulta(pregunta, anunciantes, language="en"):
     pregunta_norm = normalize(pregunta or "")
     keywords = [
         "medico","médico","doctor","hospital","clinica","clínica","dentista",
@@ -19,11 +17,14 @@ def responder_consulta(pregunta, anunciantes):
 
     selected = matching if matching else others
 
-    for a in selected:
-        if not a.get('faq'):
-            a['faq'] = [
-                {"q":"¿Aceptan seguro médico?","a":"Consulta directamente qué aseguradoras aceptan."},
-                {"q":"¿Atención en inglés?","a":"Muchos centros atienden en inglés; confirma al reservar."}
-            ]
+    # Extraer puntos clave de los 2 mejores resultados
+    key_points = []
+    for advertiser in selected[:2]:
+        point = {
+            "nombre": advertiser.get("nombre"),
+            "descripcion": advertiser.get("descripcion"),
+            "beneficios": advertiser.get("beneficios", [])
+        }
+        key_points.append(point)
 
-    return make_standard_response("Healthcare", selected, pregunta)
+    return {"key_points": key_points, "json_data": selected}

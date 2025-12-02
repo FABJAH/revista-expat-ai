@@ -35,4 +35,4 @@ def handle_query():
 
 if __name__ == '__main__':
     # Ejecuta la aplicación en modo de depuración para facilitar el desarrollo
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=8000)

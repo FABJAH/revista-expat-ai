@@ -1,8 +1,7 @@
-from .response_format import make_standard_response
 from .utils import normalize
 
 
-def responder_consulta(pregunta, anunciantes):
+def responder_consulta(pregunta, anunciantes, language="en"):
     """Responde consultas sobre empleo y networking con formato estándar.
 
     - Filtra por términos relevantes (trabajo, empleo, oferta, coworking, networking).
@@ -36,12 +35,14 @@ def responder_consulta(pregunta, anunciantes):
 
     selected = matching if matching else others
 
-    # Añadir FAQ genéricas si no vienen en los datos
-    for a in selected:
-        if not a.get('faq'):
-            a['faq'] = [
-                {"q": "¿Cómo aplico a una oferta?", "a": "Envia tu CV al contacto indicado o sigue las instrucciones en la oferta."},
-                {"q": "¿Hay posibilidad de trabajo remoto?", "a": "Depende del puesto; consulta con el anunciante."}
-            ]
+    # Extraer puntos clave de los 2 mejores resultados
+    key_points = []
+    for advertiser in selected[:2]:
+        point = {
+            "nombre": advertiser.get("nombre"),
+            "descripcion": advertiser.get("descripcion"),
+            "beneficios": advertiser.get("beneficios", [])
+        }
+        key_points.append(point)
 
-    return make_standard_response("Work and Networking", selected, pregunta)
+    return {"key_points": key_points, "json_data": selected}
