@@ -2,28 +2,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Elementos del DOM ---
     const chatInput = document.getElementById('chat-input'); // Input en el Hero
     const sendBtn = document.getElementById('send-btn');
-    const chatInput2 = document.getElementById('chat-input2'); // Input en el chat
-    const sendBtn2 = document.getElementById('send-btn2');
-    const messagesContainer = document.getElementById('chat-messages');
     const hamburger = document.getElementById('hamburger');
     const sidebar = document.getElementById('sidebar');
     const serviceCards = document.querySelectorAll('.service-card');
 
-    const API_URL = 'http://127.0.0.1:8000/api/query';
+    // Elementos del Widget de Chat
+    const chatWidgetContainer = document.getElementById('chat-widget-container');
+    const chatBubble = document.getElementById('chat-bubble');
+    const chatWindow = document.getElementById('chat-window');
+    const closeChatBtn = document.getElementById('close-chat-btn');
+    const messagesContainer = document.getElementById('chat-messages');
+    const chatInputWidget = document.getElementById('chat-input-widget');
+    const sendBtnWidget = document.getElementById('send-btn-widget');
+
+    // Como el frontend y el backend ahora se sirven desde el mismo lugar,
+    // podemos usar una ruta relativa. Esto elimina los problemas de CORS.
+    const API_URL = '/api/query';
 
     // --- Lógica del Chat ---
 
-    const handleSendMessage = async () => {
-        // Usar el valor de cualquiera de los dos inputs que tenga texto
-        let question = chatInput.value.trim() || chatInput2.value.trim();
-        if (!question) return;
+    const sendQuery = async (queryText) => {
+        if (!queryText) return;
 
         // Añadir mensaje del usuario a la interfaz
-        addMessage(question, 'user');
+        addMessage(queryText, 'user');
 
-        // Limpiar ambos inputs
+        // Limpiar inputs
         chatInput.value = '';
-        chatInput2.value = '';
+        chatInputWidget.value = '';
 
         // Mostrar indicador de "escribiendo..."
         const thinkingMessage = addMessage('...', 'bot');
@@ -36,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 // Enviamos la pregunta y el idioma detectado
-                body: JSON.stringify({ question, language: lang }),
+                body: JSON.stringify({ question: queryText, language: lang }),
             });
 
             if (!response.ok) {
@@ -60,6 +66,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const handleSendMessage = () => {
+        // Usar el valor de cualquiera de los dos inputs que tenga texto
+        const question = chatInput.value.trim() || chatInputWidget.value.trim();
+
+        // Si la pregunta viene del input principal (hero), hacer scroll al chat
+        if (chatInput.value.trim()) {
+            toggleChatWindow(true); // Abrir el widget de chat
+        }
+
+        sendQuery(question);
+    };
+
     const addMessage = (text, type) => {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}-message`;
@@ -79,52 +97,89 @@ document.addEventListener('DOMContentLoaded', () => {
         messageDiv.innerHTML = ''; // Limpiar el indicador de "escribiendo"
 
         // Mensaje amigable del orquestador
-        if (data.friendly) {
+        if (data.respuesta) {
             const friendlyDiv = document.createElement('div');
             friendlyDiv.className = 'friendly-text';
-            friendlyDiv.textContent = data.friendly;
+            friendlyDiv.textContent = data.respuesta;
             messageDiv.appendChild(friendlyDiv);
         }
 
         // Resultados en formato de tarjeta
-        if (Array.isArray(data.json) && data.json.length > 0) { // Ahora data.json es directamente el array
+        if (Array.isArray(data.json) && data.json.length > 0) {
             const resultsContainer = document.createElement('div');
             resultsContainer.className = 'results-container';
             data.json.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'result-card';
-                let cardHTML = `<h3>${item.nombre}</h3><p>${item.descripcion}</p>`;
-                if (item.contacto) cardHTML += `<p><strong>Contacto:</strong> ${item.contacto}</p>`;
-                if (item.precio) cardHTML += `<p><strong>Precio:</strong> ${item.precio}</p>`;
-                if (item.ubicacion) cardHTML += `<p><strong>Ubicación:</strong> ${item.ubicacion}</p>`;
+
+                // Estructura mejorada para más control con CSS
+                let cardHTML = `<h3>${item.nombre}</h3><p class="card-description">${item.descripcion}</p>`;
+
+                // Contenedor para los detalles (contacto, precio, etc.)
+                const details = `
+                    ${item.contacto ? `<p><strong>Contacto:</strong> ${item.contacto}</p>` : ''}
+                    ${item.precio ? `<p><strong>Precio:</strong> ${item.precio}</p>` : ''}
+                    ${item.ubicacion ? `<p><strong>Ubicación:</strong> ${item.ubicacion}</p>` : ''}
+                `;
+                if (details.trim()) {
+                    cardHTML += `<div class="card-details">${details}</div>`;
+                }
+
                 if (item.beneficios && item.beneficios.length > 0) {
-                    cardHTML += `<strong>Beneficios:</strong><ul>${item.beneficios.map(b => `<li>${b}</li>`).join('')}</ul>`;
+                    cardHTML += `<div class="card-benefits"><strong>Beneficios:</strong><ul>${item.beneficios.map(b => `<li>${b}</li>`).join('')}</ul></div>`;
                 }
                 card.innerHTML = cardHTML;
                 resultsContainer.appendChild(card);
             });
             messageDiv.appendChild(resultsContainer);
-        } else {
-            // Si no hay JSON, mostrar la respuesta de texto plano
+        } else if (!data.respuesta) {
+            // Si no hay resultados ni texto amigable, mostrar un mensaje genérico
             const textResponse = document.createElement('p');
-            textResponse.textContent = data.respuesta || "No he encontrado información sobre eso, ¿puedes ser más específico?";
+            textResponse.textContent = "No he encontrado información sobre eso, ¿puedes ser más específico?";
             messageDiv.appendChild(textResponse);
         }
 
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     };
 
+    const addWelcomeMessageWithActions = () => {
+        const welcomeText = '¡Hola! Soy tu asistente para la vida en Barcelona. ¿Cómo puedo ayudarte hoy?';
+        const messageDiv = addMessage(welcomeText, 'bot');
+
+        // Contenedor para los botones de acción
+        const actionsContainer = document.createElement('div');
+        actionsContainer.className = 'quick-actions-container';
+
+        // Definimos las acciones rápidas
+        const actions = [
+            { text: '🏨 Alojamiento', query: 'Accommodation' },
+            { text: '⚕️ Salud', query: 'Healthcare' },
+            { text: '🎓 Educación', query: 'Education' },
+            { text: '⚖️ Legal y Finanzas', query: 'Legal and Financial' },
+            { text: '🍽️ Restaurantes', query: 'Restaurants' },
+            { text: '📢 Anúnciate', query: 'Comercial' }
+        ];
+
+        actions.forEach(action => {
+            const button = document.createElement('button');
+            button.className = 'quick-action-btn';
+            button.textContent = action.text;
+            button.onclick = () => {
+                sendQuery(action.query);
+            };
+            actionsContainer.appendChild(button);
+        });
+
+        messageDiv.appendChild(actionsContainer);
+    };
     // --- Event Listeners ---
 
     // Botones de enviar
-    sendBtn.addEventListener('click', handleSendMessage);
-    sendBtn2.addEventListener('click', handleSendMessage);
+    sendBtn?.addEventListener('click', handleSendMessage); // El del hero
+    sendBtnWidget.addEventListener('click', handleSendMessage); // El del widget
 
     // Enviar con la tecla Enter
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSendMessage();
-    });
-    chatInput2.addEventListener('keypress', (e) => {
+    [chatInput, chatInputWidget].forEach(input => input?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleSendMessage();
     });
 
@@ -133,23 +188,37 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebar.classList.toggle('open');
     });
 
+    // Lógica del widget de chat
+    const toggleChatWindow = (forceOpen = null) => {
+        const isHidden = chatWindow.classList.contains('hidden');
+        if (forceOpen === true || isHidden) {
+            chatWindow.classList.remove('hidden');
+            chatBubble.classList.add('hidden');
+        } else if (forceOpen === false || !isHidden) {
+            chatWindow.classList.add('hidden');
+            chatBubble.classList.remove('hidden');
+        }
+    };
+
+    chatBubble.addEventListener('click', () => toggleChatWindow(true));
+    closeChatBtn.addEventListener('click', () => toggleChatWindow(false));
+
     // Clic en tarjetas de servicio
     serviceCards.forEach(card => {
         card.addEventListener('click', () => {
-            const service = card.dataset.service;
-            const question = `Quiero información sobre ${service}`;
-            chatInput2.value = question; // Poner la pregunta en el input del chat
+            // Obtiene el valor del atributo data-service, que ya coincide
+            // con las claves del JSON (ej: "Accommodation", "Healthcare").
+            const serviceName = card.dataset.service;
 
-            // Scroll hacia la sección de chat
-            document.getElementById('chat').scrollIntoView({ behavior: 'smooth' });
-
-            // Enviar el mensaje
-            handleSendMessage();
+            toggleChatWindow(true); // Abrir el widget de chat
+            // Envía la consulta directamente sin usar los inputs de texto
+            sendQuery(serviceName);
         });
     });
 
     // Mensaje de bienvenida
     setTimeout(() => {
-        addMessage('¡Hola! Soy tu asistente para la vida en Barcelona. Pregúntame sobre alojamiento, trámites legales, salud y más.', 'bot');
+        addWelcomeMessageWithActions();
     }, 500);
+
 });

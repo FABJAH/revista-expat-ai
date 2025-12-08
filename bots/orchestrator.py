@@ -1,9 +1,11 @@
 # bots/orchestrator.py
 import json
-import re
 import random
 from pathlib import Path
-from .response_format import make_standard_response
+# Para la clasificación semántica de intenciones
+# Asegúrate de instalarlo: pip install sentence-transformers torch
+from sentence_transformers import SentenceTransformer, util
+
 from .utils import normalize
 
 # Importa bots disponibles
@@ -12,9 +14,17 @@ from .bot_legal import responder_consulta as leg_responder
 from .bot_comercial import responder_consulta as com_responder
 from .bot_education import responder_consulta as edu_responder
 from .bot_healthcare import responder_consulta as hea_responder
-from .bot_social import responder_consulta as soc_responder
 from .bot_work import responder_consulta as work_responder
 from .bot_service import responder_consulta as srv_responder
+
+
+def generic_responder(pregunta, anunciantes, language="en"):
+    """
+    Un bot genérico que no hace ningún filtrado adicional.
+    Simplemente devuelve los anunciantes que el orquestador ya ha seleccionado para esa categoría.
+    """
+    return {"key_points": [], "json_data": anunciantes}
+
 
 class Orchestrator:
     def __init__(self):
@@ -28,75 +38,201 @@ class Orchestrator:
             print(f"❌ ERROR cargando base de datos: {e}")
             self.advertisers = {}
 
-        # Mapa de bots
+        # --- INICIALIZACIÓN DEL MODELO SEMÁNTICO ---
+        # Cargamos un modelo de lenguaje pre-entrenado y multilingüe.
+        # Es potente para entender el significado, no solo las palabras.
+        self.model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+
+        # Patrones de intención (depurados)
+        self.category_patterns = { # Separado por idioma
+            "es": {
+                "Accommodation": [
+                    "hotel", "apartamento", "alojamiento", "vivienda",
+                    "alquiler", "piso", "hostal", "renta", "habitacion",
+                    "hospedaje", "estancia"
+                ],
+                "Arts and Culture": [
+                    "museo", "galeria", "exposicion", "arte", "cultural",
+                    "teatro", "concierto"
+                ],
+                "Bars and Clubs": [
+                    "bar", "discoteca", "pub", "copas", "noche", "fiesta",
+                    "club", "karaoke", "terraza", "coctel"
+                ],
+                "Beauty and Well-Being": [
+                    "spa", "masaje", "estetica", "belleza", "bienestar",
+                    "peluqueria", "manicura", "facial", "salon"
+                ],
+                "Business Services": [
+                    "negocio", "empresa", "corporativo", "consultoría",
+                    "oficina", "servicios", "coworking"
+                ],
+                "Education": [
+                    "escuela", "colegio", "universidad", "curso",
+                    "idiomas", "academia", "formacion", "master",
+                    "posgrado", "clases", "taller"
+                ],
+                "Healthcare": [
+                    "doctor", "hospital", "clinica", "dentista", "seguro",
+                    "salud", "pediatra", "ginecologo", "farmacia",
+                    "emergencia", "especialista", "psicologo", "terapia"
+                ],
+                "Home Services": [
+                    "reparacion", "limpieza", "fontanero", "electricista",
+                    "carpintero", "mudanza", "pintor", "jardineria"
+                ],
+                "Legal and Financial": [
+                    "abogado", "legal", "financiero", "impuestos", "banco",
+                    "contrato", "visado", "nie", "residencia", "permiso",
+                    "nif", "gestoria", "gestor", "inmigracion", "extranjeria",
+                    "cuenta bancaria", "declaracion renta"
+                ],
+                "Recreation and Leisure": [
+                    "ocio", "recreacion", "deporte", "gimnasio", "parque",
+                    "entretenimiento"
+                ],
+                "Restaurants": [
+                    "restaurante", "comida", "cenar", "menu", "reserva",
+                    "terraza", "cocina", "tapas", "brunch", "desayuno",
+                    "almuerzo", "pizzeria"
+                ],
+                "Retail": [
+                    "tienda", "compras", "producto", "ropa", "moda",
+                    "centro comercial"
+                ],
+                "Comercial": [
+                    "anunciar", "publicidad", "paquete", "campaña",
+                    "promocion", "revista", "media kit", "marketing",
+                    "anunciate", "colaborar", "patrocinar"
+                ],
+                "BotService": [
+                    "bot", "agendamiento", "citas", "reservas",
+                    "asistente virtual", "chatbot"
+                ]
+            },
+            "en": {
+                "Accommodation": [
+                    "hotel", "apartment", "housing", "flat", "hostel",
+                    "room", "rent", "accommodation"
+                ],
+                "Arts and Culture": [
+                    "museum", "gallery", "exhibition", "art", "cultural",
+                    "theater", "concert"
+                ],
+                "Bars and Clubs": [
+                    "bar", "club", "pub", "drinks", "night", "party",
+                    "karaoke", "terrace", "cocktail", "nightlife"
+                ],
+                "Beauty and Well-Being": [
+                    "spa", "massage", "beauty", "wellness", "hairdresser",
+                    "manicure", "facial", "salon"
+                ],
+                "Business Services": [
+                    "business", "company", "corporate", "consulting",
+                    "office", "services", "coworking"
+                ],
+                "Education": [
+                    "school", "college", "university", "course",
+                    "languages", "academy", "training", "master",
+                    "postgraduate", "classes", "workshop"
+                ],
+                "Healthcare": [
+                    "doctor", "hospital", "clinic", "dentist", "insurance",
+                    "health", "pediatrician", "gynecologist", "pharmacy",
+                    "emergency", "specialist", "psychologist", "therapy"
+                ],
+                "Home Services": [
+                    "repair", "cleaning", "plumber", "electrician",
+                    "carpenter", "moving", "painter", "gardening"
+                ],
+                "Legal and Financial": [
+                    "lawyer", "legal", "financial", "tax", "bank",
+                    "contract", "visa", "nie", "residency", "permit",
+                    "immigration", "residency permit", "bank account",
+                    "tax return", "consultant"
+                ],
+                "Recreation and Leisure": [
+                    "leisure", "recreation", "sports", "gym", "park",
+                    "entertainment", "fun"
+                ],
+                "Restaurants": [
+                    "restaurant", "food", "dinner", "menu", "reservation",
+                    "terrace", "lunch", "cuisine", "tapas", "brunch",
+                    "breakfast", "pizzeria"
+                ],
+                "Retail": [
+                    "store", "shopping", "retail", "product", "clothes",
+                    "fashion", "shop", "mall", "clothing"
+                ],
+                "Comercial": [
+                    "advertise", "advertising", "package", "campaign",
+                    "promotion", "magazine", "media kit", "ads",
+                    "marketing", "collaborate", "sponsorship", "partner"
+                ],
+                "BotService": [
+                    "bot", "scheduling", "appointments", "booking",
+                    "virtual assistant", "chatbot"
+                ]
+            }
+        }
+
+        # --- MAPA DE BOTS UNIFICADO ---
+        # Ahora, todas las categorías tienen un bot asignado.
+        # Usamos el bot genérico para las categorías que no
+        # necesitan lógica especial.
         self.bots_map = {
             "Accommodation": acc_responder,
             "Legal and Financial": leg_responder,
             "Comercial": com_responder,
             "Education": edu_responder,
             "Healthcare": hea_responder,
-            "Social and Cultural": soc_responder,
-            "Work and Networking": work_responder,
+            "Work and Networking": work_responder, # Categoría que faltaba
             "BotService": srv_responder,
-        }
-
-        # Patrones de intención (depurados)
-        self.category_patterns = { # Separado por idioma
-            "es": {
-                "Accommodation": ["hotel", "apartamento", "alojamiento", "vivienda", "alquiler", "piso", "hostal", "renta", "habitacion", "hospedaje", "estancia"],
-                "Arts and Culture": ["museo", "galeria", "exposicion", "arte", "cultural", "teatro", "concierto"],
-                "Bars and Clubs": ["bar", "discoteca", "pub", "copas", "noche", "fiesta", "club", "karaoke", "terraza", "coctel"],
-                "Beauty and Well-Being": ["spa", "masaje", "estetica", "belleza", "bienestar", "peluqueria", "manicura", "facial"],
-                "Business Services": ["negocio", "empresa", "corporativo", "consultoria", "asesoria", "oficina", "coworking"],
-                "Education": ["escuela", "colegio", "universidad", "curso", "idiomas", "academia", "formacion", "master", "postgrado", "clases", "taller"],
-                "Healthcare": ["medico", "hospital", "clinica", "dentista", "seguro", "salud", "doctor", "pediatra", "ginecologo", "farmacia", "urgencias", "especialista", "psicologo", "terapia"],
-                "Home Services": ["reparacion", "limpieza", "fontanero", "electricista", "carpintero", "mudanza", "pintor", "jardineria"],
-                "Legal and Financial": ["abogado", "legal", "financiero", "impuestos", "banco", "contrato", "visado", "nie", "residencia", "permiso", "nif", "gestoria", "gestor", "inmigracion", "extranjeria", "cuenta bancaria", "declaracion renta"],
-                "Recreation and Leisure": ["ocio", "recreacion", "deporte", "gimnasio", "parque", "entretenimiento"],
-                "Restaurants": ["restaurante", "comida", "cenar", "menu", "reserva", "terraza", "cocina", "tapas", "brunch", "desayuno", "almuerzo", "pizzeria"],
-                "Retail": ["tienda", "compras", "producto", "ropa", "moda", "centro comercial"],
-                "Comercial": ["anunciar", "publicidad", "paquete", "campaña", "promocion", "revista", "media kit", "marketing", "anunciate", "colaborar", "patrocinar"],
-                "BotService": ["bot", "agendamiento", "citas", "reservas", "asistente virtual", "chatbot"]
-            },
-            "en": {
-                "Accommodation": ["hotel", "apartment", "housing", "flat", "hostel", "room", "rent", "accommodation"],
-                "Arts and Culture": ["museum", "gallery", "exhibition", "art", "cultural", "theater", "concert"],
-                "Bars and Clubs": ["bar", "club", "pub", "drinks", "night", "party", "karaoke", "terrace", "cocktail", "nightlife"],
-                "Beauty and Well-Being": ["spa", "massage", "beauty", "wellness", "hairdresser", "manicure", "facial", "salon"],
-                "Business Services": ["business", "company", "corporate", "consulting", "office", "services", "coworking"],
-                "Education": ["school", "college", "university", "course", "languages", "academy", "training", "master", "postgraduate", "classes", "workshop"],
-                "Healthcare": ["doctor", "hospital", "clinic", "dentist", "insurance", "health", "pediatrician", "gynecologist", "pharmacy", "emergency", "specialist", "psychologist", "therapy"],
-                "Home Services": ["repair", "cleaning", "plumber", "electrician", "carpenter", "moving", "painter", "gardening"],
-                "Legal and Financial": ["lawyer", "legal", "financial", "tax", "bank", "contract", "visa", "nie", "residency", "permit", "immigration", "residency permit", "bank account", "tax return", "consultant"],
-                "Recreation and Leisure": ["leisure", "recreation", "sports", "gym", "park", "entertainment", "fun"],
-                "Restaurants": ["restaurant", "food", "dinner", "menu", "reservation", "terrace", "lunch", "cuisine", "tapas", "brunch", "breakfast", "pizzeria"],
-                "Retail": ["store", "shopping", "retail", "product", "clothes", "fashion", "shop", "mall", "clothing"],
-                "Comercial": ["advertise", "advertising", "package", "campaign", "promotion", "magazine", "media kit", "ads", "marketing", "collaborate", "sponsorship", "partner"],
-                "BotService": ["bot", "scheduling", "appointments", "booking", "virtual assistant", "chatbot"]
-            }
+            # Bots que usan la lógica genérica
+            "Arts and Culture": generic_responder,
+            "Bars and Clubs": generic_responder,
+            "Beauty and Well-Being": generic_responder,
+            "Business Services": generic_responder,
+            "Home Services": generic_responder,
+            "Recreation and Leisure": generic_responder,
+            "Restaurants": generic_responder,
+            "Retail": generic_responder,
         }
 
         # Respuestas amigables por categoría
         self.responses_map = {
             "es": {
                 "Healthcare": [
-                    "Veo que preguntas sobre salud. Te conecto con nuestro bot de Salud.",
-                    "Parece que necesitas información médica. Nuestro bot de Salud puede guiarte.",
-                    "Los temas de salud son importantes. Dejaré que nuestro bot de Salud te ayude.",
-                    "Claro, aquí tienes información sobre servicios de salud en Barcelona.",
+                    "Veo que preguntas sobre salud. Te conecto con "
+                    "nuestro bot de Salud.",
+                    "Parece que necesitas información médica. "
+                    "Nuestro bot de Salud puede guiarte.",
+                    "Los temas de salud son importantes. "
+                    "Nuestro bot de Salud te ayudará con esto.",
+                    "Claro, aquí tienes información sobre servicios "
+                    "de salud en Barcelona.",
                     "Entendido, buscando opciones de salud para ti."
                 ],
                 "Legal and Financial": [
-                    "Parece que necesitas ayuda legal o financiera. Nuestro bot Legal te ayudará.",
-                    "Esto parece una pregunta sobre visados o contratos. Te conecto con el bot Legal.",
-                    "Los asuntos legales y financieros pueden ser complicados. Nuestro bot Legal está aquí para ayudar.",
-                    "¡Por supuesto! Navegar la burocracia puede ser difícil. Aquí tienes algunos expertos.",
-                    "Entendido. Te muestro especialistas en temas legales y financieros."
+                    "Parece que necesitas ayuda legal o financiera. "
+                    "Nuestro bot Legal te ayudará.",
+                    "Esto parece una pregunta sobre visados o contratos. "
+                    "Te conecto con el bot Legal.",
+                    "Los asuntos legales y financieros pueden ser complicados. "
+                    "Nuestro bot Legal está aquí para "
+                    "ayudar.",
+                    "¡Por supuesto! Navegar la burocracia puede ser "
+                    "difícil. Aquí tienes algunos expertos.",
+                    "Entendido. Te muestro especialistas en temas "
+                    "legales y financieros."
                 ],
                 "Accommodation": [
-                    "¿Buscando alojamiento? El bot de Alojamiento te mostrará opciones.",
-                    "Estás buscando un lugar donde quedarte. Te conecto con nuestro bot de Alojamiento.",
-                    "Las preguntas sobre alojamiento son comunes. Nuestro bot puede guiarte.",
+                    "¿Buscando alojamiento? El bot de Alojamiento te "
+                    "mostrará opciones.",
+                    "Estás buscando un lugar donde quedarte. Te conecto "
+                    "con nuestro bot de Alojamiento.",
+                    "Las preguntas sobre alojamiento son comunes. "
+                    "Nuestro bot puede guiarte.",
                     "¡Claro! Te ayudo a encontrar tu próximo hogar en Barcelona. Aquí tienes algunas opciones:",
                     "Entendido, buscando el lugar perfecto para ti. Te paso con nuestro especialista en alojamiento."
                 ],
@@ -140,8 +276,8 @@ class Orchestrator:
                 "Healthcare": [
                     "I see you’re asking about health. Let me connect you with our Healthcare bot.",
                     "Looks like you need medical information. Our Healthcare bot can guide you to clinics and doctors.",
-                    "Health matters are important. I’ll bring in our Healthcare bot to assist you.",
-                    "Of course, here is some information about healthcare services in Barcelona.",
+                    "Health matters are important. I’ll let our Healthcare bot assist you.",
+                    "Of course, here's some information about healthcare services in Barcelona.",
                     "Understood, looking for health options for you."
                 ],
                 "Legal and Financial": [
@@ -149,7 +285,7 @@ class Orchestrator:
                     "This looks like a question about visas or contracts. Let’s connect you with the Legal bot.",
                     "Legal and financial issues can be tricky. Our Legal bot is here to help.",
                     "Of course! Navigating bureaucracy can be tough. Here are some experts.",
-                    "Understood. I'll show you specialists in legal and financial matters."
+                    "Understood. I'll show you specialists for legal and financial matters."
                 ],
                 "Accommodation": [
                     "Searching for housing? The Accommodation bot will show you options.",
@@ -162,7 +298,7 @@ class Orchestrator:
                     "Interested in schools or courses? Our Education bot can guide you.",
                     "Looking for language classes or universities? The Education bot has the details.",
                     "Education is key. Let me connect you with our Education bot.",
-                    "Perfect, here is some information about educational centers in the city.",
+                    "Perfect, here's some information about educational centers in the city.",
                     "Great! Investing in training is always a good idea. Check out these options:"
                 ],
                 "Work and Networking": [
@@ -173,11 +309,11 @@ class Orchestrator:
                     "Let's do it! Here are resources for your professional career in Barcelona."
                 ],
                 "Social and Cultural": [
-                    "Want to explore culture and social life? The Social bot can guide you.",
+                    "Want to explore culture and social life? Our Social bot can guide you.",
                     "Looking for events or cultural activities? The Social bot has suggestions.",
-                    "Social and cultural experiences matter. Let me connect you with our Social bot.",
+                    "Social and cultural experiences are important. Let me connect you with our Social bot.",
                     "Fantastic! Barcelona has an incredible cultural life. Here are some ideas:",
-                    "Perfect, I'll help you discover the best social and cultural plans."
+                    "Perfect, let me help you discover the best social and cultural plans."
                 ],
                 "Comercial": [
                     "Interested in advertising with us? The Comercial bot can explain packages.",
@@ -196,43 +332,59 @@ class Orchestrator:
             }
         }
 
+        # --- PRE-CÁLCULO DE EMBEDDINGS DE CATEGORÍAS ---
+        # Creamos descripciones semánticas para cada categoría y calculamos sus vectores (embeddings).
+        # Esto se hace solo una vez al iniciar, para que las clasificaciones sean súper rápidas.
+        self.category_info = []
+        all_categories = set(self.category_patterns.get("es", {}).keys()) | set(self.category_patterns.get("en", {}).keys())
+        for category in all_categories:
+            # Combinamos palabras clave de ambos idiomas para una descripción más rica
+            keywords_es = self.category_patterns.get("es", {}).get(category, [])
+            keywords_en = self.category_patterns.get("en", {}).get(category, [])
+            # Creamos una frase descriptiva que el modelo pueda entender mejor
+            description = f"Servicios sobre {category.lower()}: " + ", ".join(keywords_es + keywords_en)
+
+            self.category_info.append({
+                "name": category,
+                "description": description,
+                "embedding": self.model.encode(description, convert_to_tensor=True)
+            })
+        print("✅ Embeddings de categorías calculados.")
+
     def classify_intent(self, question, language="en"):
         qn = normalize(question)
 
-        # --- MEJORA: Usar patrones de ambos idiomas para una detección más robusta ---
-        patterns_es = self.category_patterns.get("es", {})
-        patterns_en = self.category_patterns.get("en", {})
+        # --- LÓGICA DE BÚSQUEDA SEMÁNTICA ---
+        # 1. Convertimos la pregunta del usuario en un vector (embedding)
+        question_embedding = self.model.encode(question, convert_to_tensor=True)
 
-        best_match, best_score = None, 0
+        # 2. Extraemos los embeddings pre-calculados de las categorías
+        category_embeddings = [cat["embedding"] for cat in self.category_info]
 
-        # Unimos todas las categorías de ambos idiomas para no perder ninguna
-        all_categories = set(patterns_es.keys()) | set(patterns_en.keys())
+        # 3. Calculamos la similitud del coseno entre la pregunta y todas las categorías
+        cos_scores = util.cos_sim(question_embedding, category_embeddings)[0]
 
-        for category in all_categories:
-            # Sumar puntos por coincidencias en español e inglés
-            score = sum(1 for p in patterns_es.get(category, []) if p in qn)
-            score += sum(1 for p in patterns_en.get(category, []) if p in qn)
-            if score > best_score:
-                best_score, best_match = score, category
-        if best_match:
-            # DEBUG: Imprime la categoría detectada
-            print(f"DEBUG: Pregunta '{question}' (normalizada: '{qn}') clasificada como '{best_match}' con puntuación {best_score}")
+        # 4. Encontramos la categoría con la puntuación más alta
+        top_result = cos_scores.argmax()
+        best_score = cos_scores[top_result].item()
+        best_match_category = self.category_info[top_result]["name"]
 
-            confidence = min(0.1 * best_score + 0.5, 0.95)
-            return best_match, confidence, None
+        print(f"DEBUG: Clasificación semántica: '{best_match_category}' con confianza {best_score:.4f}")
 
-        # Coincidencias con negocios
+        # --- LÓGICA DE OVERRIDE: Coincidencia directa con nombres de negocios ---
+        # Si la pregunta menciona un negocio por su nombre, esa intención tiene prioridad.
         for category, businesses in self.advertisers.items():
             for business in businesses:
                 name = normalize(business.get('nombre', ''))
-                desc = normalize(business.get('descripcion', ''))
                 if name and name in qn:
+                    print(f"DEBUG: Coincidencia directa con el negocio '{business.get('nombre', '')}' en categoría '{category}'")
                     return category, 0.9, business
-                common = set(re.findall(r"\w+", desc)) & set(re.findall(r"\w+", qn))
-                if len(common) >= 2:
-                    return category, 0.8, business
 
-        return "Desconocida", 0.3, None
+        # Si la confianza semántica es alta, la usamos. Si no, consideramos la intención como desconocida.
+        if best_score > 0.4: # Umbral de confianza (puedes ajustarlo)
+            return best_match_category, best_score, None
+        else:
+            return "Desconocida", best_score, None
 
     def process_query(self, question, language="en"):
         categoria, confidence, advertiser = self.classify_intent(question, language)
@@ -249,43 +401,25 @@ class Orchestrator:
         # Si hay bot específico para la categoría, usarlo
         if categoria in self.bots_map:
             try:
-                bot_response = self.bots_map[categoria](question, resultados, lang)
-                key_points = bot_response.get("key_points", [])
+                # 1. Llamamos al bot específico
+                bot_response = self.bots_map[categoria](question, resultados, language=lang)
 
-                # --- NUEVA LÓGICA DE GENERACIÓN DE RESPUESTA ---
-                final_response_text = friendly_msg
-
-                if key_points:
-                    summary_parts = []
-                    for point in key_points:
-                        beneficios_str = ""
-                        if point.get('beneficios'):
-                            beneficios_str = " Sus puntos fuertes son: " + ", ".join(point['beneficios'][:2]) + "."
-
-                        summary_parts.append(
-                            f"{point.get('nombre')}, que es {point.get('descripcion', '').lower()}{beneficios_str}"
-                        )
-
-                    final_response_text += " He encontrado un par de opciones que podrían interesarte: " + " También está ".join(summary_parts) + "."
-                    final_response_text += " Te muestro la lista completa para que la explores."
-                else:
-                    # Si el bot no devuelve puntos clave, usamos una respuesta más genérica.
-                    final_response_text += " Aquí tienes una lista de contactos que podrían ayudarte."
-
+                # 2. Preparamos la respuesta final para el frontend
+                # Usamos el mensaje amigable del orquestador y los datos JSON del bot.
+                # El frontend se encargará de mostrarlo todo.
                 return {
-                    "respuesta": final_response_text,
+                    "respuesta": friendly_msg,
                     "agente": categoria,
                     "confidence": confidence,
-                    "json": bot_response.get("json_data", resultados),
-                    "friendly": friendly_msg
+                    "json": bot_response.get("json_data", []) # Pasamos directamente los datos del bot
                 }
             except Exception as e:
-                print("Error en bot:", categoria, e)
+                print(f"❌ ERROR ejecutando el bot '{categoria}': {e}")
+                # Si el bot falla, devolvemos una respuesta de error controlada
+                return {
+                    "respuesta": f"Lo siento, hubo un problema con el asistente de '{categoria}'. Inténtalo de nuevo.",
+                    "agente": categoria, "confidence": 0.5, "json": []
+                }
 
-        # Fallback: respuesta básica estandarizada
-        fallback_text = friendly_msg or "No he podido clasificar tu pregunta con claridad. Intenta reformularla o usa la barra de búsqueda."
-        if resultados:
-            fallback_text += " De todos modos, aquí tienes algunos contactos que podrían ser de utilidad."
-
-        resp = make_standard_response(categoria, resultados, question, lang)
-        return { "respuesta": fallback_text, "agente": categoria, "confidence": confidence, "json": resp.get("json", {}), "friendly": friendly_msg }
+        # Si la categoría no está en el mapa de bots (no debería pasar ahora), devolvemos un error.
+        return { "respuesta": "Lo siento, no tengo un asistente configurado para esa categoría.", "agente": "Orchestrator", "confidence": confidence, "json": [] }

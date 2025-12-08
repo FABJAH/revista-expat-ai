@@ -1,45 +1,23 @@
-from .utils import normalize
+from .utils import filter_advertisers_by_keywords
 
 
 def responder_consulta(pregunta, paquetes, language="en"):
-    """Responde consultas comerciales/publicidad con formato estándar.
-
-    - Filtra paquetes por términos relevantes (publicidad, paquete, campaña, media kit).
-    - Añade FAQs por defecto si faltan.
-    - Devuelve JSON estandarizado y texto bilingüe.
     """
-    pregunta_norm = normalize(pregunta or "")
-
+    Responde a consultas comerciales/publicidad utilizando la función de filtrado central.
+    """
     keywords = [
-        "anunciar",
-        "publicidad",
-        "paquete",
-        "campana",
-        "campaña",
-        "promocion",
-        "promoción",
-        "revista",
-        "media kit",
-        "ads",
-        "advertising",
-        "campaign",
+        "anunciar", "publicidad", "paquete", "campaña", "promocion", "revista",
+        "media kit", "marketing", "anunciate", "colaborar", "patrocinar",
+        "advertise", "advertising", "package", "campaign", "promotion", "magazine",
+        "ads", "collaborate", "sponsorship", "partner"
     ]
 
-    matching, others = [], []
-    for p in paquetes or []:
-        combined = ' '.join(
-            [str(p.get(k, '')) for k in ['nombre', 'descripcion', 'beneficios', 'perfil']]
-        )
-        combined_norm = normalize(combined)
-
-        found = any(kw in pregunta_norm or kw in combined_norm for kw in keywords)
-        (matching if found else others).append(p)
-
-    selected = matching if matching else others
+    # El argumento 'anunciantes' aquí contiene los 'paquetes'
+    selected_advertisers = filter_advertisers_by_keywords(pregunta, paquetes, keywords)
 
     # Extraer puntos clave de los 2 mejores resultados
     key_points = []
-    for advertiser in selected[:2]:
+    for advertiser in selected_advertisers[:2]:
         point = {
             "nombre": advertiser.get("nombre"),
             "descripcion": advertiser.get("descripcion"),
@@ -47,4 +25,4 @@ def responder_consulta(pregunta, paquetes, language="en"):
         }
         key_points.append(point)
 
-    return {"key_points": key_points, "json_data": selected}
+    return {"key_points": key_points, "json_data": selected_advertisers}

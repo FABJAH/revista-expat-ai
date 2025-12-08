@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from bots.orchestrator import Orchestrator
 
@@ -17,6 +17,21 @@ except Exception as e:
     print(f"❌ ERROR FATAL: No se pudo inicializar el Orquestador.")
     print(f"Causa: {e}")
     raise SystemExit("El servidor no puede arrancar sin el Orquestador. Revisa el error de arriba.")
+
+@app.route('/')
+def index():
+    # Sirve el archivo landing.html como página principal
+    return send_from_directory('.', 'landing.html')
+
+@app.route('/landi/<path:filename>')
+def serve_landi_files(filename):
+    # Sirve los archivos estáticos (imágenes) desde el directorio 'landi'
+    return send_from_directory('landi', filename)
+
+@app.route('/test')
+def test_connection():
+    # Endpoint de prueba para test_page.html
+    return jsonify({"message": "CONEXIÓN EXITOSA"})
 
 @app.route('/api/query', methods=['POST'])
 def handle_query():

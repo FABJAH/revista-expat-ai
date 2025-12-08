@@ -273,6 +273,10 @@ body {
     margin-bottom: 5px;
 }
 
+.result-card .card-description {
+    font-size: 0.9em;
+    color: #666;
+}
 /* --- Fin de estilos para tarjetas --- */
 
 .chat-input-container {
@@ -312,8 +316,139 @@ body {
     padding: 50px 20px 20px;
 }
 
+/* --- Chat Widget Flotante --- */
+.chat-widget-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+}
+
+.chat-bubble {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-color);
+    color: var(--light-text);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease-in-out;
+}
+
+.chat-bubble:hover {
+    transform: scale(1.1);
+}
+
+.chat-window {
+    width: 370px;
+    max-width: 90vw;
+    height: 70vh;
+    max-height: 600px;
+    background: var(--bg-white);
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.chat-window.hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none; /* Evita interacción cuando está oculto */
+}
+
+.chat-bubble.hidden {
+    display: none;
+}
+
+.chat-window .chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-window .chat-header button {
+    background: none;
+    border: none;
+    color: var(--light-text);
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+/* --- Animación de "Escribiendo..." --- */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.typing-indicator span {
+    height: 8px;
+    width: 8px;
+    background-color: #999;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 2px;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1.0); }
+}
+
+/* --- Botones de Acción Rápida --- */
+.quick-actions-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.quick-action-btn {
+    background-color: var(--bg-white);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.quick-action-btn:hover {
+    background-color: var(--primary-color);
+    color: var(--light-text);
+}
+
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
     .hamburger { display: block; }
     .hero-content h2 { font-size: 2.5em; }
+
+    .chat-window {
+        width: 100vw;
+        height: 100vh;
+        max-height: 100%;
+        bottom: 0;
+        right: 0;
+        border-radius: 0;
+    }
+
+    .chat-widget-container {
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+    }
 }

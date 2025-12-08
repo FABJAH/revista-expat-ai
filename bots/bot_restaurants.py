@@ -3,19 +3,17 @@ from .utils import filter_advertisers_by_keywords
 
 def responder_consulta(pregunta, anunciantes, language="en"):
     """
-    Responde a consultas legales y financieras utilizando la función de filtrado central.
+    Responde a consultas sobre restaurantes utilizando la función de filtrado central.
     """
     keywords = [
-        "abogado", "legal", "financiero", "impuestos", "banco", "contrato",
-        "visado", "nie", "residencia", "permiso", "nif", "gestoria", "gestor",
-        "inmigracion", "extranjeria", "cuenta bancaria", "declaracion renta",
-        "lawyer", "financial", "tax", "bank", "visa", "residency", "permit",
-        "immigration", "consultant"
+        "restaurante", "comida", "cenar", "menu", "reserva", "terraza",
+        "cocina", "tapas", "brunch", "desayuno", "almuerzo", "pizzeria",
+        "restaurant", "food", "dinner", "reservation", "lunch", "cuisine",
+        "breakfast"
     ]
 
     selected_advertisers = filter_advertisers_by_keywords(pregunta, anunciantes, keywords)
 
-    # Extraer puntos clave de los 2 mejores resultados
     key_points = []
     for advertiser in selected_advertisers[:2]:
         point = {
