@@ -7,6 +7,7 @@ from pathlib import Path
 from sentence_transformers import SentenceTransformer, util
 
 from .utils import normalize
+from .content_manager import ContentManager
 
 # Importa bots disponibles
 from .bot_accommodation import responder_consulta as acc_responder
@@ -37,6 +38,9 @@ class Orchestrator:
         except Exception as e:
             print(f"❌ ERROR cargando base de datos: {e}")
             self.advertisers = {}
+
+        # --- INICIALIZAR GESTOR DE CONTENIDO EDITORIAL ---
+        self.content_manager = ContentManager()
 
         # --- INICIALIZACIÓN DEL MODELO SEMÁNTICO ---
         # Cargamos un modelo de lenguaje pre-entrenado y multilingüe.
@@ -359,14 +363,15 @@ class Orchestrator:
         question_embedding = self.model.encode(question, convert_to_tensor=True)
 
         # 2. Extraemos los embeddings pre-calculados de las categorías
-        category_embeddings = [cat["embedding"] for cat in self.category_info]
+        import torch
+        category_embeddings = torch.stack([cat["embedding"] for cat in self.category_info])
 
         # 3. Calculamos la similitud del coseno entre la pregunta y todas las categorías
         cos_scores = util.cos_sim(question_embedding, category_embeddings)[0]
 
         # 4. Encontramos la categoría con la puntuación más alta
-        top_result = cos_scores.argmax()
-        best_score = cos_scores[top_result].item()
+        top_result = int(cos_scores.argmax().item())
+        best_score = float(cos_scores[top_result].item())
         best_match_category = self.category_info[top_result]["name"]
 
         print(f"DEBUG: Clasificación semántica: '{best_match_category}' con confianza {best_score:.4f}")
@@ -398,6 +403,24 @@ class Orchestrator:
         if categoria in self.responses_map[lang]:
             friendly_msg = random.choice(self.responses_map[lang][categoria])
 
+        # --- BUSCAR CONTENIDO EDITORIAL RELEVANTE ---
+        # Buscar guías/artículos relacionados con la pregunta
+        keywords = [word.lower() for word in question.split() if len(word) > 3]
+        guias_relevantes = self.content_manager.search_guides(keywords, categoria)
+
+        # Agregar referencia a guías en el mensaje si hay contenido relevante
+        guias_resumen = []
+        if guias_relevantes:
+            # Tomar las 2 guías más relevantes
+            for guia in guias_relevantes[:2]:
+                guias_resumen.append(self.content_manager.get_guide_summary(guia))
+
+            # Mejorar el mensaje con referencia al contenido
+            if lang == "es":
+                friendly_msg += f"\n\n📖 Para más información, consulta nuestra guía: '{guias_relevantes[0]['titulo']}'"
+            else:
+                friendly_msg += f"\n\n📖 For more information, check our guide: '{guias_relevantes[0]['titulo']}'"
+
         # Si hay bot específico para la categoría, usarlo
         if categoria in self.bots_map:
             try:
@@ -411,15 +434,19 @@ class Orchestrator:
                     "respuesta": friendly_msg,
                     "agente": categoria,
                     "confidence": confidence,
-                    "json": bot_response.get("json_data", []) # Pasamos directamente los datos del bot
+                    "json": bot_response.get("json_data", []), # Pasamos directamente los datos del bot
+                    "guias": guias_resumen  # NUEVO: Guías relacionadas
                 }
             except Exception as e:
                 print(f"❌ ERROR ejecutando el bot '{categoria}': {e}")
+                import traceback
+                traceback.print_exc()
                 # Si el bot falla, devolvemos una respuesta de error controlada
                 return {
                     "respuesta": f"Lo siento, hubo un problema con el asistente de '{categoria}'. Inténtalo de nuevo.",
-                    "agente": categoria, "confidence": 0.5, "json": []
+                    "agente": categoria, "confidence": 0.5, "json": [], "guias": []
                 }
+
 
         # Si la categoría no está en el mapa de bots (no debería pasar ahora), devolvemos un error.
         return { "respuesta": "Lo siento, no tengo un asistente configurado para esa categoría.", "agente": "Orchestrator", "confidence": confidence, "json": [] }

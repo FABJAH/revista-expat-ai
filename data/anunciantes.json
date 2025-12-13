@@ -105,6 +105,70 @@
       "faq": [{"q": "¿Directo o reserva?", "a": "Se aceptan ambos, pero recomendamos reservar."}, {"q": "¿Happy hour?", "a": "Sí, de 17:00 a 19:00 de lunes a viernes."}]
     }
   ],
+  "Healthcare": [
+    {
+      "nombre": "Clínica Sagrada Familia",
+      "descripcion": "Clínica médica privada con servicios integrales de salud.",
+      "contacto": "93 459 8000 / info@clinicasf.com",
+      "beneficios": ["Atención en inglés", "Seguro internacional aceptado", "Sin cita previa disponible"],
+      "precio": "€60-120 / consulta",
+      "idiomas": "Español, Inglés, Francés",
+      "ubicacion": "Carrer Provença 261, Barcelona",
+      "faq": [{"q": "¿Aceptan seguro internacional?", "a": "Sí, trabajamos con las principales aseguradoras."}, {"q": "¿Horario?", "a": "Lunes a viernes 8:00-20:00, sábados 9:00-14:00."}]
+    },
+    {
+      "nombre": "Barcelona International Health Center",
+      "descripcion": "Centro médico especializado en atención a expatriados.",
+      "contacto": "93 227 8787 / contact@bihc.es",
+      "beneficios": ["Personal multilingüe", "Todas las especialidades", "Telemedicina disponible"],
+      "precio": "€80-150 / consulta",
+      "idiomas": "Español, Inglés, Alemán, Francés",
+      "ubicacion": "Passeig de Gràcia 55, Barcelona",
+      "faq": [{"q": "¿Emergencias 24h?", "a": "Sí, línea de emergencias disponible."}, {"q": "¿Certificados médicos?", "a": "Sí, emitimos certificados oficiales."}]
+    }
+  ],
+  "Education": [
+    {
+      "nombre": "International House Barcelona",
+      "descripcion": "Escuela de idiomas líder con más de 60 años de experiencia. Cursos de español, inglés y formación de profesores.",
+      "contacto": "93 268 4511 / info@ihes.com/bcn",
+      "beneficios": ["Profesores nativos certificados", "Clases reducidas (máx. 10 alumnos)", "Preparación DELE y Cambridge", "Actividades culturales incluidas"],
+      "precio": "€180-350 / mes según intensidad",
+      "idiomas": "Español, Inglés, Catalán",
+      "ubicacion": "Carrer Trafalgar 14, Barcelona",
+      "faq": [{"q": "¿Niveles disponibles?", "a": "Desde A1 hasta C2, todos los niveles."}, {"q": "¿Horarios flexibles?", "a": "Sí, cursos intensivos, semi-intensivos y de tarde/noche."}]
+    },
+    {
+      "nombre": "Speakeasy Barcelona",
+      "descripcion": "Academia de inglés con metodología comunicativa y ambiente internacional.",
+      "contacto": "93 412 3000 / hello@speakeasy-bcn.com",
+      "beneficios": ["Enfoque conversacional", "Clases 100% en inglés", "Networking events mensuales", "Profesores de UK/USA"],
+      "precio": "€120-280 / mes",
+      "idiomas": "Inglés",
+      "ubicacion": "Passeig de Gràcia 89, Barcelona",
+      "faq": [{"q": "¿Prueba de nivel?", "a": "Sí, test gratuito online y presencial."}, {"q": "¿Clases de empresa?", "a": "Sí, cursos in-company disponibles."}]
+    },
+    {
+      "nombre": "Barcelona International School",
+      "descripcion": "Colegio internacional privado con currículum británico e IB. Desde infantil hasta bachillerato.",
+      "contacto": "93 806 1900 / admissions@bis.school",
+      "beneficios": ["Currículum británico + IB", "Clases en inglés", "Instalaciones deportivas", "Transporte escolar"],
+      "precio": "€8,000-15,000 / año según curso",
+      "idiomas": "Inglés, Español, Catalán",
+      "ubicacion": "Castelldefels (30 min Barcelona)",
+      "faq": [{"q": "¿Plazas disponibles?", "a": "Consultar disponibilidad según curso escolar."}, {"q": "¿Becas?", "a": "Programa limitado de ayudas financieras disponible."}]
+    },
+    {
+      "nombre": "Universidad Pompeu Fabra (UPF)",
+      "descripcion": "Universidad pública de referencia internacional. Programas de grado, máster y doctorado.",
+      "contacto": "93 542 2000 / info@upf.edu",
+      "beneficios": ["Top 10 universidades jóvenes del mundo", "Programas en inglés", "Ubicación céntrica", "Convenios internacionales"],
+      "precio": "€1,500-3,500 / año (grado público)",
+      "idiomas": "Español, Inglés, Catalán",
+      "ubicacion": "Ciutadella - Barcelona",
+      "faq": [{"q": "¿Admisión internacional?", "a": "Sí, proceso específico para estudiantes internacionales."}, {"q": "¿Alojamiento?", "a": "Servicio de orientación para residencias."}]
+    }
+  ],
   "Comercial": [
     {
       "nombre": "Paquete Básico",

@@ -1,0 +1,59 @@
+{
+  "titulo": "Guía Completa: Cómo Obtener tu NIE en Barcelona",
+  "categoria": "Legal",
+  "slug": "como-obtener-nie-barcelona",
+  "resumen": "Todo lo que necesitas saber para obtener tu Número de Identificación de Extranjero en Barcelona, paso a paso.",
+  "contenido": [
+    {
+      "seccion": "¿Qué es el NIE?",
+      "texto": "El NIE (Número de Identificación de Extranjero) es un número único que identifica a los extranjeros en España. Es OBLIGATORIO para trabajar, abrir una cuenta bancaria, comprar/alquilar propiedades, o realizar cualquier trámite oficial."
+    },
+    {
+      "seccion": "Tipos de NIE",
+      "texto": "Existen dos tipos: NIE temporal (válido para un trámite específico) y NIE de residencia (TIE - Tarjeta de Identidad de Extranjero), que incluye permiso de residencia."
+    },
+    {
+      "seccion": "Documentos Necesarios",
+      "lista": [
+        "Pasaporte original y fotocopia completa",
+        "Formulario EX-15 cumplimentado (descargar de extranjeria.gob.es)",
+        "Justificación económica o motivo (contrato de trabajo, matrícula universitaria, etc.)",
+        "Comprobante de pago de tasa 790 código 012 (aprox. 10.71€)",
+        "Cita previa (imprescindible)"
+      ]
+    },
+    {
+      "seccion": "Paso a Paso",
+      "pasos": [
+        "1. Solicita cita previa en la web oficial de Extranjería o llama al 060",
+        "2. Descarga y rellena el formulario EX-15",
+        "3. Paga la tasa modelo 790 código 012 en el banco",
+        "4. Reúne toda la documentación",
+        "5. Acude a tu cita en la Oficina de Extranjería (llega 15 min antes)",
+        "6. Recoge tu NIE en 10-45 días hábiles (te darán un resguardo)"
+      ]
+    },
+    {
+      "seccion": "Consejos Importantes",
+      "tips": [
+        "Las citas se agotan rápido: reserva con al menos 1-2 meses de anticipación",
+        "Si no hablas español, lleva un traductor o intérprete",
+        "Lleva copias extras de todos los documentos",
+        "Si no consigues cita, considera contratar un gestor (ver anunciantes)",
+        "Guarda tu número NIE en un lugar seguro - lo necesitarás constantemente"
+      ]
+    },
+    {
+      "seccion": "¿Necesitas Ayuda Profesional?",
+      "texto": "Si el proceso te resulta complicado o no consigues cita, nuestros anunciantes especializados pueden gestionar todo el trámite por ti. Consulta nuestras opciones en la sección Legal y Financiero."
+    }
+  ],
+  "enlaces_relacionados": [
+    {"titulo": "Guía de Empadronamiento", "slug": "empadronamiento-barcelona"},
+    {"titulo": "Abrir Cuenta Bancaria en España", "slug": "cuenta-bancaria-espana"},
+    {"titulo": "Sistema de Salud en Barcelona", "slug": "sistema-salud-barcelona"}
+  ],
+  "keywords": ["nie", "extranjeria", "documentos", "residencia", "tramites", "barcelona"],
+  "fecha_publicacion": "2025-12-01",
+  "autor": "Revista Expats Barcelona"
+}

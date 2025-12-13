@@ -1,0 +1,70 @@
+{
+  "titulo": "Sistema de Salud en Barcelona: Guía para Expatriados",
+  "categoria": "Healthcare",
+  "slug": "sistema-salud-barcelona",
+  "resumen": "Descubre cómo funciona el sistema de salud en Barcelona, desde la sanidad pública hasta opciones privadas y seguros médicos.",
+  "contenido": [
+    {
+      "seccion": "Sistema Público de Salud (CAP)",
+      "texto": "España tiene uno de los mejores sistemas de salud públicos del mundo. En Barcelona, los Centros de Atención Primaria (CAP) son la puerta de entrada. Para acceder necesitas estar empadronado y tener tu tarjeta sanitaria (TSI)."
+    },
+    {
+      "seccion": "Cómo Obtener la Tarjeta Sanitaria",
+      "pasos": [
+        "1. Empadrónate en tu ayuntamiento",
+        "2. Solicita cita en el CAP más cercano a tu domicilio",
+        "3. Presenta: NIE/pasaporte, empadronamiento, afiliación a la Seguridad Social (si trabajas)",
+        "4. Recibirás tu tarjeta en 1-2 semanas"
+      ]
+    },
+    {
+      "seccion": "Hospitales Públicos Principales",
+      "lista": [
+        "Hospital Clínic (Eixample) - Referencia en Catalunya",
+        "Hospital del Mar (Barceloneta) - Especializado en urgencias",
+        "Hospital Vall d'Hebron (Horta) - Uno de los más grandes de Europa",
+        "Hospital de Sant Pau (Sant Martí) - Patrimonio UNESCO",
+        "Hospital Germans Trias i Pujol (Badalona) - 'Can Ruti'"
+      ]
+    },
+    {
+      "seccion": "Sanidad Privada",
+      "texto": "Muchos expatriados optan por seguro médico privado por menor tiempo de espera y atención en inglés. Los principales proveedores son: Sanitas, Adeslas, Asisa, DKV, y Cigna."
+    },
+    {
+      "seccion": "Urgencias",
+      "texto": "Número de emergencias: 112 (gratuito, atienden en varios idiomas). Para urgencias no vitales, acude al CAP de Urgencias (CUAP) o servicio de Urgencias del hospital más cercano."
+    },
+    {
+      "seccion": "Farmacias",
+      "texto": "Las farmacias en Barcelona se identifican con una cruz verde. Funcionan con sistema de guardia 24h. Muchos medicamentos requieren receta médica. La app 'Farmacias de Guardia' te muestra las abiertas cerca de ti."
+    },
+    {
+      "seccion": "Costos",
+      "lista": [
+        "Sanidad pública: Gratuita (copago de medicamentos 40-60%)",
+        "Consulta privada: 60-150€",
+        "Seguro médico privado: 50-150€/mes según cobertura",
+        "Urgencias hospitalarias públicas: Gratuitas con tarjeta sanitaria"
+      ]
+    },
+    {
+      "seccion": "Consejos para Expatriados",
+      "tips": [
+        "Aprende frases médicas básicas en español/catalán",
+        "Guarda siempre tu tarjeta sanitaria y NIE contigo",
+        "Descarga apps útiles: La Meva Salut, CatSalut Respon",
+        "Si no hablas español, muchas clínicas privadas tienen personal bilingüe",
+        "El sistema público es excelente pero puede tener listas de espera para especialistas"
+      ]
+    }
+  ],
+  "enlaces_relacionados": [
+    {"titulo": "Mejores Clínicas Privadas en Barcelona", "slug": "clinicas-privadas-barcelona"},
+    {"titulo": "Seguros Médicos: Comparativa", "slug": "seguros-medicos-comparativa"},
+    {"titulo": "Farmacias 24h en Barcelona", "slug": "farmacias-24h"}
+  ],
+  "keywords": ["salud", "hospital", "medico", "urgencias", "seguro", "cap", "barcelona"],
+  "fecha_publicacion": "2025-12-05",
+  "autor": "Revista Expats Barcelona"
+}

@@ -1,0 +1,112 @@
+{
+  "titulo": "Educación en Barcelona: Guía para Familias Expatriadas",
+  "categoria": "Education",
+  "slug": "educacion-barcelona-expats",
+  "resumen": "Todo lo que necesitas saber sobre el sistema educativo en Barcelona: colegios públicos, privados, internacionales y aprendizaje de idiomas.",
+  "contenido": [
+    {
+      "seccion": "Sistema Educativo Español",
+      "texto": "El sistema educativo español es obligatorio y gratuito de 6 a 16 años. Se divide en: Educación Infantil (0-6 años, no obligatoria), Primaria (6-12), Secundaria ESO (12-16), y Bachillerato (16-18)."
+    },
+    {
+      "seccion": "Opciones para Expatriados",
+      "subsecciones": [
+        {
+          "titulo": "1. Colegios Públicos",
+          "pros": ["Gratuitos", "Inmersión lingüística en español/catalán", "Integración cultural"],
+          "contras": ["Idioma de instrucción principalmente catalán", "Menos apoyo en inglés"],
+          "costo": "Gratuito (solo material escolar €100-300/año)"
+        },
+        {
+          "titulo": "2. Colegios Concertados",
+          "pros": ["Subvencionados (más económicos)", "Mayor oferta de idiomas", "Valores específicos (religiosos, pedagógicos)"],
+          "contras": ["Lista de espera larga", "Cuotas voluntarias €50-150/mes"],
+          "costo": "€600-1,800/año en cuotas"
+        },
+        {
+          "titulo": "3. Colegios Internacionales Privados",
+          "pros": ["Currículum internacional (IB, británico, americano)", "Clases en inglés", "Comunidad multicultural", "Preparación universidad extranjera"],
+          "contras": ["Muy caros", "Pueden alejar de la cultura local"],
+          "costo": "€6,000-20,000/año"
+        }
+      ]
+    },
+    {
+      "seccion": "Principales Colegios Internacionales",
+      "lista": [
+        "American School of Barcelona (ASB) - Currículum americano, €15k-22k/año",
+        "British School of Barcelona (BSB) - Currículum británico, €10k-18k/año",
+        "Benjamin Franklin International School - IB + americano, €12k-20k/año",
+        "Hamelin-Laie International School - IB, €8k-14k/año",
+        "Kensington School - Británico, €8k-15k/año",
+        "Lycée Français de Barcelone - Francés, €4k-8k/año"
+      ]
+    },
+    {
+      "seccion": "Proceso de Inscripción",
+      "pasos": [
+        "1. Solicitar cita con el colegio (febrero-marzo para curso siguiente)",
+        "2. Presentar documentación: NIE padres, certificado de empadronamiento, cartilla vacunación",
+        "3. Para colegios públicos: preinscripción online en Generalitat de Catalunya",
+        "4. Para privados: entrevista, pruebas de nivel, pago de matrícula",
+        "5. Confirmación de plaza (junio-julio)",
+        "6. Matrícula definitiva (julio)"
+      ]
+    },
+    {
+      "seccion": "Escuelas de Idiomas",
+      "texto": "Barcelona tiene excelentes academias para aprender español, catalán o inglés. Las más reconocidas: International House, Speakeasy, Kingsbrook, Don Quijote, y BCN Languages.",
+      "precios_referencia": [
+        "Curso intensivo español: €200-400/mes (20h semanales)",
+        "Clases semi-intensivas: €120-250/mes (6-10h semanales)",
+        "Clases particulares: €25-50/hora",
+        "Cursos online: €50-150/mes"
+      ]
+    },
+    {
+      "seccion": "Universidades en Barcelona",
+      "principales": [
+        "Universitat de Barcelona (UB) - Pública, mayor de Cataluña",
+        "Universitat Pompeu Fabra (UPF) - Pública, Top mundial",
+        "Universitat Autònoma de Barcelona (UAB) - Pública, Campus Bellaterra",
+        "Universitat Politècnica de Catalunya (UPC) - Pública, Ingenierías",
+        "ESADE - Privada, Business School de élite",
+        "IED Barcelona - Privada, Diseño y creatividad"
+      ],
+      "costos": [
+        "Grado público: €1,500-3,500/año (residentes UE)",
+        "Grado privado: €8,000-20,000/año",
+        "Máster público: €2,000-4,500/año",
+        "MBA privado: €30,000-70,000 programa completo"
+      ]
+    },
+    {
+      "seccion": "Consejos Prácticos",
+      "tips": [
+        "Visita varios colegios antes de decidir - cada uno tiene filosofía diferente",
+        "Si tus hijos no hablan español, considera año de adaptación en academia intensiva",
+        "Los colegios públicos catalanes son excelentes pero la inmersión lingüística es intensa",
+        "Para colegios internacionales top, inscribe con 1-2 años de antelación (listas de espera)",
+        "Barcelona ofrece muchas actividades extraescolares: deportes, música, arte",
+        "El calendario escolar español: septiembre-junio, vacaciones en agosto"
+      ]
+    },
+    {
+      "seccion": "Recursos Útiles",
+      "lista": [
+        "Departament d'Educació Generalitat: gencat.cat/educacio",
+        "Barcelona Activa - Cursos gratuitos: barcelonactiva.cat",
+        "Instituto Cervantes - Español oficial: barcelona.cervantes.es",
+        "Consorci d'Educació Barcelona: edubcn.cat"
+      ]
+    }
+  ],
+  "enlaces_relacionados": [
+    {"titulo": "Mejores Barrios para Familias", "slug": "barrios-familias-barcelona"},
+    {"titulo": "Actividades Extraescolares", "slug": "actividades-ninos-barcelona"},
+    {"titulo": "Sistema de Salud Infantil", "slug": "salud-pediatrica-barcelona"}
+  ],
+  "keywords": ["educacion", "colegios", "escuelas", "universidad", "idiomas", "barcelona", "internacional"],
+  "fecha_publicacion": "2025-12-12",
+  "autor": "Revista Expats Barcelona"
+}

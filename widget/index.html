@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barcelona Metropolitan - Expat Assistant Widget Demo</title>
+
+  <!-- Widget Styles -->
+  <link rel="stylesheet" href="widget.css">
+
+  <style>
+    /* Demo page styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .demo-container {
+      max-width: 800px;
+      width: 100%;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 40px;
+    }
+
+    .demo-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .demo-header h1 {
+      font-size: 32px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .demo-header p {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .demo-section {
+      margin-bottom: 30px;
+    }
+
+    .demo-section h2 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .demo-info {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .demo-info h3 {
+      font-size: 16px;
+      color: #0066cc;
+      margin-bottom: 10px;
+    }
+
+    .demo-info p, .demo-info li {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .demo-info ul {
+      margin-left: 20px;
+    }
+
+    .demo-code {
+      background: #2d3748;
+      color: #a0aec0;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .demo-code .comment {
+      color: #68d391;
+    }
+
+    .demo-code .string {
+      color: #fbbf24;
+    }
+
+    .demo-code .keyword {
+      color: #c084fc;
+    }
+
+    .demo-note {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .demo-note strong {
+      color: #856404;
+    }
+
+    .demo-note p {
+      color: #856404;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .demo-button {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #0066cc;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .demo-button:hover {
+      background: #004d99;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,102,204,0.3);
+    }
+
+    .demo-arrow {
+      position: fixed;
+      bottom: 100px;
+      right: 100px;
+      font-size: 48px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .demo-container {
+        padding: 20px;
+      }
+
+      .demo-header h1 {
+        font-size: 24px;
+      }
+
+      .demo-arrow {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <div class="demo-header">
+      <h1>🚀 Expat Assistant Widget</h1>
+      <p>Widget profesional para integración en Barcelona Metropolitan</p>
+    </div>
+
+    <div class="demo-section">
+      <h2>📋 Descripción</h2>
+      <div class="demo-info">
+        <p>Este widget flotante proporciona un asistente inteligente que puede integrarse fácilmente en cualquier sitio web. Incluye:</p>
+        <ul>
+          <li>✅ Diseño responsive y profesional</li>
+          <li>✅ Integración con API FastAPI</li>
+          <li>✅ Soporte para guías editoriales y anunciantes</li>
+          <li>✅ Analytics integrado</li>
+          <li>✅ Personalizable (colores, posición, mensajes)</li>
+          <li>✅ Accesible (ARIA labels, keyboard navigation)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>🔧 Integración Simple</h2>
+      <div class="demo-info">
+        <h3>Paso 1: Agregar CSS y JavaScript</h3>
+        <p>En el <code>&lt;head&gt;</code> de tu sitio web:</p>
+      </div>
+      <div class="demo-code">
+<span class="comment">&lt;!-- En el &lt;head&gt; de barcelona-metropolitan.com --&gt;</span>
+<span class="keyword">&lt;link</span> <span class="string">rel="stylesheet"</span> <span class="string">href="https://api.barcelona-expats.com/widget.css"</span><span class="keyword">&gt;</span>
+<span class="keyword">&lt;script</span> <span class="string">src="https://api.barcelona-expats.com/widget.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+      </div>
+
+      <div class="demo-info" style="margin-top: 20px;">
+        <h3>Paso 2: (Opcional) Configurar personalización</h3>
+      </div>
+      <div class="demo-code">
+<span class="keyword">&lt;script&gt;</span>
+  window.ExpatAssistantConfig = {
+    apiUrl: <span class="string">'https://api.barcelona-expats.com'</span>,
+    primaryColor: <span class="string">'#0066cc'</span>,
+    position: <span class="string">'bottom-right'</span>, <span class="comment">// o 'bottom-left'</span>
+    greeting: <span class="string">'¡Hola! ¿En qué puedo ayudarte?'</span>
+  };
+<span class="keyword">&lt;/script&gt;</span>
+      </div>
+    </div>
+
+    <div class="demo-note">
+      <strong>👉 Prueba el widget ahora:</strong>
+      <p>Haz clic en el botón flotante azul en la esquina inferior derecha de esta página.</p>
+    </div>
+
+    <div class="demo-section">
+      <h2>🎨 Características</h2>
+      <div class="demo-info">
+        <ul>
+          <li><strong>Inteligencia Artificial:</strong> Clasificación automática de intenciones y respuestas contextuales</li>
+          <li><strong>Guías Editoriales:</strong> Contenido propio de la revista priorizado</li>
+          <li><strong>Anunciantes:</strong> Integración con sponsors y partners</li>
+          <li><strong>Datos Externos:</strong> Complemento con OpenStreetMap cuando sea necesario</li>
+          <li><strong>Analytics:</strong> Tracking de interacciones para optimización</li>
+          <li><strong>Mobile-First:</strong> Diseño optimizado para todos los dispositivos</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>💼 Modelo de Negocio</h2>
+      <div class="demo-info">
+        <ul>
+          <li><strong>Pay-per-Click:</strong> Anunciantes pagan por clicks en sus tarjetas</li>
+          <li><strong>Featured Placement:</strong> Posiciones destacadas en resultados</li>
+          <li><strong>Lead Generation:</strong> Formularios de contacto integrados</li>
+          <li><strong>Sponsored Content:</strong> Guías patrocinadas por marcas</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>📊 Métricas de Éxito</h2>
+      <div class="demo-info">
+        <p>El sistema track automáticamente:</p>
+        <ul>
+          <li>Queries por categoría (salud, legal, educación, etc.)</li>
+          <li>Click-through rate de anunciantes</li>
+          <li>Tiempo de respuesta del sistema</li>
+          <li>Satisfacción de usuarios</li>
+          <li>Tasa de conversión a leads</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h2>🚀 Ejemplos de Consultas</h2>
+      <div class="demo-info">
+        <p>Prueba estos ejemplos en el widget:</p>
+        <ul>
+          <li>"¿Cómo obtener el NIE?"</li>
+          <li>"Busco dentista en Barcelona"</li>
+          <li>"Quiero aprender español"</li>
+          <li>"Colegios internacionales"</li>
+          <li>"Información sobre salud"</li>
+          <li>"Necesito un abogado"</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="https://www.barcelona-metropolitan.com" class="demo-button" target="_blank">
+        Visitar Barcelona Metropolitan
+      </a>
+      <a href="../frontend/index.html" class="demo-button" style="margin-left: 10px;">
+        Ver Landing Page Original
+      </a>
+    </div>
+  </div>
+
+  <div class="demo-arrow" title="¡Haz clic aquí!">
+    👇
+  </div>
+
+  <!-- Widget Configuration -->
+  <script>
+    window.ExpatAssistantConfig = {
+      apiUrl: 'http://localhost:8000',
+      primaryColor: '#0066cc',
+      position: 'bottom-right',
+      greeting: '¡Hola! Soy tu asistente de Barcelona Metropolitan',
+      placeholder: 'Pregunta sobre Barcelona...',
+      suggestions: [
+        '¿Cómo obtener el NIE?',
+        'Busco dentista en Barcelona',
+        'Quiero aprender español',
+        'Colegios internacionales',
+        'Información sobre salud',
+        'Necesito un abogado'
+      ]
+    };
+  </script>
+
+  <!-- Widget Script -->
+  <script src="widget.js"></script>
+</body>
+</html>

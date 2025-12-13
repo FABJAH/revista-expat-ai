@@ -104,6 +104,29 @@ document.addEventListener('DOMContentLoaded', () => {
             messageDiv.appendChild(friendlyDiv);
         }
 
+        // --- NUEVO: Mostrar guías de la revista ---
+        if (data.guias && data.guias.length > 0) {
+            const guiasContainer = document.createElement('div');
+            guiasContainer.className = 'guias-container';
+            guiasContainer.innerHTML = '<h4 class="guias-title">📖 Guías de la Revista</h4>';
+
+            data.guias.forEach(guia => {
+                const guiaCard = document.createElement('div');
+                guiaCard.className = 'guia-card';
+                guiaCard.innerHTML = `
+                    <div class="guia-icon">📚</div>
+                    <div class="guia-content">
+                        <h5>${guia.titulo}</h5>
+                        <p>${guia.resumen}</p>
+                        <a href="${guia.url}" class="guia-link" target="_blank">Leer guía completa →</a>
+                    </div>
+                `;
+                guiasContainer.appendChild(guiaCard);
+            });
+
+            messageDiv.appendChild(guiasContainer);
+        }
+
         // Resultados en formato de tarjeta
         if (Array.isArray(data.json) && data.json.length > 0) {
             const resultsContainer = document.createElement('div');
@@ -112,8 +135,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const card = document.createElement('div');
                 card.className = 'result-card';
 
+                // Marcar anunciantes con badge
+                if (item.es_anunciante) {
+                    card.classList.add('anunciante-destacado');
+                }
+
                 // Estructura mejorada para más control con CSS
-                let cardHTML = `<h3>${item.nombre}</h3><p class="card-description">${item.descripcion}</p>`;
+                let cardHTML = '';
+
+                // Badge para anunciantes
+                if (item.es_anunciante) {
+                    cardHTML += '<span class="badge-anunciante">⭐ Anunciante</span>';
+                }
+
+                cardHTML += `<h3>${item.nombre}</h3><p class="card-description">${item.descripcion}</p>`;
 
                 // Contenedor para los detalles (contacto, precio, etc.)
                 const details = `
@@ -128,10 +163,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (item.beneficios && item.beneficios.length > 0) {
                     cardHTML += `<div class="card-benefits"><strong>Beneficios:</strong><ul>${item.beneficios.map(b => `<li>${b}</li>`).join('')}</ul></div>`;
                 }
+
+                // --- INICIO: Añadir sección de FAQ desplegable ---
+                if (item.faq && item.faq.length > 0) {
+                    cardHTML += `
+                        <div class="faq-container">
+                            <button class="faq-toggle">
+                                Preguntas Frecuentes
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="faq-content">
+                                <ul>
+                                    ${item.faq.map(f => `<li><strong>${f.q}</strong><p>${f.a}</p></li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>`;
+                }
+                // --- FIN: Añadir sección de FAQ desplegable ---
+
                 card.innerHTML = cardHTML;
                 resultsContainer.appendChild(card);
             });
             messageDiv.appendChild(resultsContainer);
+
+            // Añadir event listener para los acordeones de FAQ usando delegación de eventos
+            resultsContainer.addEventListener('click', handleFaqToggle);
+
         } else if (!data.respuesta) {
             // Si no hay resultados ni texto amigable, mostrar un mensaje genérico
             const textResponse = document.createElement('p');
@@ -140,6 +197,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    };
+
+    const handleFaqToggle = (e) => {
+        const faqToggle = e.target.closest('.faq-toggle');
+        if (!faqToggle) return;
+
+        const faqContent = faqToggle.nextElementSibling;
+        const icon = faqToggle.querySelector('i');
+
+        faqToggle.classList.toggle('active');
+        icon.classList.toggle('fa-chevron-up');
+        icon.classList.toggle('fa-chevron-down');
     };
 
     const addWelcomeMessageWithActions = () => {
@@ -181,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Enviar con la tecla Enter
     [chatInput, chatInputWidget].forEach(input => input?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleSendMessage();
-    });
+    }));
 
     // Menú hamburguesa
     hamburger.addEventListener('click', () => {

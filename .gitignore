@@ -6,8 +6,16 @@ __pycache__/
 
 # Ignorar entornos virtuales
 venv/
-.env/
+.venv/
+env/
+.env
 
 # Ignorar configuraciones locales
 .DS_Store
 *.log
+
+# Ignorar archivos de VS Code
+.vscode/
+
+# Ignorar archivos de prueba temporales
+*.save

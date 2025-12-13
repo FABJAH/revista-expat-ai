@@ -1,0 +1,96 @@
+{
+  "titulo": "Trabajar en Barcelona: Guía para Encontrar Empleo",
+  "categoria": "Work",
+  "slug": "trabajar-barcelona-guia",
+  "resumen": "Todo lo que necesitas saber para buscar trabajo en Barcelona: sectores, portales, networking y consejos prácticos.",
+  "contenido": [
+    {
+      "seccion": "Sectores con Más Oportunidades",
+      "lista": [
+        "Tecnología y Start-ups (Barcelona es el hub tech del sur de Europa)",
+        "Turismo y Hostelería (siempre buscan personal multilingüe)",
+        "Educación (profesores de inglés muy demandados)",
+        "Marketing Digital y E-commerce",
+        "Atención al Cliente Multilingüe (call centers)",
+        "Salud (enfermeros, médicos especialistas)"
+      ]
+    },
+    {
+      "seccion": "Portales de Empleo",
+      "principales": [
+        "LinkedIn - El más usado para profesionales",
+        "InfoJobs - Líder en España",
+        "Indeed - Internacional",
+        "Glassdoor - Con reviews de empresas",
+        "Jobatus - Agregador de ofertas",
+        "Barcelona Activa - Portal del ayuntamiento (gratuito)"
+      ],
+      "especializados": [
+        "Tecnoempleo - Tech jobs",
+        "Domestika Jobs - Creativos",
+        "Angel.co - Start-ups",
+        "Landing.jobs - Tech internacional"
+      ]
+    },
+    {
+      "seccion": "Requisitos Básicos",
+      "pasos": [
+        "NIE (obligatorio para trabajar legalmente)",
+        "Número de Seguridad Social (te lo da tu empleador)",
+        "Cuenta bancaria española (para recibir nómina)",
+        "CV en español (y en inglés para empresas internacionales)",
+        "Títulos homologados (para profesiones reguladas)"
+      ]
+    },
+    {
+      "seccion": "Salarios Promedio",
+      "rangos": [
+        "Junior (0-2 años): 18.000-25.000€ brutos/año",
+        "Mid-level (3-5 años): 25.000-35.000€ brutos/año",
+        "Senior (5+ años): 35.000-55.000€ brutos/año",
+        "Tech/IT: +20-30% sobre estas cifras",
+        "Hostelería: 16.000-22.000€ brutos/año"
+      ],
+      "nota": "El salario mínimo en España es 15.876€ brutos/año (2025)"
+    },
+    {
+      "seccion": "Networking en Barcelona",
+      "eventos": [
+        "Barcelona Tech City - Eventos mensuales",
+        "Startup Grind Barcelona - Networking start-ups",
+        "Internations Barcelona - Comunidad de expats",
+        "Meetup.com - Grupos por industria/interés",
+        "Coworking spaces - WeWork, Spaces, Aticco"
+      ]
+    },
+    {
+      "seccion": "Trabajar como Freelance",
+      "texto": "Barcelona tiene una vibrante comunidad freelance. Necesitas darte de alta como autónomo (aprox. 290€/mes de cuota). Considera trabajar desde coworkings para networking."
+    },
+    {
+      "seccion": "Consejos de Oro",
+      "tips": [
+        "Aprende español básico - muchas empresas lo requieren",
+        "Personaliza tu CV para cada oferta",
+        "Las entrevistas suelen ser más informales que en otros países",
+        "Barcelona Activa ofrece talleres GRATUITOS de búsqueda de empleo",
+        "El mercado laboral español valora mucho las referencias",
+        "Ten paciencia - el proceso puede tomar 1-3 meses"
+      ]
+    }
+  ],
+  "recursos_gratuitos": [
+    "Barcelona Activa - Orientación laboral gratuita",
+    "SOC (Servei d'Ocupació de Catalunya) - Cursos gratuitos",
+    "Biblioteca - Acceso gratis a LinkedIn Learning",
+    "SEPE - Subsidio de desempleo (si has trabajado antes en España)"
+  ],
+  "enlaces_relacionados": [
+    {"titulo": "NIE: Cómo Obtenerlo", "slug": "como-obtener-nie-barcelona"},
+    {"titulo": "Coworkings en Barcelona", "slug": "coworkings-barcelona"},
+    {"titulo": "Aprender Español en Barcelona", "slug": "aprender-espanol"}
+  ],
+  "keywords": ["trabajo", "empleo", "linkedin", "cv", "barcelona", "freelance"],
+  "fecha_publicacion": "2025-12-10",
+  "autor": "Revista Expats Barcelona"
+}

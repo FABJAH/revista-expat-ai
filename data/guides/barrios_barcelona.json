@@ -1,0 +1,71 @@
+{
+  "titulo": "Los Mejores Barrios de Barcelona para Expatriados",
+  "categoria": "Accommodation",
+  "slug": "mejores-barrios-barcelona-expats",
+  "resumen": "Guía completa de los barrios más populares entre expatriados en Barcelona, con pros, contras y precios.",
+  "contenido": [
+    {
+      "seccion": "Eixample",
+      "descripcion": "El barrio modernista por excelencia, diseñado por Ildefons Cerdà.",
+      "pros": ["Céntrico", "Excelente transporte", "Arquitectura modernista", "Muchos restaurantes y tiendas"],
+      "contras": ["Caro", "Muy turístico", "Ruidoso"],
+      "precio_alquiler": "1.200-2.000€/mes (2 habitaciones)",
+      "ideal_para": "Profesionales, parejas, amantes de la cultura"
+    },
+    {
+      "seccion": "Gràcia",
+      "descripcion": "Antiguo pueblo independiente, ahora un barrio bohemio y multicultural.",
+      "pros": ["Ambiente local auténtico", "Plazas encantadoras", "Buena vida nocturna", "Comunidad internacional"],
+      "contras": ["Calles estrechas", "Menos metros cuadrados por euro"],
+      "precio_alquiler": "900-1.500€/mes (2 habitaciones)",
+      "ideal_para": "Jóvenes profesionales, artistas, familias"
+    },
+    {
+      "seccion": "Poble Sec",
+      "descripcion": "Barrio tradicional al pie de Montjuïc, cada vez más popular.",
+      "pros": ["Menos turístico", "Buena oferta gastronómica", "Cerca del centro", "Más económico"],
+      "contras": ["Cuestas empinadas", "Menos vida nocturna"],
+      "precio_alquiler": "800-1.300€/mes (2 habitaciones)",
+      "ideal_para": "Familias, expatriados con presupuesto ajustado"
+    },
+    {
+      "seccion": "Poblenou",
+      "descripcion": "Antiguo barrio industrial transformado en distrito tecnológico (22@).",
+      "pros": ["Cerca de la playa", "Espacios modernos", "Start-up hub", "Menos masificado"],
+      "contras": ["Alejado del centro histórico", "Menos ambiente tradicional"],
+      "precio_alquiler": "1.000-1.800€/mes (2 habitaciones)",
+      "ideal_para": "Trabajadores del sector tech, surfistas, familias jóvenes"
+    },
+    {
+      "seccion": "Barceloneta",
+      "descripcion": "El barrio de playa tradicional de pescadores.",
+      "pros": ["Playa a pie", "Ambiente marinero", "Muchos bares y restaurantes"],
+      "contras": ["MUY turístico", "Ruidoso", "Pisos pequeños"],
+      "precio_alquiler": "1.000-1.600€/mes (2 habitaciones)",
+      "ideal_para": "Amantes de la playa, estancias cortas"
+    },
+    {
+      "seccion": "Sarrià-Sant Gervasi",
+      "descripcion": "Barrios residenciales de clase alta, tranquilos y elegantes.",
+      "pros": ["Muy tranquilo", "Seguro", "Espacios verdes", "Escuelas internacionales"],
+      "contras": ["Caro", "Lejos de la vida nocturna", "Menos transporte público"],
+      "precio_alquiler": "1.500-3.000€/mes (2 habitaciones)",
+      "ideal_para": "Familias con niños, ejecutivos, jubilados"
+    }
+  ],
+  "consejos_generales": [
+    "Visita el barrio en diferentes momentos del día antes de decidir",
+    "Usa Idealista.com y Fotocasa.es para buscar pisos",
+    "Ten en cuenta la cercanía al metro - es esencial",
+    "Los contratos suelen requerir: 1 mes de fianza + 1 mes de depósito",
+    "Negocia siempre - los precios publicados suelen tener margen"
+  ],
+  "enlaces_relacionados": [
+    {"titulo": "Cómo Alquilar un Piso en Barcelona", "slug": "alquilar-piso-barcelona"},
+    {"titulo": "Empadronamiento: Guía Completa", "slug": "empadronamiento-barcelona"},
+    {"titulo": "Mejores Zonas Cerca del Mar", "slug": "zonas-playa-barcelona"}
+  ],
+  "keywords": ["barrios", "alquiler", "vivienda", "apartamento", "barcelona", "expats"],
+  "fecha_publicacion": "2025-11-28",
+  "autor": "Revista Expats Barcelona"
+}
