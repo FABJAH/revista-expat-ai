@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- Elementos del DOM ---
-    const chatInput = document.getElementById('chat-input'); // Input en el Hero
+    const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const hamburger = document.getElementById('hamburger');
     const sidebar = document.getElementById('sidebar');
+    const closeSidebar = document.getElementById('close-sidebar');
     const serviceCards = document.querySelectorAll('.service-card');
+    const guideButtons = document.querySelectorAll('.guide-btn');
+    const advertiserButtons = document.querySelectorAll('.advertiser-btn');
 
     // Elementos del Widget de Chat
-    const chatWidgetContainer = document.getElementById('chat-widget-container');
     const chatBubble = document.getElementById('chat-bubble');
     const chatWindow = document.getElementById('chat-window');
     const closeChatBtn = document.getElementById('close-chat-btn');
@@ -15,8 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInputWidget = document.getElementById('chat-input-widget');
     const sendBtnWidget = document.getElementById('send-btn-widget');
 
-    // Como el frontend y el backend ahora se sirven desde el mismo lugar,
-    // podemos usar una ruta relativa. Esto elimina los problemas de CORS.
+    // Carrusel
+    const carousel = document.getElementById('carousel');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
     const API_URL = '/api/query';
 
     // --- Lógica del Chat ---
@@ -241,11 +246,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         messageDiv.appendChild(actionsContainer);
     };
+    // --- Lógica del Carrusel ---
+    if (carousel) {
+        prevBtn?.addEventListener('click', () => {
+            carousel.scrollBy({ left: -350, behavior: 'smooth' });
+        });
+        nextBtn?.addEventListener('click', () => {
+            carousel.scrollBy({ left: 350, behavior: 'smooth' });
+        });
+    }
+
     // --- Event Listeners ---
 
     // Botones de enviar
-    sendBtn?.addEventListener('click', handleSendMessage); // El del hero
-    sendBtnWidget.addEventListener('click', handleSendMessage); // El del widget
+    sendBtn?.addEventListener('click', handleSendMessage);
+    sendBtnWidget.addEventListener('click', handleSendMessage);
 
     // Enviar con la tecla Enter
     [chatInput, chatInputWidget].forEach(input => input?.addEventListener('keypress', (e) => {
@@ -255,6 +270,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Menú hamburguesa
     hamburger.addEventListener('click', () => {
         sidebar.classList.toggle('open');
+    });
+
+    closeSidebar.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+    });
+
+    // Cerrar sidebar al hacer clic en un link
+    sidebar.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+        });
     });
 
     // Lógica del widget de chat
@@ -275,13 +301,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clic en tarjetas de servicio
     serviceCards.forEach(card => {
         card.addEventListener('click', () => {
-            // Obtiene el valor del atributo data-service, que ya coincide
-            // con las claves del JSON (ej: "Accommodation", "Healthcare").
             const serviceName = card.dataset.service;
-
-            toggleChatWindow(true); // Abrir el widget de chat
-            // Envía la consulta directamente sin usar los inputs de texto
+            toggleChatWindow(true);
             sendQuery(serviceName);
+        });
+    });
+
+    // Botones de guías
+    guideButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const guide = btn.dataset.guide;
+            toggleChatWindow(true);
+            sendQuery(`Información sobre ${guide}`);
+        });
+    });
+
+    // Botones de anunciantes
+    advertiserButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const advertiserName = btn.dataset.name;
+            toggleChatWindow(true);
+            sendQuery(`Información sobre ${advertiserName}`);
+            e.stopPropagation();
         });
     });
 

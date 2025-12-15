@@ -1,7 +1,9 @@
 # backend/api.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from pathlib import Path
 from bots.orchestrator import Orchestrator
 
 app = FastAPI(title="Revista Expats AI API")
@@ -15,7 +17,8 @@ app.add_middleware(
 
 
 class Consulta(BaseModel):
-    pregunta: str
+    pregunta: str = None
+    question: str = None
     language: str = "es"
 
 
@@ -29,5 +32,19 @@ def health():
 
 @app.post("/consulta")
 def consulta(body: Consulta):
-    result = orq.process_query(body.pregunta, language=body.language)
+    pregunta = body.pregunta or body.question
+    result = orq.process_query(pregunta, language=body.language)
     return result
+
+
+@app.post("/api/query")
+def api_query(body: Consulta):
+    """Endpoint compatible con el frontend"""
+    pregunta = body.pregunta or body.question
+    result = orq.process_query(pregunta, language=body.language)
+    return result
+
+
+# Servir archivos estáticos del frontend (DEBE IR AL FINAL)
+frontend_path = Path(__file__).parent.parent / "frontend"
+app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")

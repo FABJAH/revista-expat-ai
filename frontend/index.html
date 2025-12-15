@@ -3,117 +3,345 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Revista Expats AI</title>
+  <title>Revista Expats AI - Tu guía en Barcelona</title>
   <link rel="stylesheet" href="styles.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 
-  <!-- HEADER con menú hamburguesa -->
+  <!-- ========== HEADER ========== -->
   <header class="header">
     <div class="container">
       <div class="logo">
+        <i class="fas fa-newspaper"></i>
         <h1>Revista Expats <span>Barcelona</span></h1>
       </div>
+      <nav class="nav-desktop">
+        <a href="#articulos">Artículos</a>
+        <a href="#guias">Guías</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#anunciantes">Anunciantes</a>
+      </nav>
       <button class="hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
     </div>
   </header>
 
-  <!-- Sidebar menú -->
+  <!-- Sidebar menú móvil -->
   <nav class="sidebar" id="sidebar">
-    <a href="#services">Servicios</a>
-    <a href="#chat">Chat</a>
-    <a href="#contact">Contacto</a>
-    <a href="#chat">Hablar con el asistente</a>
+    <button class="close-sidebar" id="close-sidebar"><i class="fas fa-times"></i></button>
+    <a href="#articulos">📰 Artículos</a>
+    <a href="#guias">📖 Guías</a>
+    <a href="#servicios">🏢 Servicios</a>
+    <a href="#anunciantes">⭐ Anunciantes</a>
+    <a href="#newsletter">💌 Newsletter</a>
   </nav>
 
-  <!-- HERO -->
+  <!-- ========== HERO SECTION ========== -->
   <section class="hero">
+    <div class="hero-overlay"></div>
     <div class="hero-content">
-      <h2>Tu guía inteligente en Barcelona</h2>
-      <p>Encuentra alojamiento, salud, educación, servicios legales y más en un solo lugar.</p>
+      <h1>Tu Revista Digital para Expatriados en Barcelona</h1>
+      <p>Descubre alojamiento, salud, educación, servicios legales y mucho más con nuestra guía inteligente</p>
       <div class="search-box">
-        <input type="text" id="chat-input" placeholder="Haz tu pregunta aquí...">
-        <button id="send-btn"><i class="fas fa-paper-plane"></i> Enviar</button>
+        <input type="text" id="chat-input" placeholder="¿Qué necesitas? Pregunta aquí...">
+        <button id="send-btn"><i class="fas fa-search"></i></button>
       </div>
     </div>
   </section>
 
-  <!-- SERVICES -->
-  <section id="services" class="services-section">
-    <h2 class="section-title">Servicios</h2>
-    <p class="section-subtitle">Explora las categorías disponibles</p>
-    <div class="services-grid">
-      <div class="service-card" data-service="Accommodation">
-        <i class="fas fa-home service-icon"></i>
-        <h3>Alojamiento</h3>
-        <p>Encuentra pisos, hoteles y alquileres.</p>
-        <button class="service-btn">Consultar</button>
-      </div>
-      <div class="service-card" data-service="Healthcare">
-        <i class="fas fa-stethoscope service-icon"></i>
-        <h3>Salud</h3>
-        <p>Médicos, clínicas y seguros médicos.</p>
-        <button class="service-btn">Consultar</button>
-      </div>
-      <div class="service-card" data-service="Education">
-        <i class="fas fa-book service-icon"></i>
-        <h3>Educación</h3>
-        <p>Cursos, academias y universidades.</p>
-        <button class="service-btn">Consultar</button>
-      </div>
-      <div class="service-card" data-service="Legal and Financial">
-        <i class="fas fa-gavel service-icon"></i>
-        <h3>Legal y Finanzas</h3>
-        <p>Visados, NIE, impuestos y asesoría.</p>
-        <button class="service-btn">Consultar</button>
-      </div>
-      <div class="service-card" data-service="Restaurants">
-        <i class="fas fa-utensils service-icon"></i>
-        <h3>Restaurantes</h3>
-        <p>Descubre los mejores lugares para comer.</p>
-        <button class="service-btn">Consultar</button>
-      </div>
-      <div class="service-card" data-service="Comercial">
-        <i class="fas fa-bullhorn service-icon"></i>
-        <h3>Anúnciate</h3>
-        <p>Promociona tu negocio con nosotros.</p>
-        <button class="service-btn">Consultar</button>
+  <!-- ========== ARTÍCULOS DESTACADOS ========== -->
+  <section id="articulos" class="featured-articles">
+    <div class="container">
+      <h2 class="section-title">📰 Artículos Destacados</h2>
+      <div class="articles-grid">
+        <article class="article-card">
+          <div class="article-image">
+            <img src="assets/images/1.png" alt="Guía de alojamiento">
+            <span class="article-badge">Alojamiento</span>
+          </div>
+          <div class="article-content">
+            <h3>Guía Completa de Alojamiento en Barcelona</h3>
+            <p>Descubre los mejores barrios para vivir, opciones de alquiler y tips para encontrar tu hogar perfecto.</p>
+            <a href="#" class="read-more">Leer artículo →</a>
+          </div>
+        </article>
+
+        <article class="article-card">
+          <div class="article-image">
+            <img src="assets/images/2.png" alt="Sistema de salud">
+            <span class="article-badge">Salud</span>
+          </div>
+          <div class="article-content">
+            <h3>Sistema de Salud en Barcelona: Cómo Acceder</h3>
+            <p>Todo lo que necesitas saber sobre el sistema sanitario español, cómo registrarte y encontrar médicos.</p>
+            <a href="#" class="read-more">Leer artículo →</a>
+          </div>
+        </article>
+
+        <article class="article-card">
+          <div class="article-image">
+            <img src="assets/images/3.png" alt="Educación">
+            <span class="article-badge">Educación</span>
+          </div>
+          <div class="article-content">
+            <h3>Opciones de Educación para Expatriados</h3>
+            <p>Escuelas internacionales, academias de idiomas y universidades en Barcelona para toda la familia.</p>
+            <a href="#" class="read-more">Leer artículo →</a>
+          </div>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer class="footer" id="contact">
-    <div class="footer-content">
-      <div class="footer-section">
-        <h4>Sobre nosotros</h4>
-        <p>Revista digital para expatriados en Barcelona. Tu guía confiable.</p>
-      </div>
-      <div class="footer-section">
-        <h4>Contacto</h4>
-        <ul>
-          <li>Email: info@revistaexpats.com</li>
-          <li>Tel: +34 600 000 000</li>
-        </ul>
+  <!-- ========== SECCIÓN DE TRENDING ========== -->
+  <section class="trending-section">
+    <div class="container">
+      <h2 class="section-title">🔥 Tendencia Ahora</h2>
+      <div class="carousel-container">
+        <button class="carousel-btn prev" id="prev-btn"><i class="fas fa-chevron-left"></i></button>
+        <div class="carousel" id="carousel">
+          <div class="carousel-item">
+            <div class="trending-card">
+              <img src="assets/images/4.png" alt="Restaurante">
+              <h3>Nuevos Restaurantes Trending</h3>
+              <p>Los mejores locales de comida para explorar esta temporada en Barcelona.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="trending-card">
+              <img src="assets/images/5.png" alt="Legal">
+              <h3>NIE y Documentación Legal</h3>
+              <p>Paso a paso para obtener tu NIE y regularizar tu situación legal.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="trending-card">
+              <img src="assets/images/6.png" alt="Trabajo">
+              <h3>Oportunidades Laborales</h3>
+              <p>Encuentra trabajos en Barcelona para expatriados con experiencia.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="trending-card">
+              <img src="assets/images/7.png" alt="Servicios">
+              <h3>Servicios Recomendados</h3>
+              <p>Los servicios más confiables para expatriados en la ciudad.</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-btn next" id="next-btn"><i class="fas fa-chevron-right"></i></button>
       </div>
     </div>
-    <div class="footer-bottom">
-      &copy; 2025 Revista Expats AI. Todos los derechos reservados.
+  </section>
+
+  <!-- ========== GUÍAS DE LA REVISTA ========== -->
+  <section id="guias" class="guides-section">
+    <div class="container">
+      <h2 class="section-title">📖 Guías Esenciales</h2>
+      <div class="guides-grid">
+        <div class="guide-card">
+          <div class="guide-icon">🏘️</div>
+          <h3>Barrios de Barcelona</h3>
+          <p>Descubre qué ofrecen los principales barrios: Eixample, Gracia, Sagrada Familia...</p>
+          <button class="guide-btn" data-guide="barrios">Ver guía</button>
+        </div>
+        <div class="guide-card">
+          <div class="guide-icon">💼</div>
+          <h3>Trabajar en Barcelona</h3>
+          <p>Requisitos, opciones de trabajo y consejos para encontrar empleo.</p>
+          <button class="guide-btn" data-guide="trabajo">Ver guía</button>
+        </div>
+        <div class="guide-card">
+          <div class="guide-icon">🏥</div>
+          <h3>Sistema de Salud</h3>
+          <p>Cómo acceder, registrarse y utilizar los servicios de salud públicos.</p>
+          <button class="guide-btn" data-guide="salud">Ver guía</button>
+        </div>
+        <div class="guide-card">
+          <div class="guide-icon">🎓</div>
+          <h3>Educación</h3>
+          <p>Escuelas, universidades y opciones de educación para tus hijos.</p>
+          <button class="guide-btn" data-guide="educacion">Ver guía</button>
+        </div>
+        <div class="guide-card">
+          <div class="guide-icon">📋</div>
+          <h3>Documentación</h3>
+          <p>NIE, empadronamiento, visados y toda la documentación necesaria.</p>
+          <button class="guide-btn" data-guide="documentacion">Ver guía</button>
+        </div>
+        <div class="guide-card">
+          <div class="guide-icon">🏠</div>
+          <h3>Alojamiento</h3>
+          <p>Cómo buscar, alquilar y mudarse en Barcelona de forma segura.</p>
+          <button class="guide-btn" data-guide="alojamiento">Ver guía</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SERVICIOS DESTACADOS ========== -->
+  <section id="servicios" class="services-section">
+    <div class="container">
+      <h2 class="section-title">🏢 Categorías de Servicios</h2>
+      <p class="section-subtitle">Consulta a nuestro asistente inteligente sobre cualquier categoría</p>
+      <div class="services-grid">
+        <div class="service-card" data-service="Accommodation">
+          <i class="fas fa-home service-icon"></i>
+          <h3>Alojamiento</h3>
+          <p>Apartamentos, pisos y hoteles en Barcelona</p>
+          <button class="service-btn">Consultar</button>
+        </div>
+        <div class="service-card" data-service="Healthcare">
+          <i class="fas fa-hospital-user service-icon"></i>
+          <h3>Salud</h3>
+          <p>Médicos, clínicas y seguros médicos</p>
+          <button class="service-btn">Consultar</button>
+        </div>
+        <div class="service-card" data-service="Education">
+          <i class="fas fa-graduation-cap service-icon"></i>
+          <h3>Educación</h3>
+          <p>Escuelas, academias y universidades</p>
+          <button class="service-btn">Consultar</button>
+        </div>
+        <div class="service-card" data-service="Legal and Financial">
+          <i class="fas fa-briefcase service-icon"></i>
+          <h3>Legal y Finanzas</h3>
+          <p>Visados, NIE, impuestos y asesoría</p>
+          <button class="service-btn">Consultar</button>
+        </div>
+        <div class="service-card" data-service="Restaurants">
+          <i class="fas fa-utensils service-icon"></i>
+          <h3>Gastronomía</h3>
+          <p>Restaurantes y lugares para comer</p>
+          <button class="service-btn">Consultar</button>
+        </div>
+        <div class="service-card" data-service="Work">
+          <i class="fas fa-briefcase service-icon"></i>
+          <h3>Empleo</h3>
+          <p>Oportunidades laborales y networking</p>
+          <button class="service-btn">Consultar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ANUNCIANTES DESTACADOS ========== -->
+  <section id="anunciantes" class="advertisers-section">
+    <div class="container">
+      <h2 class="section-title">⭐ Nuestros Anunciantes</h2>
+      <p class="section-subtitle">Empresas confiables que apoyan la revista</p>
+      <div class="advertisers-grid">
+        <div class="advertiser-card">
+          <img src="assets/images/1.png" alt="W Hotel">
+          <h3>W Hotel Barcelona</h3>
+          <p>Alojamiento de lujo en el corazón de Barcelona</p>
+          <button class="advertiser-btn" data-name="W Hotel">Conocer más</button>
+        </div>
+        <div class="advertiser-card">
+          <img src="assets/images/2.png" alt="Enjoy Apartments">
+          <h3>Enjoy Apartments Barcelona</h3>
+          <p>Apartamentos amueblados para expatriados</p>
+          <button class="advertiser-btn" data-name="Enjoy Apartments Barcelona">Conocer más</button>
+        </div>
+        <div class="advertiser-card">
+          <img src="assets/images/3.png" alt="Hotel Novotel">
+          <h3>Hotel Novotel Barcelona City</h3>
+          <p>Hospedaje cómodo a precios accesibles</p>
+          <button class="advertiser-btn" data-name="Hotel Novotel Barcelona City">Conocer más</button>
+        </div>
+        <div class="advertiser-card">
+          <img src="assets/images/4.png" alt="Restaurantes">
+          <h3>Restaurantes Selectos</h3>
+          <p>Descubre la gastronomía barcelonesa</p>
+          <button class="advertiser-btn" data-name="Restaurantes Selectos">Conocer más</button>
+        </div>
+        <div class="advertiser-card">
+          <img src="assets/images/5.png" alt="Consultoría Legal">
+          <h3>Consultoría Legal & Fiscal</h3>
+          <p>Servicios legales para expatriados</p>
+          <button class="advertiser-btn" data-name="Consultoría Legal">Conocer más</button>
+        </div>
+        <div class="advertiser-card">
+          <img src="assets/images/6.png" alt="Centro de Salud">
+          <h3>Centro Médico Barcelona</h3>
+          <p>Atención médica especializada</p>
+          <button class="advertiser-btn" data-name="Centro Médico Barcelona">Conocer más</button>
+        </div>
+        <div class="advertiser-card">
+          <img src="assets/images/7.png" alt="Servicios">
+          <h3>Tienda de Servicios</h3>
+          <p>Todo lo que necesitas en un lugar</p>
+          <button class="advertiser-btn" data-name="Tienda de Servicios">Conocer más</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== NEWSLETTER ========== -->
+  <section id="newsletter" class="newsletter-section">
+    <div class="container">
+      <div class="newsletter-content">
+        <h2>📧 Suscríbete a Nuestra Newsletter</h2>
+        <p>Recibe semanalmente las mejores guías, artículos y ofertas para expatriados en Barcelona</p>
+        <form class="newsletter-form">
+          <input type="email" placeholder="Tu correo electrónico" required>
+          <button type="submit">Suscribirse</button>
+        </form>
+        <p class="newsletter-info">No compartiremos tu correo. Puedes darte de baja en cualquier momento.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h4>Sobre la Revista</h4>
+          <p>Tu guía completa para vivir en Barcelona como expatriado. Información, servicios y comunidad.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Navegación</h4>
+          <ul>
+            <li><a href="#articulos">Artículos</a></li>
+            <li><a href="#guias">Guías</a></li>
+            <li><a href="#servicios">Servicios</a></li>
+            <li><a href="#anunciantes">Anunciantes</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Contacto</h4>
+          <ul>
+            <li>📧 info@revistaexpats.com</li>
+            <li>📱 +34 600 000 000</li>
+            <li>📍 Barcelona, España</li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Síguenos</h4>
+          <div class="social-links">
+            <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Revista Expats AI. Todos los derechos reservados. | <a href="#">Privacidad</a> | <a href="#">Términos</a></p>
+      </div>
     </div>
   </footer>
 
-  <!-- CHAT WIDGET -->
+  <!-- ========== CHAT WIDGET FLOTANTE ========== -->
   <div id="chat-widget-container">
-    <!-- Burbuja para abrir el chat -->
     <div id="chat-bubble" class="chat-bubble">
       <i class="fas fa-comment-dots"></i>
     </div>
 
-    <!-- Ventana del chat (inicialmente oculta) -->
     <div id="chat-window" class="chat-window hidden">
       <div class="chat-header">
-        <h3>Asistente Virtual</h3>
+        <h3>💬 Asistente Virtual</h3>
         <button id="close-chat-btn"><i class="fas fa-times"></i></button>
       </div>
       <div id="chat-messages" class="chat-messages"></div>
