@@ -22,11 +22,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
 
-    const API_URL = '/api/query';
+    const apiBase = (window.location.protocol === 'file:' || window.location.origin === 'null')
+        ? 'http://127.0.0.1:8000'
+        : window.location.origin;
+    const API_URL = `${apiBase}/api/query`;
+    const API_URL_ADS = `${apiBase}/api/bot/advertising`;
 
     // --- Lógica del Chat ---
 
-    const sendQuery = async (queryText) => {
+    // Estado de paginación por sesión
+    let lastQuery = null;
+    let lastAgent = null;
+    let nextOffset = 0;
+    const pageSize = 5;
+
+    const sendQuery = async (queryText, opts = {}) => {
         if (!queryText) return;
 
         // Añadir mensaje del usuario a la interfaz
@@ -43,11 +53,22 @@ document.addEventListener('DOMContentLoaded', () => {
             // Detecta el idioma del navegador (ej. "es-ES", "en-US") y toma solo las dos primeras letras.
             const lang = navigator.language.split('-')[0];
 
-            const response = await fetch(API_URL, {
+            const useAds = opts.advertising === true;
+            const endpoint = useAds ? API_URL_ADS : API_URL;
+
+            const payload = useAds
+                ? { message: queryText, language: lang }
+                : {
+                    question: queryText,
+                    language: lang,
+                    limit: opts.limit ?? pageSize,
+                    offset: opts.offset ?? 0,
+                };
+
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                // Enviamos la pregunta y el idioma detectado
-                body: JSON.stringify({ question: queryText, language: lang }),
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
@@ -55,7 +76,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
-            updateBotMessage(thinkingMessage, data);
+
+            // Normalizar respuesta para el bot de anuncios
+            const normalized = opts.advertising
+                ? {
+                    respuesta: data.message || data.respuesta,
+                    json: [],
+                    tips: [],
+                    guias: [],
+                    articulos: [],
+                }
+                : data;
+
+            // Guardar estado para "Mostrar más" solo en el bot principal
+            if (!opts.advertising) {
+                lastQuery = queryText;
+                lastAgent = data.agente;
+                nextOffset = data.next_offset ?? 0;
+            }
+
+            updateBotMessage(thinkingMessage, normalized);
 
         } catch (error) {
             // --- DIAGNÓSTICO MEJORADO ---
@@ -109,6 +149,15 @@ document.addEventListener('DOMContentLoaded', () => {
             messageDiv.appendChild(friendlyDiv);
         }
 
+        // --- NUEVO: Mostrar consejos rápidos ---
+        if (data.tips && data.tips.length > 0) {
+            const tipsContainer = document.createElement('div');
+            tipsContainer.className = 'guias-container';
+            tipsContainer.innerHTML = '<h4 class="guias-title">💡 Consejos rápidos</h4>' +
+                `<ul style="list-style:disc;padding-left:20px">${data.tips.map(t => `<li>${t}</li>`).join('')}</ul>`;
+            messageDiv.appendChild(tipsContainer);
+        }
+
         // --- NUEVO: Mostrar guías de la revista ---
         if (data.guias && data.guias.length > 0) {
             const guiasContainer = document.createElement('div');
@@ -130,6 +179,29 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             messageDiv.appendChild(guiasContainer);
+        }
+
+        // --- NUEVO: Mostrar artículos de la revista (RSS) ---
+        if (data.articulos && data.articulos.length > 0) {
+            const articulosContainer = document.createElement('div');
+            articulosContainer.className = 'guias-container';
+            articulosContainer.innerHTML = '<h4 class="guias-title">✨ Artículos de Barcelona Metropolitan</h4>';
+
+            data.articulos.forEach(articulo => {
+                const articuloCard = document.createElement('div');
+                articuloCard.className = 'guia-card';
+                articuloCard.innerHTML = `
+                    <div class="guia-icon">📰</div>
+                    <div class="guia-content">
+                        <h5>${articulo.title || 'Sin título'}</h5>
+                        <p>${articulo.description || 'Sin descripción'}</p>
+                        ${articulo.url ? `<a href="${articulo.url}" class="guia-link" target="_blank">Leer artículo →</a>` : ''}
+                    </div>
+                `;
+                articulosContainer.appendChild(articuloCard);
+            });
+
+            messageDiv.appendChild(articulosContainer);
         }
 
         // Resultados en formato de tarjeta
@@ -165,6 +237,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     cardHTML += `<div class="card-details">${details}</div>`;
                 }
 
+                // CTA a ficha del directorio si existe URL
+                if (item.url) {
+                    cardHTML += `<p><a href="${item.url}" target="_blank" rel="noopener" class="guia-link">Ver ficha en el directorio →</a></p>`;
+                }
+
                 if (item.beneficios && item.beneficios.length > 0) {
                     cardHTML += `<div class="card-benefits"><strong>Beneficios:</strong><ul>${item.beneficios.map(b => `<li>${b}</li>`).join('')}</ul></div>`;
                 }
@@ -191,8 +268,54 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             messageDiv.appendChild(resultsContainer);
 
-            // Añadir event listener para los acordeones de FAQ usando delegación de eventos
-            resultsContainer.addEventListener('click', handleFaqToggle);
+            // Botón "Mostrar más"
+            if (data.has_more) {
+                const moreBtn = document.createElement('button');
+                moreBtn.className = 'show-more-btn';
+                moreBtn.textContent = 'Mostrar más resultados';
+                moreBtn.addEventListener('click', async () => {
+                    const loading = addMessage('...', 'bot');
+                    try {
+                        const lang = navigator.language.split('-')[0];
+                        const resp = await fetch(API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                question: lastQuery,
+                                language: lang,
+                                limit: pageSize,
+                                offset: nextOffset,
+                            }),
+                        });
+                        const nextData = await resp.json();
+                        // Actualizar offset para futuras cargas
+                        nextOffset = nextData.next_offset ?? 0;
+                        updateBotMessage(loading, nextData);
+                    } catch (e) {
+                        updateBotMessage(loading, { respuesta: 'No pude cargar más resultados.', json: [] });
+                    }
+                });
+                messageDiv.appendChild(moreBtn);
+            }
+
+            // Añadir event listener para los acordeones de FAQ y tracking de CTA usando delegación de eventos
+            resultsContainer.addEventListener('click', (e) => {
+                handleFaqToggle(e);
+                const link = e.target.closest('a.guia-link');
+                if (link) {
+                    try {
+                        fetch('/api/analytics', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                event: 'directory_click',
+                                data: { url: link.href, text: link.textContent },
+                                timestamp: new Date().toISOString()
+                            })
+                        }).catch(()=>{});
+                    } catch (err) {}
+                }
+            });
 
         } else if (!data.respuesta) {
             // Si no hay resultados ni texto amigable, mostrar un mensaje genérico
@@ -231,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { text: '🎓 Educación', query: 'Education' },
             { text: '⚖️ Legal y Finanzas', query: 'Legal and Financial' },
             { text: '🍽️ Restaurantes', query: 'Restaurants' },
-            { text: '📢 Anúnciate', query: 'Comercial' }
+            { text: '📢 Anúnciate', query: 'Quiero anunciarme', advertising: true }
         ];
 
         actions.forEach(action => {
@@ -239,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
             button.className = 'quick-action-btn';
             button.textContent = action.text;
             button.onclick = () => {
-                sendQuery(action.query);
+                sendQuery(action.query, { advertising: action.advertising === true });
             };
             actionsContainer.appendChild(button);
         });
