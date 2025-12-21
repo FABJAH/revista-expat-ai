@@ -3,58 +3,236 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Revista Expats - Landing (Prueba API)</title>
+  <title>Revista Expats - Tu Guía para Vivir en España</title>
   <style>
-    body{font-family:system-ui,Segoe UI,Helvetica,Arial;margin:24px}
-    label,input,select,button{display:block;margin:8px 0}
-    #result{white-space:pre-wrap;border:1px solid #ddd;padding:12px;margin-top:12px}
-    .gallery{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
-    .card{width:200px;border:1px solid #eee;padding:8px;border-radius:6px;text-align:center;background:#fff}
-    .card img{max-width:100%;height:150px;object-fit:cover;border-radius:4px;cursor:pointer}
-    .card small{display:block;margin-top:6px;color:#666}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, Segoe UI, Helvetica, Arial; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+
+    .hero { color: white; text-align: center; padding: 60px 20px; }
+    .hero h1 { font-size: 3em; margin-bottom: 10px; }
+    .hero p { font-size: 1.2em; margin-bottom: 40px; opacity: 0.9; }
+
+    .paths { display: flex; gap: 20px; max-width: 1000px; margin: 0 auto 40px; flex-wrap: wrap; justify-content: center; }
+    .path-card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      flex: 1;
+      min-width: 250px;
+      text-align: center;
+    }
+    .path-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .path-card h2 { color: #667eea; margin-bottom: 15px; }
+    .path-card p { color: #666; margin-bottom: 20px; }
+    .path-card button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .path-card button:hover { background: #764ba2; }
+
+    .content {
+      background: white;
+      margin: 20px auto;
+      padding: 30px;
+      max-width: 900px;
+      border-radius: 10px;
+      display: none;
+    }
+    .content.active { display: block; }
+
+    label, input, select, button { display: block; margin: 8px 0; }
+    #result { white-space: pre-wrap; border: 1px solid #ddd; padding: 12px; margin-top: 12px; }
+    .gallery { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+    .card { width: 200px; border: 1px solid #eee; padding: 8px; border-radius: 6px; text-align: center; background: #f9f9f9; }
+    .card img { max-width: 100%; height: 150px; object-fit: cover; border-radius: 4px; cursor: pointer; }
+    .card small { display: block; margin-top: 6px; color: #666; }
+
+    .back-btn { background: #666; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+    .back-btn:hover { background: #333; }
   </style>
 </head>
 <body>
-  <h1>Landing — Prueba API</h1>
-  <p>Introduce una pregunta y pulsa <strong>Consultar</strong>. La página llama a <code>http://127.0.0.1:8000/api/query</code>.</p>
+  <!-- HERO CON DOS CAMINOS -->
+  <div class="hero">
+    <h1>🌍 Tu Guía Completa para Vivir en España</h1>
+    <p>Información para extranjeros que buscan mudarse y para expats que ya viven aquí</p>
 
-  <label for="pregunta">Pregunta</label>
-  <input id="pregunta" type="text" value="¿Dónde puedo alquilar un apartamento en Barcelona?" style="width:100%" />
+    <div class="paths">
+      <div class="path-card">
+        <h2>✈️ Voy a Mudarme</h2>
+        <p>Soy extranjero y estoy pensando vivir en España. Necesito información sobre visados, NIE y primeros pasos.</p>
+        <button onclick="selectPath('immigrant')">Comenzar</button>
+      </div>
 
-  <label for="language">Idioma</label>
-  <select id="language">
-    <option value="es">Español</option>
-    <option value="en">English</option>
-  </select>
+      <div class="path-card">
+        <h2>🏘️ Ya Vivo en Barcelona</h2>
+        <p>Soy expatriado y busco servicios, recomendaciones y información útil para mi día a día.</p>
+        <button onclick="selectPath('expat')">Comenzar</button>
+      </div>
+    </div>
+  </div>
 
-  <button id="consultar">Consultar</button>
-  <label><input type="checkbox" id="autoSend" /> Enviar automáticamente al seleccionar una imagen</label>
+  <!-- CONTENIDO DINÁMICO -->
+  <div class="content" id="immigrant-content">
+    <button class="back-btn" onclick="selectPath(null)">← Volver</button>
+    <h1>✈️ Información para Inmigración</h1>
+    <p>Asistente especializado en visados, documentación y primeros pasos para vivir en España.</p>
 
-  <div id="status" aria-live="polite" style="margin-top:8px;color:#444"></div>
-  <div id="result">Aquí aparecerá la respuesta</div>
-  <div id="parsed" style="margin-top:12px"></div>
+    <label for="pregunta-immigrant">Tu pregunta</label>
+    <input id="pregunta-immigrant" type="text" placeholder="ej. ¿Qué necesito para vivir en España? O dame info sobre Argentina" style="width:100%" />
 
-  <h2>Galería de anunciantes (clic para probar)</h2>
-  <div class="gallery" id="gallery">
-    <div class="card"><img src="landi/1.png" alt="W Hotel" data-name="W Hotel" data-category="Accommodation" /><small>W Hotel</small></div>
-    <div class="card"><img src="landi/2.png" alt="Enjoy Apartments Barcelona" data-name="Enjoy Apartments Barcelona" data-category="Accommodation" /><small>Enjoy Apartments</small></div>
-    <div class="card"><img src="landi/3.png" alt="Hotel Novotel" data-name="Hotel Novotel Barcelona City" data-category="Accommodation" /><small>Hotel Novotel</small></div>
-    <div class="card"><img src="landi/4.png" alt="Restaurante Ejemplo" data-name="Restaurante Ejemplo" data-category="Restaurants" /><small>Restaurante</small></div>
-    <div class="card"><img src="landi/5.png" alt="Consultoria Legal" data-name="Consultoria Legal" data-category="Legal and Financial" /><small>Legal</small></div>
-    <div class="card"><img src="landi/6.png" alt="Centro Salud" data-name="Centro Salud" data-category="Healthcare" /><small>Healthcare</small></div>
-    <div class="card"><img src="landi/7.png" alt="Tienda Local" data-name="Tienda Local" data-category="Retail" /><small>Retail</small></div>
+    <label for="language-immigrant">Idioma</label>
+    <select id="language-immigrant">
+      <option value="es">Español</option>
+      <option value="en">English</option>
+    </select>
+
+    <button onclick="consultarImmigration()">Consultar</button>
+    <div id="status-immigrant" style="margin-top:8px;color:#444"></div>
+    <div id="result-immigrant" style="margin-top:12px"></div>
+  </div>
+
+  <!-- CONTENIDO EXPAT -->
+  <div class="content" id="expat-content">
+    <button class="back-btn" onclick="selectPath(null)">← Volver</button>
+    <h1>🏘️ Información para Expats en Barcelona</h1>
+    <p>Encuentra servicios, recomendaciones y todo lo que necesitas para tu día a día.</p>
+
+    <label for="pregunta-expat">Tu pregunta</label>
+    <input id="pregunta-expat" type="text" value="¿Dónde puedo alquilar un apartamento?" style="width:100%" />
+
+    <label for="language-expat">Idioma</label>
+    <select id="language-expat">
+      <option value="es">Español</option>
+      <option value="en">English</option>
+    </select>
+
+    <button onclick="consultarExpat()">Consultar</button>
+    <label><input type="checkbox" id="autoSend" /> Auto-enviar al seleccionar imagen</label>
+
+    <div id="status-expat" style="margin-top:8px;color:#444"></div>
+    <div id="result-expat" style="margin-top:12px"></div>
+    <div id="parsed" style="margin-top:12px"></div>
+
+    <h2>Categorías de Servicios</h2>
+    <div class="gallery" id="gallery">
+      <div class="card"><img src="landi/1.png" alt="W Hotel" data-name="W Hotel" data-category="Accommodation" /><small>W Hotel</small></div>
+      <div class="card"><img src="landi/2.png" alt="Enjoy Apartments Barcelona" data-name="Enjoy Apartments Barcelona" data-category="Accommodation" /><small>Enjoy Apartments</small></div>
+      <div class="card"><img src="landi/3.png" alt="Hotel Novotel" data-name="Hotel Novotel Barcelona City" data-category="Accommodation" /><small>Hotel Novotel</small></div>
+      <div class="card"><img src="landi/4.png" alt="Restaurante Ejemplo" data-name="Restaurante Ejemplo" data-category="Restaurants" /><small>Restaurante</small></div>
+      <div class="card"><img src="landi/5.png" alt="Consultoria Legal" data-name="Consultoria Legal" data-category="Legal and Financial" /><small>Legal</small></div>
+      <div class="card"><img src="landi/6.png" alt="Centro Salud" data-name="Centro Salud" data-category="Healthcare" /><small>Healthcare</small></div>
+      <div class="card"><img src="landi/7.png" alt="Tienda Local" data-name="Tienda Local" data-category="Retail" /><small>Retail</small></div>
+    </div>
   </div>
 
   <script>
-    const consultarBtn = document.getElementById('consultar');
-    const preguntaInput = document.getElementById('pregunta');
-    const languageSelect = document.getElementById('language');
-    const resultDiv = document.getElementById('result');
-    const statusDiv = document.getElementById('status');
+    const apiBase = (window.location.protocol === 'file:' || window.location.origin === 'null')
+      ? 'http://127.0.0.1:8000'
+      : window.location.origin;
 
-    async function consulta() {
-      const pregunta = preguntaInput.value.trim();
-      const language = languageSelect.value;
+    function selectPath(path) {
+      const immigrantContent = document.getElementById('immigrant-content');
+      const expatContent = document.getElementById('expat-content');
+
+      if (path === 'immigrant') {
+        immigrantContent.classList.add('active');
+        expatContent.classList.remove('active');
+      } else if (path === 'expat') {
+        expatContent.classList.add('active');
+        immigrantContent.classList.remove('active');
+      } else {
+        immigrantContent.classList.remove('active');
+        expatContent.classList.remove('active');
+      }
+    }
+
+    async function consultarImmigration() {
+      const pregunta = document.getElementById('pregunta-immigrant').value.trim();
+      const language = document.getElementById('language-immigrant').value;
+      const statusDiv = document.getElementById('status-immigrant');
+      const resultDiv = document.getElementById('result-immigrant');
+
+      if (!pregunta) {
+        statusDiv.textContent = 'Escribe una pregunta antes de consultar.';
+        return;
+      }
+
+      statusDiv.textContent = 'Enviando petición…';
+      resultDiv.innerHTML = '';
+
+      try {
+        const res = await fetch(`${apiBase}/api/immigration`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: pregunta, language })
+        });
+
+        const data = await res.json();
+
+        // Mostrar respuesta principal
+        const messageDiv = document.createElement('div');
+        messageDiv.style.cssText = 'background: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 15px; white-space: pre-wrap;';
+        messageDiv.textContent = data.message || data.respuesta || 'Sin respuesta';
+        resultDiv.appendChild(messageDiv);
+
+        // Mostrar firmas legales anunciantes si existen
+        if (data.legal_ads && data.legal_ads.length > 0) {
+          const adsTitle = document.createElement('h3');
+          adsTitle.textContent = language === 'es' ? '📋 Firmas Anunciantes en la Revista' : '📋 Advertiser Law Firms';
+          adsTitle.style.cssText = 'margin-top: 20px; color: #667eea;';
+          resultDiv.appendChild(adsTitle);
+
+          const adsContainer = document.createElement('div');
+          adsContainer.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 10px;';
+
+          data.legal_ads.forEach(ad => {
+            const adCard = document.createElement('div');
+            adCard.style.cssText = 'border: 2px solid #667eea; padding: 15px; border-radius: 8px; background: #f9f9ff;';
+            adCard.innerHTML = `
+              <strong style="color: #667eea; font-size: 1.1em;">${ad.nombre || 'Firma Legal'}</strong><br/>
+              <small style="color: #666;">${ad.descripcion || ''}</small><br/>
+              <div style="margin-top: 8px;">
+                ${ad.contacto ? `📞 <strong>${ad.contacto}</strong><br/>` : ''}
+                ${ad.precio ? `💰 ${ad.precio}<br/>` : ''}
+                ${ad.idiomas ? `🗣️ ${ad.idiomas}<br/>` : ''}
+                ${ad.ubicacion ? `📍 ${ad.ubicacion}` : ''}
+              </div>
+              ${ad.beneficios && ad.beneficios.length ? `
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd;">
+                  <strong>Beneficios:</strong>
+                  <ul style="margin: 5px 0; padding-left: 20px;">
+                    ${ad.beneficios.map(b => `<li>${b}</li>`).join('')}
+                  </ul>
+                </div>
+              ` : ''}
+            `;
+            adsContainer.appendChild(adCard);
+          });
+
+          resultDiv.appendChild(adsContainer);
+        }
+
+        statusDiv.textContent = 'Respuesta recibida.';
+      } catch (err) {
+        statusDiv.textContent = 'Error: ' + err.message;
+        resultDiv.innerHTML = '<div style="color: #c00; padding: 10px;">No se pudo conectar con el servidor. Asegúrate de que el servidor esté corriendo en http://127.0.0.1:8000</div>';
+      }
+    }
+
+    async function consultarExpat() {
+      const pregunta = document.getElementById('pregunta-expat').value.trim();
+      const language = document.getElementById('language-expat').value;
+      const statusDiv = document.getElementById('status-expat');
+      const resultDiv = document.getElementById('result-expat');
+
       if (!pregunta) {
         statusDiv.textContent = 'Escribe una pregunta antes de consultar.';
         return;
@@ -64,76 +242,48 @@
       resultDiv.textContent = '';
 
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/query', {
+        const res = await fetch(`${apiBase}/api/query`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ question: pregunta, language })
         });
 
-        const bodyText = await res.text();
-        // Intentar parsear JSON para formatearlo, si no, mostrar texto
-        let pretty = bodyText;
-        let parsed = null;
-        try { parsed = JSON.parse(bodyText); pretty = JSON.stringify(parsed, null, 2); } catch(e){}
+        const data = await res.json();
+        resultDiv.innerHTML = `<strong>Respuesta:</strong> ${data.respuesta || 'Sin respuesta'}<br/>
+          ${data.json && data.json.length ? '<strong>Resultados:</strong>' : ''}`;
 
-        // Mostrar código de estado y body formateado
-        resultDiv.textContent = `HTTP ${res.status} ${res.statusText}\n\n${pretty}`;
-        statusDiv.textContent = 'Petición completada.';
-
-        // Mostrar respuesta parseada en formato legible
-        const parsedDiv = document.getElementById('parsed');
-        parsedDiv.innerHTML = '';
-        if (parsed) {
-          const h = document.createElement('div');
-          h.innerHTML = `<strong>Agente:</strong> ${parsed.agente} &nbsp; <strong>Confidence:</strong> ${parsed.confidence}`;
-          parsedDiv.appendChild(h);
-
-          if (parsed.json && parsed.json.opciones && parsed.json.opciones.length) {
-            const list = document.createElement('div');
-            list.style.display = 'grid';
-            list.style.gridTemplateColumns = 'repeat(auto-fit,minmax(240px,1fr))';
-            list.style.gap = '12px';
-            parsed.json.opciones.forEach(opt => {
-              const card = document.createElement('div');
-              card.style.border = '1px solid #eee';
-              card.style.padding = '8px';
-              card.style.borderRadius = '6px';
-              card.style.background = '#fafafa';
-              card.innerHTML = `<strong>${opt.nombre}</strong><br/><small>${opt.descripcion || ''}</small><br/>Contacto: ${opt.contacto || 'N/A'}`;
-              if (opt.faq && opt.faq.length) {
-                const fa = document.createElement('div');
-                fa.style.marginTop = '8px';
-                fa.innerHTML = '<em>FAQ:</em>' + opt.faq.map(q=>`<div>Q: ${q.q}<br/>A: ${q.a}</div>`).join('');
-                card.appendChild(fa);
-              }
-              list.appendChild(card);
-            });
-            parsedDiv.appendChild(list);
-          }
+        if (data.json && data.json.length) {
+          const list = document.createElement('div');
+          list.style.display = 'grid';
+          list.style.gridTemplateColumns = 'repeat(auto-fit,minmax(240px,1fr))';
+          list.style.gap = '12px';
+          list.style.marginTop = '12px';
+          data.json.forEach(opt => {
+            const card = document.createElement('div');
+            card.style.border = '1px solid #ddd';
+            card.style.padding = '12px';
+            card.style.borderRadius = '6px';
+            card.style.background = '#fafafa';
+            card.innerHTML = `<strong>${opt.nombre}</strong><br/><small>${opt.descripcion || ''}</small><br/>📞 ${opt.contacto || 'N/A'}`;
+            list.appendChild(card);
+          });
+          document.getElementById('parsed').appendChild(list);
         }
+        statusDiv.textContent = 'Respuesta recibida.';
       } catch (err) {
-        statusDiv.textContent = 'Error en la petición: ' + err.message;
+        statusDiv.textContent = 'Error: ' + err.message;
         resultDiv.textContent = '';
       }
     }
 
-    consultarBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      consulta();
-    });
-
-    // Galería: al clicar imagen se rellena la pregunta y opcionalmente se envía
+    // Galería: al clicar imagen se rellena la pregunta
     document.getElementById('gallery').addEventListener('click', (ev) => {
       const img = ev.target.closest('img');
       if (!img) return;
       const name = img.dataset.name || img.alt || '';
       const category = img.dataset.category || '';
-      // Rellenar la pregunta con un texto útil para probar el bot
-      preguntaInput.value = `Quiero información sobre ${name} (${category})`;
-      statusDiv.textContent = `Pregunta rellenada por imagen: ${name}`;
-      if (document.getElementById('autoSend').checked) consulta();
+      document.getElementById('pregunta-expat').value = `Busco información sobre ${name}`;
+      if (document.getElementById('autoSend').checked) consultarExpat();
     });
 
     // Añadir manejadores de error para detectar recursos que fallen (imágenes, scripts, hojas)
@@ -176,6 +326,27 @@
         const src = e.target && (e.target.currentSrc || e.target.src) || '<unknown>';
         reportResourceFailure(`Image load error: ${src}`);
       });
+    });
+  </script>
+
+  <!-- ============================================================ -->
+  <!-- LUNA ADVERTISING WIDGET -->
+  <!-- ============================================================ -->
+  <link rel="stylesheet" href="widget/luna-advertising.css">
+  <script src="widget/luna-advertising.js"></script>
+  <script>
+    // Inicializar Luna Bot Widget
+    document.addEventListener('DOMContentLoaded', function() {
+      const lunaWidget = new LunaAdvertisingWidget({
+        position: 'bottom-right',
+        language: 'es', // 'es' o 'en'
+        autoOpen: true,
+        autoOpenDelay: 4000, // 4 segundos después de cargar
+        apiEndpoint: 'http://127.0.0.1:8000/api/bot/advertising',
+        theme: 'default' // 'default' o 'dark'
+      });
+
+      console.log('🦉 Luna Widget activado en landing page');
     });
   </script>
 </body>

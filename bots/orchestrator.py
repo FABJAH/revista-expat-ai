@@ -8,6 +8,9 @@ from sentence_transformers import SentenceTransformer, util
 
 from .utils import normalize
 from .content_manager import ContentManager
+from .logger import logger
+from .rss_manager import get_rss_manager
+from config import settings
 
 # Importa bots disponibles
 from .bot_accommodation import responder_consulta as acc_responder
@@ -17,12 +20,14 @@ from .bot_education import responder_consulta as edu_responder
 from .bot_healthcare import responder_consulta as hea_responder
 from .bot_work import responder_consulta as work_responder
 from .bot_service import responder_consulta as srv_responder
+from .bot_immigration import ImmigrationBot
 
 
 def generic_responder(pregunta, anunciantes, language="en"):
     """
     Un bot genérico que no hace ningún filtrado adicional.
-    Simplemente devuelve los anunciantes que el orquestador ya ha seleccionado para esa categoría.
+    Devuelve todos los anunciantes que el orquestador ha seleccionado para esa categoría.
+    El orquestador se encargará de aplicar limit/offset.
     """
     return {"key_points": [], "json_data": anunciantes}
 
@@ -34,13 +39,16 @@ class Orchestrator:
         try:
             with open(str(data_path), 'r', encoding='utf-8') as f:
                 self.advertisers = json.load(f)
-            print("✅ Base de datos cargada.")
+            logger.info("Base de datos cargada.")
         except Exception as e:
-            print(f"❌ ERROR cargando base de datos: {e}")
+            logger.error(f"ERROR cargando base de datos: {e}")
             self.advertisers = {}
 
         # --- INICIALIZAR GESTOR DE CONTENIDO EDITORIAL ---
         self.content_manager = ContentManager()
+
+        # --- INICIALIZAR RSS MANAGER ---
+        self.rss_manager = get_rss_manager()
 
         # --- INICIALIZACIÓN DEL MODELO SEMÁNTICO ---
         # Cargamos un modelo de lenguaje pre-entrenado y multilingüe.
@@ -87,9 +95,20 @@ class Orchestrator:
                 ],
                 "Legal and Financial": [
                     "abogado", "legal", "financiero", "impuestos", "banco",
-                    "contrato", "visado", "nie", "residencia", "permiso",
-                    "nif", "gestoria", "gestor", "inmigracion", "extranjeria",
+                    "contrato", "nif", "gestoria", "gestor",
                     "cuenta bancaria", "declaracion renta"
+                ],
+                "Immigration": [
+                    "visado", "visa", "nie", "residencia", "permiso",
+                    "inmigracion", "extranjeria", "empadronamiento",
+                    "mudanza", "mudarme", "vivir en españa", "requisitos",
+                    "documentacion", "primeros pasos", "extranjero",
+                    "inmigrar", "emigrar", "trasladarme", "formulario",
+                    "mudarse", "trasladarse", "venir", "venir a españa",
+                    "llegar a españa", "desde usa", "desde reino unido",
+                    "desde canada", "desde australia", "necesito para",
+                    "que necesito", "como emigrar", "como inmigrar",
+                    "pasaporte", "tramites", "papeles", "certificado"
                 ],
                 "Recreation and Leisure": [
                     "ocio", "recreacion", "deporte", "gimnasio", "parque",
@@ -151,9 +170,18 @@ class Orchestrator:
                 ],
                 "Legal and Financial": [
                     "lawyer", "legal", "financial", "tax", "bank",
-                    "contract", "visa", "nie", "residency", "permit",
-                    "immigration", "residency permit", "bank account",
+                    "contract", "bank account",
                     "tax return", "consultant"
+                ],
+                "Immigration": [
+                    "visa", "nie", "residency", "permit",
+                    "immigration", "residency permit", "move to spain",
+                    "living in spain", "requirements", "documentation",
+                    "first steps", "foreigner", "relocate", "relocating",
+                    "emigrate", "immigrate", "registration", "empadronamiento",
+                    "moving", "settle", "from usa", "from uk", "from canada",
+                    "from australia", "citizenship", "papers",
+                    "procedures", "formalities", "passport"
                 ],
                 "Recreation and Leisure": [
                     "leisure", "recreation", "sports", "gym", "park",
@@ -192,6 +220,7 @@ class Orchestrator:
             "Healthcare": hea_responder,
             "Work and Networking": work_responder, # Categoría que faltaba
             "BotService": srv_responder,
+            "Immigration": self._immigration_responder,  # Bot de inmigración
             # Bots que usan la lógica genérica
             "Arts and Culture": generic_responder,
             "Bars and Clubs": generic_responder,
@@ -274,6 +303,13 @@ class Orchestrator:
                     "Puedo ayudarte con eso. Aquí tienes información sobre los servicios de bot que ofrecemos.",
                     "¡Claro! Un asistente virtual puede transformar tu negocio. Esto es lo que ofrecemos:",
                     "Detecto que preguntas por mis 'poderes'. ¡Te cuento cómo puedes tener un asistente como yo!"
+                ],
+                "Immigration": [
+                    "Veo que preguntas sobre inmigración y documentación. Nuestro bot especializado te ayudará.",
+                    "¿Planeas mudarte a España? El bot de Inmigración tiene toda la información que necesitas.",
+                    "Los trámites de inmigración pueden ser complejos. Te conecto con nuestro experto.",
+                    "¡Perfecto! Te ayudo con visados, NIE y primeros pasos para vivir en España.",
+                    "Entendido, aquí tienes información detallada sobre requisitos de inmigración."
                 ]
             },
             "en": {
@@ -332,6 +368,13 @@ class Orchestrator:
                     "I can help with that. Here is some information about the bot services we offer to advertisers.",
                     "Of course! A virtual assistant can transform your business. Here's what we offer:",
                     "I detect you're asking about my 'powers'. I'll tell you how you can have an assistant like me!"
+                ],
+                "Immigration": [
+                    "I see you're asking about immigration and documentation. Our specialized bot will help you.",
+                    "Planning to move to Spain? The Immigration bot has all the information you need.",
+                    "Immigration procedures can be complex. Let me connect you with our expert.",
+                    "Perfect! I'll help you with visas, NIE and first steps to live in Spain.",
+                    "Understood, here's detailed information about immigration requirements."
                 ]
             }
         }
@@ -353,10 +396,130 @@ class Orchestrator:
                 "description": description,
                 "embedding": self.model.encode(description, convert_to_tensor=True)
             })
-        print("✅ Embeddings de categorías calculados.")
+        logger.info("Embeddings de categorías calculados.")
+
+        # --- CONSEJOS RÁPIDOS POR CATEGORÍA ---
+        self.tips_map = {
+            "es": {
+                "Legal and Financial": [
+                    "Verifica experiencia en extranjería (NIE/visas) y plazos.",
+                    "Solicita presupuesto cerrado y detalle de servicios.",
+                    "Pregunta por atención en tu idioma y seguimiento del caso."
+                ],
+                "Healthcare": [
+                    "Confirma seguro aceptado y disponibilidad en tu zona.",
+                    "Pregunta por atención en tu idioma y tiempos de cita.",
+                    "Revisa especialidades y emergencias 24h si las necesitas."
+                ],
+                "Education": [
+                    "Define idioma de instrucción y programa (IB/británico/español).",
+                    "Consulta calendario de admisiones y visitas guiadas.",
+                    "Valora distancia, transporte escolar y actividades."
+                ],
+                "Accommodation": [
+                    "Revisa contrato, fianza y gastos incluidos (agua/luz/internet).",
+                    "Valora barrio y distancias a trabajo/escuela.",
+                    "Pide inventario y fotografías del estado del inmueble."
+                ],
+                "Restaurants": [
+                    "Reserva si es fin de semana o local popular.",
+                    "Pregunta por opciones en tu idioma y dietas (sin gluten/veg).",
+                    "Revisa ubicación y horarios (brunch, cocina continua)."
+                ],
+                "Home Services": [
+                    "Solicita presupuesto detallado y plazos.",
+                    "Pide referencias y garantía del trabajo.",
+                    "Confirma disponibilidad en tu zona."
+                ],
+                "Business Services": [
+                    "Aclara entregables y comunicación (idioma/horarios).",
+                    "Solicita caso de éxito o referencias.",
+                    "Define plazos y cláusulas de revisión."
+                ],
+                "Bars and Clubs": [
+                    "Consulta dress code y horarios de entrada.",
+                    "Revisa ubicación y opciones de transporte nocturno.",
+                    "Pregunta por eventos/guest list para evitar colas."
+                ],
+                "Arts and Culture": [
+                    "Revisa agenda y entradas anticipadas.",
+                    "Valora idiomas de las exposiciones/tours.",
+                    "Explora descuentos para residentes/estudiantes."
+                ],
+                "Recreation and Leisure": [
+                    "Consulta niveles/edades si es actividad deportiva.",
+                    "Pregunta por horarios y material necesario.",
+                    "Valora cercanía y grupos en tu idioma."
+                ],
+                "Retail": [
+                    "Revisa políticas de devoluciones y tallaje.",
+                    "Pregunta por atención en tu idioma.",
+                    "Valora ubicaciones y horarios extendidos."
+                ]
+            },
+            "en": {
+                "Legal and Financial": [
+                    "Check immigration (NIE/visa) expertise and timelines.",
+                    "Ask for fixed-fee quotes and service breakdown.",
+                    "Confirm language support and case follow-up."
+                ],
+                "Healthcare": [
+                    "Confirm accepted insurance and nearby availability.",
+                    "Ask about language support and appointment times.",
+                    "Check specialties and 24h emergency if needed."
+                ],
+                "Education": [
+                    "Choose language/program (IB/British/Spanish).",
+                    "Check admissions calendar and school tours.",
+                    "Consider distance, transport and activities."
+                ],
+                "Accommodation": [
+                    "Review contract, deposit and included utilities.",
+                    "Consider neighborhood and commute distances.",
+                    "Request inventory and property condition photos."
+                ]
+            }
+        }
+
+    def _immigration_responder(self, question, anunciantes, language="es"):
+        """
+        Bot adapter para inmigración que devuelve formato compatible con orquestador.
+        Incluye legal_ads en la respuesta.
+        """
+        bot = ImmigrationBot(language=language)
+        mensaje = bot.get_response(question)
+
+        return {
+            "key_points": [
+                "Información sobre visados, NIE y documentación",
+                "Primeros pasos para vivir en España",
+                "Firmas legales especializadas en inmigración"
+            ],
+            "json_data": bot.legal_ads  # Anunciantes legales de la revista
+        }
 
     def classify_intent(self, question, language="en"):
         qn = normalize(question)
+
+        # --- PRIORIDAD CRÍTICA: Palabras clave de inmigración ---
+        # NIE, visados, mudanza son términos muy específicos que deben ir a Immigration
+        critical_immigration_keywords = {
+                 'es': ['nie', 'visado', 'visa', 'mudarme', 'mudanza', 'residencia',
+                     'empadronamiento', 'empadronar', 'empadronarme', 'trasladarme',
+                     'desde usa', 'desde reino unido', 'desde canada', 'desde australia',
+                     'inmigrar', 'emigrar', 'permiso de residencia', 'permiso residencia'],
+                 'en': ['nie', 'visa', 'residency', 'residence permit', 'relocat',
+                     'move to spain', 'moving to spain', 'from usa', 'from uk',
+                     'from canada', 'from australia', 'immigrat', 'emigrat',
+                     'registration padrón', 'padrón', 'empadronamiento']
+        }
+
+        keywords_to_check = critical_immigration_keywords.get(language, critical_immigration_keywords['en'])
+        for keyword in keywords_to_check:
+            if keyword in qn:
+                logger.debug(f"🔒 OVERRIDE CRÍTICO: '{keyword}' detectado → Immigration")
+                return "Immigration", 0.95, None
+
 
         # --- LÓGICA DE BÚSQUEDA SEMÁNTICA ---
         # 1. Convertimos la pregunta del usuario en un vector (embedding)
@@ -374,7 +537,7 @@ class Orchestrator:
         best_score = float(cos_scores[top_result].item())
         best_match_category = self.category_info[top_result]["name"]
 
-        print(f"DEBUG: Clasificación semántica: '{best_match_category}' con confianza {best_score:.4f}")
+        logger.debug(f"Clasificación semántica: '{best_match_category}' conf={best_score:.4f}")
 
         # --- LÓGICA DE OVERRIDE: Coincidencia directa con nombres de negocios ---
         # Si la pregunta menciona un negocio por su nombre, esa intención tiene prioridad.
@@ -382,16 +545,30 @@ class Orchestrator:
             for business in businesses:
                 name = normalize(business.get('nombre', ''))
                 if name and name in qn:
-                    print(f"DEBUG: Coincidencia directa con el negocio '{business.get('nombre', '')}' en categoría '{category}'")
+                    logger.debug(f"Coincidencia directa negocio='{business.get('nombre', '')}' categoria='{category}'")
                     return category, 0.9, business
 
+        # --- LÓGICA DE OVERRIDE: Coincidencia por palabras clave declarativas ---
+        # Contamos hits por categoría usando los patrones declarados para el idioma.
+        kw_map = self.category_patterns.get(language, {})
+        best_kw_cat = None
+        best_hits = 0
+        for cat, kws in kw_map.items():
+            hits = sum(1 for kw in kws if kw in qn)
+            if hits > best_hits:
+                best_hits = hits
+                best_kw_cat = cat
+        if best_kw_cat and best_hits > 0:
+            # Devolvemos la categoría por palabras clave con una confianza mínima razonable
+            return best_kw_cat, max(0.25, min(0.9, 0.15 * best_hits + 0.25)), None
+
         # Si la confianza semántica es alta, la usamos. Si no, consideramos la intención como desconocida.
-        if best_score > 0.4: # Umbral de confianza (puedes ajustarlo)
+        if best_score > 0.2: # Umbral de confianza ajustado para consultas cortas
             return best_match_category, best_score, None
         else:
             return "Desconocida", best_score, None
 
-    def process_query(self, question, language="en"):
+    def process_query(self, question, language="en", limit: int = 3, offset: int = 0):
         categoria, confidence, advertiser = self.classify_intent(question, language)
         lang = language if language in self.responses_map else "en"
         resultados = self.advertisers.get(categoria, [])
@@ -408,6 +585,9 @@ class Orchestrator:
         keywords = [word.lower() for word in question.split() if len(word) > 3]
         guias_relevantes = self.content_manager.search_guides(keywords, categoria)
 
+        # --- BUSCAR ARTÍCULOS EN RSS CACHE ---
+        articulos_revista = self.rss_manager.get_articles_by_category(categoria, limit=3)
+
         # Agregar referencia a guías en el mensaje si hay contenido relevante
         guias_resumen = []
         if guias_relevantes:
@@ -421,32 +601,48 @@ class Orchestrator:
             else:
                 friendly_msg += f"\n\n📖 For more information, check our guide: '{guias_relevantes[0]['titulo']}'"
 
+        # Preparar consejos rápidos
+        tips = self.tips_map.get(lang, {}).get(categoria, [])
+
         # Si hay bot específico para la categoría, usarlo
         if categoria in self.bots_map:
             try:
                 # 1. Llamamos al bot específico
                 bot_response = self.bots_map[categoria](question, resultados, language=lang)
 
-                # 2. Preparamos la respuesta final para el frontend
-                # Usamos el mensaje amigable del orquestador y los datos JSON del bot.
-                # El frontend se encargará de mostrarlo todo.
+                # 2. Slicing de resultados en el orquestador
+                all_items = bot_response.get("json_data", [])
+                total = len(all_items)
+                if limit is None or limit == 0:
+                    sliced = all_items[offset:]
+                else:
+                    sliced = all_items[offset:offset + limit]
+                has_more = (offset + (limit or 0)) < total if limit not in (None, 0) else False
+                next_offset = (offset + (limit or 0)) if has_more else None
+
+                # 3. Preparamos la respuesta final para el frontend
                 return {
                     "respuesta": friendly_msg,
                     "agente": categoria,
                     "confidence": confidence,
-                    "json": bot_response.get("json_data", []), # Pasamos directamente los datos del bot
-                    "guias": guias_resumen  # NUEVO: Guías relacionadas
+                    "json": sliced,
+                    "total_results": total,
+                    "has_more": has_more,
+                    "next_offset": next_offset,
+                    "guias": guias_resumen,
+                    "articulos": articulos_revista,
+                    "tips": tips
                 }
             except Exception as e:
-                print(f"❌ ERROR ejecutando el bot '{categoria}': {e}")
+                logger.error(f"ERROR ejecutando bot '{categoria}': {e}")
                 import traceback
                 traceback.print_exc()
                 # Si el bot falla, devolvemos una respuesta de error controlada
                 return {
                     "respuesta": f"Lo siento, hubo un problema con el asistente de '{categoria}'. Inténtalo de nuevo.",
-                    "agente": categoria, "confidence": 0.5, "json": [], "guias": []
+                    "agente": categoria, "confidence": 0.5, "json": [], "guias": [], "articulos": [], "has_more": False
                 }
 
 
         # Si la categoría no está en el mapa de bots (no debería pasar ahora), devolvemos un error.
-        return { "respuesta": "Lo siento, no tengo un asistente configurado para esa categoría.", "agente": "Orchestrator", "confidence": confidence, "json": [] }
+        return { "respuesta": "Lo siento, no tengo un asistente configurado para esa categoría.", "agente": "Orchestrator", "confidence": confidence, "json": [], "articulos": [], "has_more": False }

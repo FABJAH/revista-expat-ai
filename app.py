@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from bots.orchestrator import Orchestrator
+from routes.advertising_api import advertising_api
+from routes.immigration_api import immigration_api
 
 # Inicializa la aplicación Flask
 app = Flask(__name__)
@@ -9,6 +11,11 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Crea una única instancia del Orchestrator para que la base de datos
 # se cargue solo una vez al iniciar el servidor.
+
+# Registrar blueprints
+app.register_blueprint(advertising_api)
+app.register_blueprint(immigration_api)
+
 try:
     orchestrator = Orchestrator()
     print("✅ Orquestador inicializado correctamente.")

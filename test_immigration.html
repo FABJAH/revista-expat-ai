@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Immigration Bot</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        h1 { color: #667eea; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input, select, button { width: 100%; padding: 10px; margin-top: 5px; font-size: 16px; }
+        button { background: #667eea; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        button:hover { background: #764ba2; }
+        #result { margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px; min-height: 100px; }
+        .legal-card { border: 2px solid #667eea; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f9f9ff; }
+        .status { color: #666; font-style: italic; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🌍 Test Immigration Bot API</h1>
+
+    <label for="message">Tu pregunta:</label>
+    <input type="text" id="message" placeholder="ej: Necesito info sobre visado de USA" value="¿Qué necesito para mudarme desde USA?">
+
+    <label for="language">Idioma:</label>
+    <select id="language">
+        <option value="es">Español</option>
+        <option value="en">English</option>
+    </select>
+
+    <button onclick="testImmigration()">Consultar</button>
+
+    <div class="status" id="status"></div>
+    <div id="result"></div>
+
+    <script>
+        async function testImmigration() {
+            const message = document.getElementById('message').value.trim();
+            const language = document.getElementById('language').value;
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+
+            if (!message) {
+                alert('Por favor escribe una pregunta');
+                return;
+            }
+
+            statusDiv.textContent = '⏳ Enviando petición...';
+            resultDiv.innerHTML = '';
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/immigration', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, language })
+                });
+
+                const data = await response.json();
+
+                statusDiv.textContent = '✅ Respuesta recibida';
+
+                // Mostrar mensaje
+                const messageDiv = document.createElement('div');
+                messageDiv.style.cssText = 'white-space: pre-wrap; padding: 15px; background: white; border-radius: 5px; margin-bottom: 20px;';
+                messageDiv.textContent = data.message;
+                resultDiv.appendChild(messageDiv);
+
+                // Mostrar firmas legales
+                if (data.legal_ads && data.legal_ads.length > 0) {
+                    const adsTitle = document.createElement('h3');
+                    adsTitle.textContent = '📋 Firmas Legales Anunciantes';
+                    adsTitle.style.color = '#667eea';
+                    resultDiv.appendChild(adsTitle);
+
+                    data.legal_ads.forEach(ad => {
+                        const card = document.createElement('div');
+                        card.className = 'legal-card';
+                        card.innerHTML = `
+                            <strong style="font-size: 1.2em; color: #667eea;">${ad.nombre}</strong><br/>
+                            <p style="color: #666; margin: 10px 0;">${ad.descripcion || ''}</p>
+                            <div style="margin-top: 10px;">
+                                ${ad.contacto ? `📞 <strong>${ad.contacto}</strong><br/>` : ''}
+                                ${ad.precio ? `💰 ${ad.precio}<br/>` : ''}
+                                ${ad.idiomas ? `🗣️ ${ad.idiomas}<br/>` : ''}
+                                ${ad.ubicacion ? `📍 ${ad.ubicacion}` : ''}
+                            </div>
+                            ${ad.beneficios && ad.beneficios.length ? `
+                                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd;">
+                                    <strong>✨ Beneficios:</strong>
+                                    <ul style="margin: 10px 0; padding-left: 20px;">
+                                        ${ad.beneficios.map(b => `<li>${b}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        `;
+                        resultDiv.appendChild(card);
+                    });
+                }
+
+                // Mostrar datos técnicos
+                const techDiv = document.createElement('details');
+                techDiv.style.cssText = 'margin-top: 20px; padding: 10px; background: #eee; border-radius: 5px;';
+                techDiv.innerHTML = `
+                    <summary style="cursor: pointer; font-weight: bold;">📊 Datos técnicos</summary>
+                    <pre style="margin-top: 10px; overflow-x: auto;">${JSON.stringify(data, null, 2)}</pre>
+                `;
+                resultDiv.appendChild(techDiv);
+
+            } catch (err) {
+                statusDiv.textContent = '❌ Error: ' + err.message;
+                resultDiv.innerHTML = `
+                    <div style="color: red; padding: 15px; background: #fee; border-radius: 5px;">
+                        <strong>Error de conexión</strong><br/>
+                        Asegúrate de que el servidor está corriendo en http://127.0.0.1:8000<br/>
+                        Ejecuta: <code>python3 app.py</code>
+                    </div>
+                `;
+            }
+        }
+
+        // Test automático al cargar (opcional)
+        // window.addEventListener('load', () => setTimeout(testImmigration, 1000));
+    </script>
+</body>
+</html>
