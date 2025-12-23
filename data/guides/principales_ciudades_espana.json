@@ -1,0 +1,91 @@
+{
+  "titulo": "Principales Ciudades para Expatriados en España",
+  "categoria": "Accommodation",
+  "slug": "principales-ciudades-expatriados-espana",
+  "resumen": "Comparativa de las mejores ciudades españolas para vivir como expatriado: Madrid, Barcelona, Valencia, Málaga, Bilbao y más.",
+  "contenido": [
+    {
+      "ciudad": "Barcelona",
+      "region": "Cataluña",
+      "poblacion_expatriados": "150,000+",
+      "pros": ["Clima mediterráneo", "Playas cercanas", "Gran comunidad internacional", "Excelente gastronomía", "Vida cultural activa"],
+      "contras": ["Muy turística", "Precios altos", "Independentismo político"],
+      "costo_vida_mensual": "1.800-2.500€ (1 persona)",
+      "clima": "Templado, 300 días de sol",
+      "transporte": "Metro, autobús, bicicletas públicas",
+      "ideal_para": "Profesionales jóvenes, amantes de playa y cultura"
+    },
+    {
+      "ciudad": "Madrid",
+      "region": "Comunidad de Madrid",
+      "poblacion_expatriados": "200,000+",
+      "pros": ["Capital, más oportunidades laborales", "Excelente conexión de transportes", "Vida nocturna intensa", "Museos y cultura", "Buen clima"],
+      "contras": ["Muy contaminada", "Mucho tráfico", "Precios altos en centro"],
+      "costo_vida_mensual": "1.600-2.200€ (1 persona)",
+      "clima": "Continental, inviernos fríos, veranos calurosos",
+      "transporte": "Metro (más extenso de España), autobús, cercanías",
+      "ideal_para": "Profesionales ambiciosos, amantes de la gastronomía y cultura"
+    },
+    {
+      "ciudad": "Valencia",
+      "region": "Comunidad Valenciana",
+      "poblacion_expatriados": "40,000+",
+      "pros": ["Clima excelente", "Playas bonitas", "Costo de vida más bajo", "Paella y gastronomía local", "Comunidad creciente de expats"],
+      "contras": ["Menos oportunidades laborales", "Menos vida cultural que Madrid/BCN", "Inseguridad en algunas zonas"],
+      "costo_vida_mensual": "1.200-1.600€ (1 persona)",
+      "clima": "Mediterráneo, muy soleado",
+      "transporte": "Metro moderno, autobús, bicicletas",
+      "ideal_para": "Jubilados, nómadas digitales, familias buscando tranquilidad"
+    },
+    {
+      "ciudad": "Málaga",
+      "region": "Andalucía",
+      "poblacion_expatriados": "50,000+ (Costa del Sol)",
+      "pros": ["Mejor clima de España", "Playas espectaculares", "Muy barato", "Comunidad británica/extranjera muy establecida", "Aeropuerto internacional"],
+      "contras": ["Menos empleo", "Baja calidad educativa en algunas escuelas", "Turismo masivo en verano"],
+      "costo_vida_mensual": "1.000-1.400€ (1 persona)",
+      "clima": "Subtropical, 320 días de sol al año",
+      "transporte": "Autobús, tren, car-sharing",
+      "ideal_para": "Jubilados, familias, nómadas, amantes del sol y playa"
+    },
+    {
+      "ciudad": "Bilbao",
+      "region": "País Vasco",
+      "poblacion_expatriados": "20,000+",
+      "pros": ["Excelente calidad de vida", "Buen empleo", "Gastronomía superior", "Verde y montañas", "Seguridad"],
+      "contras": ["Clima lluvioso", "Más caro que el sur", "Comunidad internacional más pequeña"],
+      "costo_vida_mensual": "1.400-1.900€ (1 persona)",
+      "clima": "Oceánico, lluvioso pero templado",
+      "transporte": "Metro, tranvía, autobús",
+      "ideal_para": "Profesionales, amantes de naturaleza y gastronomía"
+    },
+    {
+      "ciudad": "Sevilla",
+      "region": "Andalucía",
+      "poblacion_expatriados": "15,000+",
+      "pros": ["Muy barato", "Clima hermoso", "Cultura andaluza auténtica", "Buen ambiente", "Histórico"],
+      "contras": ["Calor extremo en verano", "Menos oportunidades laborales internacionales", "Ritmo más lento"],
+      "costo_vida_mensual": "900-1.300€ (1 persona)",
+      "clima": "Subtropical, muy caluroso",
+      "transporte": "Autobús, tren, taxis",
+      "ideal_para": "Artistas, nómadas digitales, buscadores de autenticidad"
+    }
+  ],
+  "comparativa_rapida": {
+    "Para trabajar": "Madrid, Barcelona",
+    "Para jubilarse": "Málaga, Valencia, Sevilla",
+    "Para familias": "Barcelona, Bilbao, Valencia",
+    "Para nómadas digitales": "Barcelona, Madrid, Valencia, Málaga",
+    "Mejor relación precio-calidad": "Valencia, Sevilla, Málaga",
+    "Mejor clima": "Málaga, Sevilla",
+    "Mejor calidad de vida": "Bilbao, Madrid"
+  },
+  "consejos_finales": [
+    "Visita la ciudad antes de mudarte",
+    "Conecta con comunidades de expatriados locales",
+    "Busca alojamiento una vez estés allí (primero Airbnb)",
+    "Aprende español básico",
+    "Abre cuenta bancaria española para vivir aquí",
+    "Registrate en padrón municipal (importante para muchos trámites)"
+  ]
+}
