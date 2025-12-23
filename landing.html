@@ -123,12 +123,16 @@
 
     <h2>Categorías de Servicios</h2>
     <div class="gallery" id="gallery">
-      <div class="card"><img src="landi/1.png" alt="Alojamiento" data-name="Servicios de Alojamiento" data-category="Accommodation" /><small>Alojamiento</small></div>
-      <div class="card"><img src="landi/2.png" alt="Restaurantes" data-name="Gastronomía Local" data-category="Restaurants" /><small>Restaurantes</small></div>
-      <div class="card"><img src="landi/4.png" alt="Salud" data-name="Servicios Médicos" data-category="Healthcare" /><small>Salud</small></div>
-      <div class="card"><img src="landi/5.png" alt="Legal" data-name="Asesoría Legal" data-category="Legal and Financial" /><small>Legal</small></div>
-      <div class="card"><img src="landi/6.png" alt="Educación" data-name="Centros Educativos" data-category="Education" /><small>Educación</small></div>
-      <div class="card"><img src="landi/7.png" alt="Comercios" data-name="Tiendas Locales" data-category="Retail" /><small>Comercios</small></div>
+      <!-- Hospedaje en una sola casilla -->
+      <div class="card"><img src="landi/1.png" alt="Alojamiento y hospedaje" data-name="Alojamiento y hospedaje" data-category="Accommodation" /><small>Hospedaje</small></div>
+
+      <!-- Servicios del hogar: reformas y arreglos -->
+      <div class="card"><img src="landi/5.png" alt="Servicios del hogar" data-name="Reformas y reparaciones del hogar" data-category="Home Services" /><small>Servicios del hogar</small></div>
+
+      <!-- Otras categorías principales -->
+      <div class="card"><img src="landi/6.png" alt="Salud" data-name="Centro de salud" data-category="Healthcare" /><small>Salud</small></div>
+      <div class="card"><img src="landi/7.png" alt="Legal" data-name="Asesoría legal" data-category="Legal and Financial" /><small>Legal</small></div>
+      <div class="card"><img src="landi/8.png" alt="Restaurantes" data-name="Restaurantes" data-category="Restaurants" /><small>Restaurantes</small></div>
     </div>
   </div>
 
@@ -281,7 +285,17 @@
       if (!img) return;
       const name = img.dataset.name || img.alt || '';
       const category = img.dataset.category || '';
-      document.getElementById('pregunta-expat').value = `Busco información sobre ${name}`;
+      const catEsMap = {
+        'Accommodation': 'alojamiento',
+        'Home Services': 'servicios del hogar',
+        'Restaurants': 'restaurantes',
+        'Healthcare': 'salud',
+        'Legal and Financial': 'servicios legales',
+        'Education': 'educación',
+        'Retail': 'tiendas'
+      };
+      const catText = catEsMap[category] || 'información';
+      document.getElementById('pregunta-expat').value = `Busco ${catText}: ${name}`;
       if (document.getElementById('autoSend').checked) consultarExpat();
     });
 
