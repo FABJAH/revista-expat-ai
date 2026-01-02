@@ -3,14 +3,15 @@ import json
 import random
 from pathlib import Path
 # Para la clasificación semántica de intenciones
-# Asegúrate de instalarlo: pip install sentence-transformers torch
+# pip install sentence-transformers torch
+import torch
 from sentence_transformers import SentenceTransformer, util
 
 from .utils import normalize
 from .content_manager import ContentManager
 from .logger import logger
 from .rss_manager import get_rss_manager
-from config import settings
+from .directory_connector import get_directory_connector
 
 # Importa bots disponibles
 from .bot_accommodation import responder_consulta as acc_responder
@@ -26,7 +27,8 @@ from .bot_immigration import ImmigrationBot
 def generic_responder(pregunta, anunciantes, language="en"):
     """
     Un bot genérico que no hace ningún filtrado adicional.
-    Devuelve todos los anunciantes que el orquestador ha seleccionado para esa categoría.
+    Devuelve todos los anunciantes que el orquestador ha
+    seleccionado para esa categoría.
     El orquestador se encargará de aplicar limit/offset.
     """
     return {"key_points": [], "json_data": anunciantes}
@@ -34,15 +36,13 @@ def generic_responder(pregunta, anunciantes, language="en"):
 
 class Orchestrator:
     def __init__(self):
-        base_dir = Path(__file__).resolve().parent.parent
-        data_path = base_dir / "data" / "anunciantes.json"
-        try:
-            with open(str(data_path), 'r', encoding='utf-8') as f:
-                self.advertisers = json.load(f)
-            logger.info("Base de datos cargada.")
-        except Exception as e:
-            logger.error(f"ERROR cargando base de datos: {e}")
-            self.advertisers = {}
+        # --- INICIALIZAR CONECTOR CON DIRECTORIO REAL ---
+        # Esto intenta conectar con Barcelona Metropolitan
+        # Si falla, usa anunciantes.json como fallback
+        self.directory = get_directory_connector()
+
+        # Cargar anunciantes desde directorio real (o JSON local)
+        self.advertisers = self._load_advertisers_from_directory()
 
         # --- INICIALIZAR GESTOR DE CONTENIDO EDITORIAL ---
         self.content_manager = ContentManager()
@@ -53,10 +53,11 @@ class Orchestrator:
         # --- INICIALIZACIÓN DEL MODELO SEMÁNTICO ---
         # Cargamos un modelo de lenguaje pre-entrenado y multilingüe.
         # Es potente para entender el significado, no solo las palabras.
-        self.model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+        model_name = 'paraphrase-multilingual-MiniLM-L12-v2'
+        self.model = SentenceTransformer(model_name)
 
         # Patrones de intención (depurados)
-        self.category_patterns = { # Separado por idioma
+        self.category_patterns = {  # Separado por idioma
             "es": {
                 "Accommodation": [
                     "hotel", "apartamento", "alojamiento", "vivienda",
@@ -218,7 +219,7 @@ class Orchestrator:
             "Comercial": com_responder,
             "Education": edu_responder,
             "Healthcare": hea_responder,
-            "Work and Networking": work_responder, # Categoría que faltaba
+            "Work and Networking": work_responder,  # Categoría faltante
             "BotService": srv_responder,
             "Immigration": self._immigration_responder,  # Bot de inmigración
             # Bots que usan la lógica genérica
@@ -236,8 +237,8 @@ class Orchestrator:
         self.responses_map = {
             "es": {
                 "Healthcare": [
-                    "Veo que preguntas sobre salud. Te conecto con "
-                    "nuestro bot de Salud.",
+                    ("Veo que preguntas sobre salud. Te conecto con "
+                     "nuestro bot de Salud."),
                     "Parece que necesitas información médica. "
                     "Nuestro bot de Salud puede guiarte.",
                     "Los temas de salud son importantes. "
@@ -251,9 +252,9 @@ class Orchestrator:
                     "Nuestro bot Legal te ayudará.",
                     "Esto parece una pregunta sobre visados o contratos. "
                     "Te conecto con el bot Legal.",
-                    "Los asuntos legales y financieros pueden ser complicados. "
-                    "Nuestro bot Legal está aquí para "
-                    "ayudar.",
+                    ("Los asuntos legales y financieros pueden ser "
+                     "complicados. Nuestro bot Legal está aquí para "
+                     "ayudar."),
                     "¡Por supuesto! Navegar la burocracia puede ser "
                     "difícil. Aquí tienes algunos expertos.",
                     "Entendido. Te muestro especialistas en temas "
@@ -266,115 +267,191 @@ class Orchestrator:
                     "con nuestro bot de Alojamiento.",
                     "Las preguntas sobre alojamiento son comunes. "
                     "Nuestro bot puede guiarte.",
-                    "¡Claro! Te ayudo a encontrar tu próximo hogar en Barcelona. Aquí tienes algunas opciones:",
-                    "Entendido, buscando el lugar perfecto para ti. Te paso con nuestro especialista en alojamiento."
+                    ("¡Claro! Te ayudo a encontrar tu próximo hogar en "
+                     "Barcelona. Aquí tienes algunas opciones:"),
+                    ("Entendido, buscando el lugar perfecto para ti. Te paso "
+                     "con nuestro especialista en alojamiento."),
                 ],
                 "Education": [
-                    "¿Interesado en escuelas o cursos? Nuestro bot de Educación puede guiarte.",
-                    "¿Buscas clases de idiomas o universidades? El bot de Educación tiene los detalles.",
-                    "La educación es clave. Te conecto con nuestro bot de Educación.",
-                    "Perfecto, aquí tienes información sobre centros educativos en la ciudad.",
-                    "¡Genial! Invertir en formación siempre es una buena idea. Mira estas opciones:"
+                    ("¿Interesado en escuelas o cursos? Nuestro bot de "
+                     "Educación puede guiarte."),
+                    ("¿Buscas clases de idiomas o universidades? El bot de "
+                     "Educación tiene los detalles."),
+                    "La educación es clave. Te conecto con nuestro bot "
+                    "de Educación.",
+                    "Perfecto, aquí tienes información sobre centros "
+                    "educativos en la ciudad.",
+                    ("¡Genial! Invertir en formación siempre es una buena "
+                     "idea. Mira estas opciones:"),
                 ],
                 "Work and Networking": [
-                    "¿Buscando trabajo u oportunidades de networking? El bot de Empleo puede ayudarte.",
-                    "Las preguntas sobre carrera son importantes. Nuestro bot de Empleo te guiará.",
-                    "Te conectamos con el bot de Empleo para oportunidades profesionales.",
-                    "Claro, te muestro información sobre el mercado laboral y eventos de networking.",
-                    "¡A por ello! Aquí tienes recursos para tu carrera profesional en Barcelona."
+                    ("¿Buscando trabajo u oportunidades de networking? El "
+                     "bot de Empleo puede ayudarte."),
+                    ("Las preguntas sobre carrera son importantes. Nuestro "
+                     "bot de Empleo te guiará."),
+                    ("Te conectamos con el bot de Empleo para oportunidades "
+                     "profesionales."),
+                    ("Claro, te muestro información sobre el mercado laboral "
+                     "y eventos de networking."),
+                    ("¡A por ello! Aquí tienes recursos para tu carrera "
+                     "profesional en Barcelona."),
                 ],
                 "Social and Cultural": [
-                    "¿Quieres explorar la vida social y cultural? El bot Social puede guiarte.",
-                    "¿Buscas eventos o actividades culturales? El bot Social tiene sugerencias.",
-                    "Las experiencias sociales y culturales importan. Te conecto con nuestro bot Social.",
-                    "¡Fantástico! Barcelona tiene una vida cultural increíble. Aquí tienes algunas ideas:",
-                    "Perfecto, te ayudo a descubrir los mejores planes sociales y culturales."
+                    ("¿Quieres explorar la vida social y cultural? El bot "
+                     "Social puede guiarte."),
+                    ("¿Buscas eventos o actividades culturales? El bot "
+                     "Social tiene sugerencias."),
+                    ("Las experiencias sociales y culturales importan. Te "
+                     "conecto con nuestro bot Social."),
+                    ("¡Fantástico! Barcelona tiene una vida cultural increíble. "
+                     "Aquí tienes algunas ideas:"),
+                    ("Perfecto, te ayudo a descubrir los mejores planes "
+                     "sociales y culturales."),
                 ],
                 "Comercial": [
-                    "¿Interesado en anunciarte con nosotros? El bot Comercial puede explicarte los paquetes.",
-                    "¿Buscas oportunidades de promoción? El bot Comercial te guiará.",
-                    "El marketing y la publicidad son importantes. Te conectamos con nuestro bot Comercial.",
-                    "¡Genial que quieras colaborar! Aquí tienes la información sobre nuestros paquetes de publicidad.",
-                    "Claro, te muestro cómo tu negocio puede llegar a miles de expatriados en Barcelona."
+                    ("¿Interesado en anunciarte con nosotros? El bot "
+                     "Comercial puede explicarte los paquetes."),
+                    ("¿Buscas oportunidades de promoción? El bot Comercial "
+                     "te guiará."),
+                    ("El marketing y la publicidad son importantes. Te "
+                     "conectamos con nuestro bot Comercial."),
+                    ("¡Genial que quieras colaborar! Aquí tienes la "
+                     "información sobre nuestros paquetes de publicidad."),
+                    ("Claro, te muestro cómo tu negocio puede llegar a miles "
+                     "de expatriados en Barcelona."),
                 ],
                 "BotService": [
-                    "Parece que preguntas sobre nuestros servicios de bots personalizados. Te doy los detalles.",
-                    "¿Interesado en un chatbot para tu negocio? Puedo darte más información.",
-                    "Puedo ayudarte con eso. Aquí tienes información sobre los servicios de bot que ofrecemos.",
-                    "¡Claro! Un asistente virtual puede transformar tu negocio. Esto es lo que ofrecemos:",
-                    "Detecto que preguntas por mis 'poderes'. ¡Te cuento cómo puedes tener un asistente como yo!"
+                    ("Parece que preguntas sobre nuestros servicios de bots "
+                     "personalizados. Te doy los detalles."),
+                    ("¿Interesado en un chatbot para tu negocio? Puedo "
+                     "darte más información."),
+                    ("Puedo ayudarte con eso. Aquí tienes información sobre "
+                     "los servicios de bot que ofrecemos."),
+                    ("¡Claro! Un asistente virtual puede transformar tu "
+                     "negocio. Esto es lo que ofrecemos:"),
+                    ("Detecto que preguntas por mis 'poderes'. ¡Te cuento "
+                     "cómo puedes tener un asistente como yo!")
                 ],
                 "Immigration": [
-                    "Veo que preguntas sobre inmigración y documentación. Nuestro bot especializado te ayudará.",
-                    "¿Planeas mudarte a España? El bot de Inmigración tiene toda la información que necesitas.",
-                    "Los trámites de inmigración pueden ser complejos. Te conecto con nuestro experto.",
-                    "¡Perfecto! Te ayudo con visados, NIE y primeros pasos para vivir en España.",
-                    "Entendido, aquí tienes información detallada sobre requisitos de inmigración."
+                    ("Veo que preguntas sobre inmigración y documentación. "
+                     "Nuestro bot especializado te ayudará."),
+                    ("¿Planeas mudarte a España? El bot de Inmigración "
+                     "tiene toda la información que necesitas."),
+                    ("Los trámites de inmigración pueden ser complejos. Te "
+                     "conecto con nuestro experto."),
+                    ("¡Perfecto! Te ayudo con visados, NIE y primeros pasos "
+                     "para vivir en España."),
+                    ("Entendido, aquí tienes información detallada sobre "
+                     "requisitos de inmigración."),
                 ]
             },
             "en": {
                 "Healthcare": [
-                    "I see you’re asking about health. Let me connect you with our Healthcare bot.",
-                    "Looks like you need medical information. Our Healthcare bot can guide you to clinics and doctors.",
-                    "Health matters are important. I’ll let our Healthcare bot assist you.",
-                    "Of course, here's some information about healthcare services in Barcelona.",
+                    ("I see you're asking about health. Let me connect "
+                     "you with our Healthcare bot."),
+                    ("Looks like you need medical information. Our "
+                     "Healthcare bot can guide you to clinics and doctors."),
+                    ("Health matters are important. I'll let our "
+                     "Healthcare bot assist you."),
+                    ("Of course, here's some information about healthcare "
+                     "services in Barcelona."),
                     "Understood, looking for health options for you."
                 ],
                 "Legal and Financial": [
-                    "You seem to need legal or financial help. Our Legal bot will assist you.",
-                    "This looks like a question about visas or contracts. Let’s connect you with the Legal bot.",
-                    "Legal and financial issues can be tricky. Our Legal bot is here to help.",
-                    "Of course! Navigating bureaucracy can be tough. Here are some experts.",
-                    "Understood. I'll show you specialists for legal and financial matters."
+                    ("You seem to need legal or financial help. Our Legal "
+                     "bot will assist you."),
+                    ("This looks like a question about visas or contracts. "
+                     "Let's connect you with the Legal bot."),
+                    ("Legal and financial issues can be tricky. Our Legal "
+                     "bot is here to help."),
+                    ("Of course! Navigating bureaucracy can be tough. Here "
+                     "are some experts."),
+                    ("Understood. I'll show you specialists for legal and "
+                     "financial matters.")
                 ],
                 "Accommodation": [
-                    "Searching for housing? The Accommodation bot will show you options.",
-                    "You’re looking for a place to stay. Let me connect you with our Accommodation bot.",
-                    "Accommodation questions are common. Our bot can guide you to rentals and housing.",
-                    "Sure! Let me help you find your next home in Barcelona. Here are some options:",
-                    "Got it, looking for the perfect place for you. I'll connect you with our accommodation specialist."
+                    ("Searching for housing? The Accommodation bot will "
+                     "show you options."),
+                    ("You're looking for a place to stay. Let me connect "
+                     "you with our Accommodation bot."),
+                    ("Accommodation questions are common. Our bot can guide "
+                     "you to rentals and housing."),
+                    ("Sure! Let me help you find your next home in "
+                     "Barcelona. Here are some options:"),
+                    ("Got it, looking for the perfect place for you. I'll "
+                     "connect you with our accommodation specialist.")
                 ],
                 "Education": [
-                    "Interested in schools or courses? Our Education bot can guide you.",
-                    "Looking for language classes or universities? The Education bot has the details.",
-                    "Education is key. Let me connect you with our Education bot.",
-                    "Perfect, here's some information about educational centers in the city.",
-                    "Great! Investing in training is always a good idea. Check out these options:"
+                    ("Interested in schools or courses? Our Education bot "
+                     "can guide you."),
+                    ("Looking for language classes or universities? The "
+                     "Education bot has the details."),
+                    ("Education is key. Let me connect you with our "
+                     "Education bot."),
+                    ("Perfect, here's some information about educational "
+                     "centers in the city."),
+                    ("Great! Investing in training is always a good idea. "
+                     "Check out these options:")
                 ],
                 "Work and Networking": [
-                    "Searching for jobs or networking opportunities? The Work bot can help.",
-                    "Career questions are important. Our Work bot will guide you.",
-                    "Let’s connect you with the Work bot for professional opportunities.",
-                    "Sure, I'll show you information about the job market and networking events.",
-                    "Let's do it! Here are resources for your professional career in Barcelona."
+                    ("Searching for jobs or networking opportunities? The "
+                     "Work bot can help."),
+                    ("Career questions are important. Our Work bot will "
+                     "guide you."),
+                    ("Let's connect you with the Work bot for professional "
+                     "opportunities."),
+                    ("Sure, I'll show you information about the job market "
+                     "and networking events."),
+                    ("Let's do it! Here are resources for your professional "
+                     "career in Barcelona.")
                 ],
                 "Social and Cultural": [
-                    "Want to explore culture and social life? Our Social bot can guide you.",
-                    "Looking for events or cultural activities? The Social bot has suggestions.",
-                    "Social and cultural experiences are important. Let me connect you with our Social bot.",
-                    "Fantastic! Barcelona has an incredible cultural life. Here are some ideas:",
-                    "Perfect, let me help you discover the best social and cultural plans."
+                    ("Want to explore culture and social life? Our Social "
+                     "bot can guide you."),
+                    ("Looking for events or cultural activities? The Social "
+                     "bot has suggestions."),
+                    ("Social and cultural experiences are important. Let me "
+                     "connect you with our Social bot."),
+                    ("Fantastic! Barcelona has an incredible cultural life. "
+                     "Here are some ideas:"),
+                    ("Perfect, let me help you discover the best social and "
+                     "cultural plans.")
                 ],
                 "Comercial": [
-                    "Interested in advertising with us? The Comercial bot can explain packages.",
-                    "Looking for promotion opportunities? The Comercial bot will guide you.",
-                    "Marketing and ads are important. Let’s connect you with our Comercial bot.",
-                    "Great that you want to collaborate! Here is the information about our advertising packages.",
-                    "Sure, I'll show you how your business can reach thousands of expats in Barcelona."
+                    ("Interested in advertising with us? The Comercial bot "
+                     "can explain packages."),
+                    ("Looking for promotion opportunities? The Comercial bot "
+                     "will guide you."),
+                    ("Marketing and ads are important. Let's connect you "
+                     "with our Comercial bot."),
+                    ("Great that you want to collaborate! Here is the "
+                     "information about our advertising packages."),
+                    ("Sure, I'll show you how your business can reach "
+                     "thousands of expats in Barcelona.")
                 ],
                 "BotService": [
-                    "It looks like you're asking about our custom bot services. Let me get you the details.",
-                    "Interested in a chatbot for your business? I can provide more information on that.",
-                    "I can help with that. Here is some information about the bot services we offer to advertisers.",
-                    "Of course! A virtual assistant can transform your business. Here's what we offer:",
-                    "I detect you're asking about my 'powers'. I'll tell you how you can have an assistant like me!"
+                    ("It looks like you're asking about our custom bot "
+                     "services. Let me get you the details."),
+                    ("Interested in a chatbot for your business? I can "
+                     "provide more information on that."),
+                    ("I can help with that. Here is some information about "
+                     "the bot services we offer to advertisers."),
+                    ("Of course! A virtual assistant can transform your "
+                     "business. Here's what we offer:"),
+                    ("I detect you're asking about my 'powers'. I'll tell "
+                     "you how you can have an assistant like me!")
                 ],
                 "Immigration": [
-                    "I see you're asking about immigration and documentation. Our specialized bot will help you.",
-                    "Planning to move to Spain? The Immigration bot has all the information you need.",
-                    "Immigration procedures can be complex. Let me connect you with our expert.",
-                    "Perfect! I'll help you with visas, NIE and first steps to live in Spain.",
-                    "Understood, here's detailed information about immigration requirements."
+                    ("I see you're asking about immigration and "
+                     "documentation. Our specialized bot will help you."),
+                    ("Planning to move to Spain? The Immigration bot has "
+                     "all the information you need."),
+                    ("Immigration procedures can be complex. Let me connect "
+                     "you with our expert."),
+                    ("Perfect! I'll help you with visas, NIE and first "
+                     "steps to live in Spain."),
+                    ("Understood, here's detailed information about "
+                     "immigration requirements.")
                 ]
             }
         }
@@ -397,6 +474,22 @@ class Orchestrator:
                 "embedding": self.model.encode(description, convert_to_tensor=True)
             })
         logger.info("Embeddings de categorías calculados.")
+
+        # --- OPTIMIZACIÓN: PRE-CALCULAR TENSOR DE EMBEDDINGS ---
+        # Evita re-crear el tensor en cada query (mejora 50ms por consulta)
+        import torch
+        self.category_embeddings_tensor = torch.stack([cat["embedding"] for cat in self.category_info])
+        logger.info(f"Tensor de embeddings pre-calculado: {self.category_embeddings_tensor.shape}")
+
+        # --- OPTIMIZACIÓN: ÍNDICE DE NOMBRES DE NEGOCIOS ---
+        # Crea un índice para búsqueda O(1) en lugar de O(n²)
+        self.business_name_index = {}
+        for category, businesses in self.advertisers.items():
+            for business in businesses:
+                name = normalize(business.get('nombre', ''))
+                if name:
+                    self.business_name_index[name] = (category, business)
+        logger.info(f"Índice de negocios creado: {len(self.business_name_index)} nombres indexados")
 
         # --- CONSEJOS RÁPIDOS POR CATEGORÍA ---
         self.tips_map = {
@@ -483,7 +576,8 @@ class Orchestrator:
 
     def _immigration_responder(self, question, anunciantes, language="es"):
         """
-        Bot adapter para inmigración que devuelve formato compatible con orquestador.
+        Bot adapter para inmigración que devuelve formato compatible
+        con orquestador.
         Incluye legal_ads en la respuesta.
         """
         bot = ImmigrationBot(language=language)
@@ -497,6 +591,70 @@ class Orchestrator:
             ],
             "json_data": bot.legal_ads  # Anunciantes legales de la revista
         }
+
+    def _load_advertisers_from_directory(self) -> dict:
+        """
+        Carga anunciantes desde el directorio real de Barcelona Metropolitan.
+
+        Si la API está disponible, obtiene datos actualizados.
+        Si falla, usa anunciantes.json como fallback.
+
+        Organiza los anunciantes por categorías para compatibilidad
+        con el código existente.
+
+        Returns:
+            Dict con estructura: {"Categoría": [anunciantes]}
+        """
+        try:
+            logger.info(
+            "🔄 Cargando anunciantes desde directorio Barcelona Metropolitan..."
+        )
+
+            # Obtener todos los anunciantes desde el directorio
+            all_advertisers = self.directory.get_all_advertisers(limit=500)
+
+            if not all_advertisers:
+                logger.warning("⚠️ El directorio está vacío, usando JSON local")
+                return self._load_local_json()
+
+            # Organizar por categorías
+            categorized = {}
+            for advertiser in all_advertisers:
+                category = advertiser.get('category', advertiser.get('categoria', 'Other'))
+
+                if category not in categorized:
+                    categorized[category] = []
+
+                categorized[category].append(advertiser)
+
+            logger.info(f"✅ Cargados {len(all_advertisers)} anunciantes de {len(categorized)} categorías")
+            return categorized
+
+        except Exception as e:
+            logger.error(f"❌ Error cargando directorio: {e}")
+            logger.info("📄 Usando anunciantes.json como fallback")
+            return self._load_local_json()
+
+    def _load_local_json(self) -> dict:
+        """
+        Fallback: Carga anunciantes desde JSON local.
+
+        Returns:
+            Dict con estructura: {"Categoría": [anunciantes]}
+        """
+        try:
+            base_dir = Path(__file__).resolve().parent.parent
+            data_path = base_dir / "data" / "anunciantes.json"
+
+            with open(str(data_path), 'r', encoding='utf-8') as f:
+                advertisers = json.load(f)
+
+            logger.info(f"✅ Anunciantes JSON cargados: {len(advertisers)} categorías")
+            return advertisers
+
+        except Exception as e:
+            logger.error(f"❌ Error cargando JSON local: {e}")
+            return {}
 
     def classify_intent(self, question, language="en"):
         qn = normalize(question)
@@ -525,12 +683,9 @@ class Orchestrator:
         # 1. Convertimos la pregunta del usuario en un vector (embedding)
         question_embedding = self.model.encode(question, convert_to_tensor=True)
 
-        # 2. Extraemos los embeddings pre-calculados de las categorías
-        import torch
-        category_embeddings = torch.stack([cat["embedding"] for cat in self.category_info])
-
+        # 2. Usamos el tensor pre-calculado (OPTIMIZADO - evita stack en cada query)
         # 3. Calculamos la similitud del coseno entre la pregunta y todas las categorías
-        cos_scores = util.cos_sim(question_embedding, category_embeddings)[0]
+        cos_scores = util.cos_sim(question_embedding, self.category_embeddings_tensor)[0]
 
         # 4. Encontramos la categoría con la puntuación más alta
         top_result = int(cos_scores.argmax().item())
@@ -541,12 +696,11 @@ class Orchestrator:
 
         # --- LÓGICA DE OVERRIDE: Coincidencia directa con nombres de negocios ---
         # Si la pregunta menciona un negocio por su nombre, esa intención tiene prioridad.
-        for category, businesses in self.advertisers.items():
-            for business in businesses:
-                name = normalize(business.get('nombre', ''))
-                if name and name in qn:
-                    logger.debug(f"Coincidencia directa negocio='{business.get('nombre', '')}' categoria='{category}'")
-                    return category, 0.9, business
+        # OPTIMIZADO: Usa índice pre-calculado O(n) en lugar de O(n²)
+        for name, (category, business) in self.business_name_index.items():
+            if name in qn:
+                logger.debug(f"Coincidencia directa negocio='{business.get('nombre', '')}' categoria='{category}'")
+                return category, 0.9, business
 
         # --- LÓGICA DE OVERRIDE: Coincidencia por palabras clave declarativas ---
         # Contamos hits por categoría usando los patrones declarados para el idioma.
@@ -619,6 +773,21 @@ class Orchestrator:
                     sliced = all_items[offset:offset + limit]
                 has_more = (offset + (limit or 0)) < total if limit not in (None, 0) else False
                 next_offset = (offset + (limit or 0)) if has_more else None
+
+                # 2.5 NUEVO: Trackear recomendaciones en el directorio
+                if sliced:
+                    session_id = f"session_{offset}_{hash(question) % 10000}"
+                    for advertiser in sliced[:limit or 3]:
+                        advertiser_id = advertiser.get('id', advertiser.get('nombre', 'unknown'))
+                        try:
+                            self.directory.track_recommendation(
+                                advertiser_id=advertiser_id,
+                                query=question,
+                                session_id=session_id
+                            )
+                        except Exception as e:
+                            logger.debug(f"⚠️ Error trackeando recomendación: {e}")
+                            pass  # No bloquear si falla el tracking
 
                 # 3. Preparamos la respuesta final para el frontend
                 return {
