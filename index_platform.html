@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luna - Tu Plataforma Inteligente para Vivir en España</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #0066CC;
+            --primary-dark: #0052A3;
+            --secondary: #FF6B00;
+            --success: #28A745;
+            --warning: #DC3545;
+            --neutral: #F5F5F5;
+            --dark: #1a1a1a;
+            --text: #333;
+            --border: #E0E0E0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            background: #fff;
+        }
+
+        /* NAVBAR */
+        nav {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .logo { font-size: 1.8rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+        .logo span { font-size: 2rem; }
+        nav ul { display: flex; list-style: none; gap: 2rem; align-items: center; }
+        nav a { color: var(--text); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        nav a:hover { color: var(--primary); }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,102,204,0.3); }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            padding: 0.6rem 1.5rem;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        /* HERO */
+        .hero { background: linear-gradient(135deg, var(--primary) 0%, #004499 100%); color: white; padding: 6rem 2rem; text-align: center; }
+        .hero h1 { font-size: 3.2rem; margin-bottom: 1rem; line-height: 1.2; }
+        .hero p { font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.95; max-width: 700px; margin-left: auto; margin-right: auto; }
+        .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+
+        /* SEARCH SECTION */
+        .search-section {
+            background: white;
+            padding: 3rem 2rem;
+            max-width: 1000px;
+            margin: -40px auto 0;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            position: relative;
+            z-index: 10;
+        }
+        .search-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 1.5rem; color: var(--dark); }
+        .search-input { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .search-input input { flex: 1; min-width: 200px; padding: 0.9rem 1.2rem; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; }
+        .search-input input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,102,204,0.1); }
+        .quick-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.8rem; }
+        .filter-btn { padding: 0.6rem 1rem; border: 1px solid var(--border); background: white; border-radius: 6px; cursor: pointer; transition: all 0.3s; font-weight: 500; font-size: 0.9rem; }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* HOW IT WORKS */
+        .how-it-works { padding: 4rem 2rem; background: var(--neutral); }
+        .how-it-works-container { max-width: 1200px; margin: 0 auto; }
+        .how-it-works-title { font-size: 2rem; margin-bottom: 0.5rem; color: var(--dark); }
+        .how-it-works-subtitle { color: #666; margin-bottom: 2rem; font-size: 1rem; }
+        .how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; align-items: start; }
+        .how-card { background: white; border-radius: 12px; padding: 2rem; border-left: 4px solid var(--primary); }
+        .how-card.response { border-left-color: var(--secondary); }
+        .how-card h3 { margin-bottom: 1.5rem; color: var(--dark); font-size: 1.1rem; }
+        .question-box { background: var(--neutral); padding: 1rem; border-radius: 8px; font-style: italic; color: #666; margin-bottom: 1rem; }
+        .response-list { list-style: none; color: #666; font-size: 0.95rem; line-height: 1.8; }
+        .response-list li { margin-bottom: 0.8rem; }
+        .tip-box { background: var(--neutral); padding: 1rem; border-radius: 8px; margin: 1.5rem 0; font-size: 0.9rem; color: #666; }
+        .tip-box strong { color: var(--warning); }
+        .solutions-grid { background: white; border-radius: 12px; padding: 2rem; margin-top: 2rem; }
+        .solutions-title { margin-bottom: 1.5rem; color: var(--dark); font-size: 1.1rem; }
+        .solution-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .solution-card { border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; transition: all 0.3s; }
+        .solution-card:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,102,204,0.1); }
+        .solution-card h4 { color: var(--dark); margin-bottom: 0.8rem; font-size: 1rem; }
+        .solution-card p { color: #666; font-size: 0.9rem; margin-bottom: 1rem; }
+        .solution-time { font-size: 0.85rem; color: #999; margin-bottom: 1rem; }
+
+        /* FLOWS */
+        .flows { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .flows h2 { font-size: 2rem; margin-bottom: 0.5rem; color: var(--dark); }
+        .flows p { color: #666; margin-bottom: 2rem; font-size: 1rem; }
+        .flow-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .flow-card { border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+        .flow-card h3 { margin-bottom: 0.6rem; color: var(--dark); }
+        .flow-card p.desc { color: #666; font-size: 0.95rem; margin-bottom: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; color: var(--dark); }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 1rem;
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .status-text { font-size: 0.9rem; color: #666; margin-top: 0.5rem; }
+        .result-box { background: var(--neutral); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-top: 0.8rem; min-height: 60px; }
+
+        /* CATEGORIES GRID */
+        .categories { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .categories h2 { font-size: 2rem; margin-bottom: 0.5rem; color: var(--dark); }
+        .categories-subtitle { color: #666; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+        .category-card { background: white; border: 2px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; }
+        .category-card:hover { border-color: var(--primary); box-shadow: 0 8px 24px rgba(0,102,204,0.15); transform: translateY(-4px); }
+        .category-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .category-card h3 { font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--dark); }
+        .category-card p { color: #666; font-size: 0.95rem; margin-bottom: 1rem; }
+        .category-count { display: inline-block; background: var(--neutral); padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: var(--primary); }
+
+        /* DIRECTORY MOCK */
+        .directory-preview { padding: 4rem 2rem; background: var(--neutral); }
+        .directory-container { max-width: 1200px; margin: 0 auto; }
+        .directory-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .directory-header h2 { font-size: 1.8rem; color: var(--dark); }
+        .sort-dropdown { padding: 0.6rem 1rem; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.95rem; }
+        .results-grid { display: grid; gap: 1.5rem; }
+        .result-card { background: white; border-radius: 12px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; transition: all 0.3s; border: 1px solid var(--border); flex-wrap: wrap; }
+        .result-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .result-info { flex: 1; min-width: 250px; }
+        .result-name { font-size: 1.2rem; font-weight: bold; color: var(--dark); margin-bottom: 0.5rem; }
+        .result-meta { display: flex; gap: 1.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; font-size: 0.95rem; color: #666; }
+        .meta-item { display: flex; align-items: center; gap: 0.3rem; }
+        .rating { color: var(--secondary); font-weight: 600; }
+        .result-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+
+        /* TESTIMONIALS */
+        .testimonials { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .testimonials h2 { font-size: 2rem; margin-bottom: 0.5rem; text-align: center; color: var(--dark); }
+        .testimonials-subtitle { text-align: center; color: #666; margin-bottom: 3rem; font-size: 1.1rem; }
+        .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .testimonial { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 2rem; position: relative; }
+        .testimonial-quote { color: var(--primary); font-size: 2rem; margin-bottom: 1rem; }
+        .testimonial-text { color: #666; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.7; }
+        .testimonial-author { display: flex; align-items: center; gap: 1rem; }
+        .author-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.3rem; }
+        .author-info h4 { margin: 0; font-size: 0.95rem; color: var(--dark); }
+        .author-info p { margin: 0; font-size: 0.8rem; color: #999; }
+
+        /* STATS */
+        .stats { padding: 3rem 2rem; background: var(--primary); color: white; text-align: center; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; }
+        .stat-item h3 { font-size: 2.5rem; margin-bottom: 0.5rem; font-weight: bold; }
+        .stat-item p { font-size: 1rem; opacity: 0.9; }
+
+        /* CTA SECTION */
+        .cta-section { padding: 4rem 2rem; background: linear-gradient(135deg, var(--primary) 0%, #004499 100%); color: white; text-align: center; }
+        .cta-section h2 { font-size: 2rem; margin-bottom: 1rem; }
+        .cta-section p { font-size: 1.1rem; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+        /* FOOTER */
+        footer { background: var(--dark); color: white; padding: 3rem 2rem; text-align: center; }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: left; margin-bottom: 2rem; }
+        .footer-section h4 { margin-bottom: 1rem; color: var(--primary); }
+        .footer-section ul { list-style: none; }
+        .footer-section a { color: #ccc; text-decoration: none; transition: color 0.3s; display: block; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .footer-section a:hover { color: var(--primary); }
+        .footer-bottom { border-top: 1px solid #444; padding-top: 2rem; color: #999; font-size: 0.9rem; }
+
+        /* MODALS */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content { background-color: white; margin: 5% auto; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px; animation: slideUp 0.3s; max-height: 80vh; overflow-y: auto; }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: black; }
+        .modal h2 { margin-bottom: 1.5rem; color: var(--dark); }
+
+        /* AD BUBBLE */
+        .ad-bubble {
+            position: fixed;
+            right: 18px;
+            top: 0;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.55rem 0.75rem 0.55rem 0.65rem;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px) scale(0.98);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            z-index: 1100;
+            font-size: 0.9rem;
+        }
+        .ad-bubble.show { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+        .ad-bubble .ad-text { color: var(--dark); font-weight: 600; font-size: 0.9rem; white-space: nowrap; }
+        .ad-bubble .ad-cta { background: var(--secondary); color: white; border: none; padding: 0.35rem 0.65rem; border-radius: 7px; cursor: pointer; font-weight: 700; font-size: 0.85rem; }
+        .ad-bubble .ad-cta:hover { filter: brightness(0.95); }
+        .ad-bubble .ad-close { background: transparent; border: none; color: #777; cursor: pointer; font-weight: 700; font-size: 0.95rem; line-height: 1; padding: 0.2rem; }
+        .ad-bubble .ad-close:hover { color: #444; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            nav ul { gap: 1rem; flex-wrap: wrap; }
+            .search-input { flex-direction: column; }
+            .search-input input { min-width: auto; }
+            .result-card { flex-direction: column; text-align: left; }
+            .how-grid { grid-template-columns: 1fr; }
+            .stats-grid { gap: 1rem; }
+            .stat-item h3 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav>
+        <div class="logo">
+            <span>🌙</span>
+            <span>Luna</span>
+        </div>
+        <ul>
+            <li><a href="#flujos">Mudanza / Ya vivo</a></li>
+            <li><a href="#categorias">Servicios</a></li>
+            <li><a href="#anunciar">Anunciar</a></li>
+            <li><a href="#testimonios">Testimonios</a></li>
+            <li><button class="btn-primary" onclick="openChat()">Usar Luna</button></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <h1>Tu Plataforma Inteligente para Vivir en España</h1>
+        <p>Acceso a 100+ profesionales verificados + IA especializada + comunidad de 15K+ expats</p>
+        <div class="hero-cta">
+            <button class="btn-primary" onclick="document.querySelector('.search-section').scrollIntoView({behavior: 'smooth'})">Explorar Servicios</button>
+            <button class="btn-secondary" style="background: white; color: var(--primary);" onclick="openChat()">Chatear con Luna</button>
+            <button class="btn-secondary" onclick="document.getElementById('anunciar').scrollIntoView({behavior: 'smooth'})">Anunciar mi negocio</button>
+        </div>
+    </section>
+
+    <!-- SEARCH & FILTER -->
+    <section class="search-section">
+        <h3 class="search-title">¿Qué necesitas hoy?</h3>
+        <div class="search-input">
+            <input type="text" id="searchInput" placeholder="Ej: 'Abogado NIE', 'Médico inglés', 'Casa en Madrid'..." onkeyup="filterCategories()">
+        </div>
+        <h4 style="margin-bottom: 1rem; font-size: 0.95rem; color: #666;">Categorías principales:</h4>
+        <div class="quick-filters" id="quickFilters">
+            <button class="filter-btn active" onclick="filterByCategory('all')">Todas</button>
+            <button class="filter-btn" onclick="filterByCategory('legal')">⚖️ Legal</button>
+            <button class="filter-btn" onclick="filterByCategory('health')">🏥 Salud</button>
+            <button class="filter-btn" onclick="filterByCategory('housing')">🏠 Vivienda</button>
+            <button class="filter-btn" onclick="filterByCategory('education')">📚 Educación</button>
+            <button class="filter-btn" onclick="filterByCategory('work')">💼 Trabajo</button>
+            <button class="filter-btn" onclick="filterByCategory('finance')">💰 Finanzas</button>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS - BOT RESPONSE EXAMPLE -->
+    <section class="how-it-works">
+        <div class="how-it-works-container">
+            <h2 class="how-it-works-title">Cómo Funciona Luna</h2>
+            <p class="how-it-works-subtitle">Tu pregunta → Luna IA → Bot especializado → Soluciones verificadas</p>
+
+            <div class="how-grid">
+                <div class="how-card">
+                    <h3>📝 Tu Pregunta</h3>
+                    <div class="question-box">"¿Cómo tramitar el NIE en Madrid? ¿Cuánto cuesta y cuánto tarda?"</div>
+                    <p style="font-size: 0.9rem; color: #999;">Categoría detectada: ⚖️ Legal (0.98 confianza)</p>
+                </div>
+                <div class="how-card response">
+                    <h3>🤖 Respuesta de Luna</h3>
+                    <div>
+                        <h4 style="color: var(--dark); margin-bottom: 0.8rem; font-size: 0.95rem;">📋 NIE (Número de Identidad de Extranjero)</h4>
+                        <ul class="response-list">
+                            <li>✓ <strong>Requisitos:</strong> Pasaporte + empadronamiento + cita previa</li>
+                            <li>✓ <strong>Dónde:</strong> Delegación de Policía Nacional</li>
+                            <li>✓ <strong>Tiempo:</strong> 15-30 días hábiles</li>
+                            <li>✓ <strong>Coste:</strong> GRATIS (certificado: €6)</li>
+                        </ul>
+                    </div>
+                    <div class="tip-box"><strong>⚠️ Consejo:</strong> Si es tu primer NIE, mejor con asesor legal para evitar rechazos.</div>
+                    <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.9rem;">📖 Ver guía completa</a>
+                </div>
+            </div>
+
+            <div class="solutions-grid">
+                <h3 class="solutions-title">🎯 Soluciones Recomendadas</h3>
+                <div class="solution-options">
+                    <div class="solution-card">
+                        <h4>✅ Con Abogado (Recomendado)</h4>
+                        <p>Asesor legal tramita por ti + garantía de aprobación</p>
+                        <p class="solution-time">Tiempo: 20-30 días</p>
+                        <button class="btn-small primary" onclick="showDirectory('legal')">Ver Abogados</button>
+                    </div>
+                    <div class="solution-card">
+                        <h4>📋 Solo (Más Barato)</h4>
+                        <p>Trámites por tu cuenta con nuestra guía paso a paso</p>
+                        <p class="solution-time">Tiempo: 30-45 días</p>
+                        <button class="btn-small">Descargar Guía</button>
+                    </div>
+                    <div class="solution-card">
+                        <h4>💬 Preguntar Más</h4>
+                        <p>Continúa el chat con Luna para resolver dudas específicas</p>
+                        <p class="solution-time">Respuesta: en segundos</p>
+                        <button class="btn-small primary" onclick="openChat()">Chatear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FLOWS (Voy a mudarme / Ya vivo en España / Anunciar) -->
+    <section class="flows" id="flujos">
+        <h2>Elige tu camino</h2>
+        <p>Misma página, tres flujos: mudanza, vida diaria o anunciar. Respuestas de los bots en pantalla.</p>
+        <div class="flow-grid">
+            <div class="flow-card">
+                <h3>✈️ Voy a mudarme a España</h3>
+                <p class="desc">Visados, NIE, primeros pasos. Responde el bot de Inmigración.</p>
+                <div class="form-group">
+                    <label>Tu pregunta</label>
+                    <textarea id="q-imm" placeholder="Ej: ¿Qué necesito para sacar el NIE en Madrid?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Idioma</label>
+                    <select id="lang-imm">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <button class="btn-primary" style="width:100%;" onclick="consultarImmLanding()">Consultar Inmigración</button>
+                <div class="status-text" id="status-imm"></div>
+                <div class="result-box" id="result-imm"></div>
+            </div>
+
+            <div class="flow-card">
+                <h3>🏘️ Ya vivo en España</h3>
+                <p class="desc">Servicios, salud, legal, vivienda. Responde el orquestador.</p>
+                <div class="form-group">
+                    <label>¿Qué necesitas?</label>
+                    <textarea id="q-expat" placeholder="Ej: dentista que hable inglés en Valencia"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select id="cat-expat">
+                        <option value="">Automático</option>
+                        <option value="legal">Legal</option>
+                        <option value="health">Salud</option>
+                        <option value="housing">Vivienda</option>
+                        <option value="education">Educación</option>
+                        <option value="work">Trabajo</option>
+                        <option value="finance">Finanzas</option>
+                        <option value="restaurants">Restaurantes</option>
+                        <option value="community">Comunidad</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Idioma</label>
+                    <select id="lang-expat">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <button class="btn-primary" style="width:100%;" onclick="consultarExpatLanding()">Consultar Servicios</button>
+                <div class="status-text" id="status-expat"></div>
+                <div class="result-box" id="result-expat"></div>
+            </div>
+
+            <div class="flow-card" id="anunciar">
+                <h3>📣 Quiero anunciar en Luna</h3>
+                <p class="desc">Publicidad en la revista y directorio. Bot comercial conversacional.</p>
+                <div class="form-group">
+                    <label>Describe tu negocio o necesidad</label>
+                    <textarea id="q-com" placeholder="Ej: Quiero anunciar mi academia de español en Barcelona"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Idioma</label>
+                    <select id="lang-com">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <button class="btn-primary" style="width:100%;" onclick="openComercialChat()">Hablar con el bot Comercial</button>
+                <div class="status-text" id="status-com"></div>
+                <div class="result-box" id="result-com"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="categories" id="categorias">
+        <h2>Explora Todos los Servicios</h2>
+        <p class="categories-subtitle">Encuentra exactamente lo que necesitas con filtros inteligentes</p>
+        <div class="category-grid">
+            <div class="category-card" onclick="showDirectory('legal')">
+                <div class="category-icon">⚖️</div>
+                <h3>Asesoría Legal</h3>
+                <p>Visa, NIE, derechos laborales, arrendamiento, empresas</p>
+                <span class="category-count">36 profesionales</span>
+            </div>
+            <div class="category-card" onclick="showDirectory('health')">
+                <div class="category-icon">🏥</div>
+                <h3>Healthcare</h3>
+                <p>Seguros, médicos, dentistas, especialistas en inglés</p>
+                <span class="category-count">24 proveedores</span>
+            </div>
+            <div class="category-card" onclick="showDirectory('housing')">
+                <div class="category-icon">🏠</div>
+                <h3>Hospedaje & Vivienda</h3>
+                <p>Apartamentos, inmobiliarias, coliving para expats</p>
+                <span class="category-count">18 inmobiliarias</span>
+            </div>
+            <div class="category-card" onclick="showDirectory('education')">
+                <div class="category-icon">📚</div>
+                <h3>Educación</h3>
+                <p>Colegios internacionales, español, universidades, homologación</p>
+                <span class="category-count">28 instituciones</span>
+            </div>
+            <div class="category-card" onclick="showDirectory('work')">
+                <div class="category-icon">💼</div>
+                <h3>Trabajo & Emprendimiento</h3>
+                <p>Bolsas de empleo, autónomos, mentorías, comunidades</p>
+                <span class="category-count">21 recursos</span>
+            </div>
+            <div class="category-card" onclick="showDirectory('finance')">
+                <div class="category-icon">💰</div>
+                <h3>Finanzas & Seguros</h3>
+                <p>Bancos, asesoría fiscal, inversión, seguros</p>
+                <span class="category-count">15 especialistas</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIRECTORY PREVIEW (Mock) -->
+    <section class="directory-preview" id="directoryPreview" style="display: none;">
+        <div class="directory-container">
+            <div class="directory-header">
+                <div>
+                    <h2 id="directoryTitle">Abogados de Inmigración</h2>
+                    <p style="color: #666; margin-top: 0.5rem;"><strong id="resultCount">16</strong> resultados encontrados</p>
+                </div>
+                <select class="sort-dropdown" onchange="sortResults(this.value)">
+                    <option value="rating">Ordenar por: Rating</option>
+                    <option value="speed">Ordenar por: Rapidez</option>
+                </select>
+            </div>
+            <div class="results-grid" id="resultsGrid"></div>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats">
+        <div class="stats-grid">
+            <div class="stat-item"><h3>15K+</h3><p>Expats activos</p></div>
+            <div class="stat-item"><h3>100+</h3><p>Profesionales verificados</p></div>
+            <div class="stat-item"><h3>8</h3><p>Ciudades principales</p></div>
+            <div class="stat-item"><h3>24/7</h3><p>Luna disponible</p></div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials" id="testimonios">
+        <h2>Lo que Dicen los Expats</h2>
+        <p class="testimonials-subtitle">Historias reales de personas que transformaron su vida en España</p>
+        <div class="testimonial-grid">
+            <div class="testimonial">
+                <div class="testimonial-quote">"</div>
+                <div class="testimonial-text">"Sin Luna no hubiera podido tramitar mi NIE. El abogado que encontré aquí fue perfecto, rápido y barato. Súper recomendado."</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">JM</div>
+                    <div class="author-info"><h4>Juan Martinez</h4><p>México → Madrid, 6 meses</p></div>
+                </div>
+            </div>
+            <div class="testimonial">
+                <div class="testimonial-quote">"</div>
+                <div class="testimonial-text">"Encontré trabajo en 3 semanas por el job board filtrado de Luna. El chatbot de IA me ayudó a entender los contratos españoles."</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">SR</div>
+                    <div class="author-info"><h4>Sofia Rossi</h4><p>Italia → Barcelona, 2 meses</p></div>
+                </div>
+            </div>
+            <div class="testimonial">
+                <div class="testimonial-quote">"</div>
+                <div class="testimonial-text">"La comunidad de Luna es increíble. Conocí gente, hice amigos y encontré grupo de senderismo en una semana."</div>
+                <div class="testimonial-author">
+                    <div class="author-avatar">LK</div>
+                    <div class="author-info"><h4>Lucas Kim</h4><p>Corea del Sur → Valencia, 1 mes</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2>Empieza Ahora, Es Gratis</h2>
+        <p>Acceso inmediato a Luna IA + comunidad de expats + directorio verificado</p>
+        <button class="btn-primary" onclick="openChat()" style="background: white; color: var(--primary); font-weight: bold;">Chatear con Luna</button>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Luna</h4>
+                <ul>
+                    <li><a href="#">Sobre Nosotros</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Preguntas Frecuentes</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Servicios</h4>
+                <ul>
+                    <li><a href="#">IA Especializada</a></li>
+                    <li><a href="#">Directorio Verificado</a></li>
+                    <li><a href="#">Comunidad de Expats</a></li>
+                    <li><a href="#">Para Profesionales</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacidad</a></li>
+                    <li><a href="#">Términos de Servicio</a></li>
+                    <li><a href="#">Cookies</a></li>
+                    <li><a href="#">Seguridad</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Luna - Tu Plataforma para Vivir en España | Hecho con ❤️ para expats</p>
+        </div>
+    </footer>
+
+    <!-- AD BUBBLE CTA -->
+    <div class="ad-bubble" id="adBubble" onclick="openAdsBubble()">
+        <span class="ad-text">¿Quieres anunciar con Luna?</span>
+        <button class="ad-cta">Ver opciones</button>
+        <button class="ad-close" onclick="closeAdBubble(event)">×</button>
+    </div>
+
+    <!-- CHAT MODAL -->
+    <div id="chatModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeChat()">&times;</span>
+            <h2>Hola, Soy Luna 🌙</h2>
+            <p style="margin-bottom: 1.5rem; color: #666;">Tu asistente IA especializada en vivir en España</p>
+            <div class="form-group">
+                <label>¿Cuál es tu mayor necesidad hoy?</label>
+                <select id="needSelect" style="width: 100%; padding: 0.8rem; border: 1px solid var(--border); border-radius: 6px;">
+                    <option value="">Selecciona una opción...</option>
+                    <option value="visa">📄 Visa / NIE / Documentación</option>
+                    <option value="salud">🏥 Salud / Seguros / Médicos</option>
+                    <option value="vivienda">🏠 Buscar Vivienda / Alquiler</option>
+                    <option value="trabajo">💼 Encontrar Trabajo / Emprender</option>
+                    <option value="educacion">📚 Educación / Colegio / Español</option>
+                    <option value="comunidad">👥 Conocer Gente / Comunidad</option>
+                    <option value="otro">💬 Otra pregunta</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tu Pregunta:</label>
+                <textarea id="questionInput" placeholder="Cuéntame qué necesitas..."></textarea>
+            </div>
+            <button class="btn-primary" style="width: 100%;" onclick="sendQuery()">Enviar a Luna</button>
+        </div>
+    </div>
+
+    <!-- COMERCIAL CHAT MODAL -->
+    <div id="comercialModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeComercialChat()">&times;</span>
+            <h2>Hola, soy Luna Comercial 📣</h2>
+            <p style="margin-bottom: 1rem; color: #666;">Te acompaño paso a paso para anunciar tu negocio con confianza.</p>
+
+            <div id="com-step-1">
+                <div class="form-group">
+                    <label>Nombre del negocio</label>
+                    <input id="comName" placeholder="Ej: Academia Cervantes BCN" />
+                </div>
+                <div class="form-group">
+                    <label>Cuéntame brevemente tu negocio</label>
+                    <textarea id="comDesc" placeholder="Ej: Academia de español para expats en Barcelona"></textarea>
+                </div>
+                <button class="btn-primary" style="width: 100%;" onclick="nextComStep(1)">Continuar</button>
+            </div>
+
+            <div id="com-step-2" style="display:none;">
+                <p style="color:#666; margin-bottom:0.75rem;">Genial. ¿Qué te interesa ahora mismo?</p>
+                <div class="form-group">
+                    <label>Elige una opción</label>
+                    <div style="display:grid; gap:0.5rem;">
+                        <label><input type="radio" name="comPlan" value="mensual" /> Plan mensual (34€/mes)</label>
+                        <label><input type="radio" name="comPlan" value="anual" /> Plan anual (367€/año, 10% ahorro)</label>
+                        <label><input type="radio" name="comPlan" value="campania" /> Campaña especial (acompañamiento y precios negociables)</label>
+                        <label><input type="radio" name="comPlan" value="explorando" /> Aún explorando (quiero entender mejor)</label>
+                    </div>
+                </div>
+                <div class="tip-box">Consejo: si buscas estabilidad y ahorro, el anual suele ser el favorito.</div>
+                <div style="display:flex; gap:0.5rem;">
+                    <button class="btn-secondary" style="flex:1;" onclick="prevComStep(2)">Atrás</button>
+                    <button class="btn-primary" style="flex:1;" onclick="nextComStep(2)">Continuar</button>
+                </div>
+            </div>
+
+            <div id="com-step-3" style="display:none;">
+                <p style="color:#666; margin-bottom:0.75rem;">Perfecto. Necesito tus datos de contacto para coordinar factura/contrato.</p>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input id="comEmail" placeholder="tu@correo.com" />
+                </div>
+                <div class="form-group">
+                    <label>Teléfono (WhatsApp)</label>
+                    <input id="comPhone" placeholder="+34 600 000 000" />
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <button class="btn-secondary" style="flex:1;" onclick="prevComStep(3)">Atrás</button>
+                    <button class="btn-primary" style="flex:1;" onclick="nextComStep(3)">Continuar</button>
+                </div>
+            </div>
+
+            <div id="com-step-4" style="display:none;">
+                <p style="color:#666; margin-bottom:0.75rem;">Resumen rápido. Si todo está bien, lo envío a nuestro equipo.</p>
+                <div id="comSummary" class="result-box" style="min-height:auto;"></div>
+                <div style="display:flex; gap:0.5rem; margin-top:0.75rem;">
+                    <button class="btn-secondary" style="flex:1;" onclick="prevComStep(4)">Atrás</button>
+                    <button class="btn-primary" style="flex:1;" onclick="submitComLead()">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const directories = {
+            legal: [
+                { name: "Abogacía López & Martín", rating: 4.9, reviews: 87, speciality: "NIE, Visa, Residencia", response: "2h", contact: "Llamar" },
+                { name: "SOS Legal Inmigración", rating: 4.8, reviews: 64, speciality: "Rápido, En línea 24/7", response: "30min", contact: "Chat" },
+                { name: "García & Partners", rating: 4.7, reviews: 34, speciality: "Asequible, Presencial", response: "5 días", contact: "Email" }
+            ],
+            health: [
+                { name: "Sanitas España", rating: 4.8, reviews: 156, speciality: "Seguro Privado Premium", response: "Inmediato", contact: "Contratar" },
+                { name: "Dr. International Clinic", rating: 4.7, reviews: 92, speciality: "Médicos en Inglés", response: "24h", contact: "Agendar" },
+                { name: "Quirónsalud", rating: 4.6, reviews: 134, speciality: "Cobertura Completa", response: "2h", contact: "Contratar" }
+            ],
+            housing: [
+                { name: "Idealista Inmobiliaria", rating: 4.7, reviews: 224, speciality: "Mayor Variedad", response: "Inmediato", contact: "Ver Anuncios" },
+                { name: "Fotocasa Directos", rating: 4.6, reviews: 187, speciality: "Propietarios Directos", response: "24h", contact: "Contactar" },
+                { name: "Expat Housing BCN", rating: 4.9, reviews: 78, speciality: "Especializado en Expats", response: "1h", contact: "Reservar" }
+            ],
+            education: [
+                { name: "Colegio Internacional Madrid", rating: 4.8, reviews: 92, speciality: "Primaria-Bachillerato", response: "Email", contact: "Matricular" },
+                { name: "Academia Cervantes", rating: 4.7, reviews: 312, speciality: "Español para Extranjeros", response: "Inmediato", contact: "Inscribirse" },
+                { name: "Universidad Autónoma Madrid", rating: 4.6, reviews: 145, speciality: "Grados y Posgrados", response: "Email", contact: "Solicitar" }
+            ],
+            work: [
+                { name: "LinkedIn Jobs España", rating: 4.7, reviews: 1200, speciality: "Mayor Variedad", response: "Inmediato", contact: "Buscar" },
+                { name: "Infojobs Expats", rating: 4.6, reviews: 856, speciality: "Filtro por Visa", response: "24h", contact: "Aplicar" },
+                { name: "Coaching para Autónomos", rating: 4.9, reviews: 67, speciality: "Mentoría Personalizada", response: "Agendar", contact: "Reservar" }
+            ],
+            finance: [
+                { name: "N26 Bank", rating: 4.7, reviews: 2340, speciality: "Digital, Fácil para Extranjeros", response: "5min", contact: "Abrir Cuenta" },
+                { name: "Asesor Fiscal García", rating: 4.8, reviews: 134, speciality: "Autónomos e Inversores", response: "48h", contact: "Contactar" },
+                { name: "Generali Seguros", rating: 4.6, reviews: 234, speciality: "Seguros de Viaje y Vida", response: "24h", contact: "Cotizar" }
+            ]
+        };
+
+        function showDirectory(category) {
+            const results = directories[category] || [];
+            const titles = {
+                legal: "⚖️ Abogados y Asesoría Legal",
+                health: "🏥 Servicios de Salud",
+                housing: "🏠 Vivienda e Inmobiliarias",
+                education: "📚 Educación",
+                work: "💼 Trabajo y Emprendimiento",
+                finance: "💰 Finanzas y Seguros"
+            };
+            document.getElementById('directoryTitle').textContent = titles[category] || 'Servicios';
+            document.getElementById('resultCount').textContent = results.length;
+            const grid = document.getElementById('resultsGrid');
+            grid.innerHTML = results.map(r => `
+                <div class="result-card">
+                    <div class="result-info">
+                        <div class="result-name">${r.name}</div>
+                        <div class="result-meta">
+                            <div class="meta-item"><span class="rating">⭐ ${r.rating}</span><span style="color: #999;">(${r.reviews} opiniones)</span></div>
+                            <div class="meta-item">⏱️ ${r.response}</div>
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">📍 ${r.speciality}</div>
+                    </div>
+                    <div class="result-actions">
+                        <button class="btn-small primary" onclick="agendaWithProvider('${r.name}')">${r.contact}</button>
+                        <button class="btn-small" onclick="shareProvider('${r.name}')">Compartir</button>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('directoryPreview').style.display = 'block';
+            document.getElementById('directoryPreview').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function filterByCategory(cat) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function filterCategories() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.category-card').forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(input) ? 'block' : 'none';
+            });
+        }
+
+        function sortResults(value) { console.log('Ordenar por:', value); }
+
+        function openChat() { document.getElementById('chatModal').style.display = 'block'; }
+        function closeChat() { document.getElementById('chatModal').style.display = 'none'; }
+
+        function renderAds(container, ads) {
+            if (!ads || !ads.length) return;
+            const title = document.createElement('h4');
+            title.textContent = 'Profesionales recomendados';
+            title.style.margin = '1rem 0 0.5rem';
+            container.appendChild(title);
+            const grid = document.createElement('div');
+            grid.style.display = 'grid';
+            grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(240px,1fr))';
+            grid.style.gap = '0.75rem';
+            ads.forEach(ad => {
+                const card = document.createElement('div');
+                card.style.border = '1px solid var(--border)';
+                card.style.padding = '0.75rem';
+                card.style.borderRadius = '8px';
+                card.style.background = '#fff';
+                card.innerHTML = `<strong>${ad.nombre || 'Profesional'}</strong><br/><small>${ad.descripcion || ''}</small><br/>${ad.contacto ? '📞 ' + ad.contacto : ''}`;
+                grid.appendChild(card);
+            });
+            container.appendChild(grid);
+        }
+
+        async function consultarImmLanding() {
+            const q = document.getElementById('q-imm').value.trim();
+            const lang = document.getElementById('lang-imm').value;
+            const status = document.getElementById('status-imm');
+            const result = document.getElementById('result-imm');
+            if (!q) { status.textContent = 'Escribe una pregunta.'; return; }
+            status.textContent = 'Enviando...'; result.innerHTML = '';
+            try {
+                const res = await fetch('/api/immigration', {method: 'POST', headers: { 'Content-Type': 'application/json' },body: JSON.stringify({ message: q, language: lang })});
+                const data = await res.json();
+                const msg = data.message || data.respuesta || 'Sin respuesta';
+                result.innerHTML = `<div style="margin-bottom:0.6rem;">${msg}</div>`;
+                if (data.legal_ads) renderAds(result, data.legal_ads);
+                status.textContent = 'Respuesta recibida.';
+            } catch (e) {
+                status.textContent = 'Error al consultar.';
+                result.textContent = e.message;
+            }
+        }
+
+        async function consultarComercial() {
+        const q = document.getElementById('q-com').value.trim();
+        const lang = document.getElementById('lang-com').value;
+        const status = document.getElementById('status-com');
+        const result = document.getElementById('result-com');
+        if (!q) { status.textContent = 'Escribe tu pregunta.'; return; }
+        status.textContent = 'Enviando...';
+        result.innerHTML = '';
+        try {
+        const res = await fetch('/api/query', {method: 'POST',headers: { 'Content-Type': 'application/json' },body: JSON.stringify({ question: q, language: lang })});
+        const data = await res.json();
+        const msg = data.respuesta || 'Sin respuesta';
+        result.innerHTML = `<div style="margin-bottom:0.6rem;">${msg}</div>`;
+        if (data.json && data.json.length) {
+        const grid = document.createElement('div');
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(240px,1fr))';
+        grid.style.gap = '0.75rem';
+        data.json.forEach(item => {
+        const benefits = (item.beneficios || []).map(b => `<li>${b}</li>`).join('');
+        const card = document.createElement('div');
+        card.style.border = '1px solid var(--border)';
+        card.style.padding = '0.75rem';
+        card.style.borderRadius = '8px';
+        card.style.background = '#fff';
+        card.innerHTML = `<strong>${item.nombre || 'Opción comercial'}</strong><br/><small>${item.descripcion || ''}</small>${item.contacto ? `<div style=\"margin-top:0.4rem;\">📞 ${item.contacto}</div>` : ''}${benefits ? `<ul style=\"margin-top:0.6rem; padding-left:1.1rem; color:#555; font-size:0.9rem; list-style: disc;\">${benefits}</ul>` : ''}`;
+        grid.appendChild(card);
+        });
+        result.appendChild(grid);
+        }
+        status.textContent = 'Respuesta recibida.';
+        } catch (e) {
+        status.textContent = 'Error al consultar.';
+        result.textContent = e.message;
+        }}
+
+        async function consultarComercial() {
+            const q = document.getElementById('q-com').value.trim();
+            const lang = document.getElementById('lang-com').value;
+            const status = document.getElementById('status-com');
+            const result = document.getElementById('result-com');
+            const question = q || 'Quiero anunciar mi negocio con Luna. Necesito opciones de publicidad y precios.';
+
+            status.textContent = 'Enviando...';
+            result.innerHTML = '';
+
+            try {
+                const res = await fetch('/api/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question, language: lang })
+                });
+                const data = await res.json();
+                const msg = data.respuesta || 'Sin respuesta';
+                result.innerHTML = `<div style="margin-bottom:0.6rem;">${msg}</div>`;
+
+                if (data.json && data.json.length) {
+                    const grid = document.createElement('div');
+                    grid.style.display = 'grid';
+                    grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(240px,1fr))';
+                    grid.style.gap = '0.75rem';
+
+                    data.json.forEach(item => {
+                        const benefits = (item.beneficios || []).map(b => `<li>${b}</li>`).join('');
+                        const card = document.createElement('div');
+                        card.style.border = '1px solid var(--border)';
+                        card.style.padding = '0.75rem';
+                        card.style.borderRadius = '8px';
+                        card.style.background = '#fff';
+                        card.innerHTML = `<strong>${item.nombre || 'Opción comercial'}</strong><br/><small>${item.descripcion || ''}</small>${item.contacto ? `<div style=\"margin-top:0.4rem;\">📞 ${item.contacto}</div>` : ''}${benefits ? `<ul style=\"margin-top:0.6rem; padding-left:1.1rem; color:#555; font-size:0.9rem; list-style: disc;\">${benefits}</ul>` : ''}`;
+                        grid.appendChild(card);
+                    });
+
+                    result.appendChild(grid);
+                }
+
+                status.textContent = 'Respuesta recibida.';
+            } catch (e) {
+                status.textContent = 'Error al consultar.';
+                result.textContent = e.message;
+            }
+        }
+
+        function sendQuery() {
+            const need = document.getElementById('needSelect').value;
+            const question = document.getElementById('questionInput').value;
+            if (!need || !question.trim()) { alert('Completa todos los campos'); return; }
+            fetch('/api/query', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question, category: need })
+            })
+            .then(res => res.json())
+            .then(data => { alert('Respuesta de Luna:\n\n' + (data.respuesta || '')); closeChat(); })
+            .catch(e => alert('Error: ' + e));
+        }
+
+        function agendaWithProvider(name) { alert('Agendando con: ' + name + '\n(Aquí iría integración real)'); }
+        function shareProvider(name) { alert('Compartiendo: ' + name); }
+        window.onclick = function(ev) { const modal = document.getElementById('chatModal'); if (ev.target == modal) modal.style.display = 'none'; };
+
+        // Ad bubble follows scroll, shows periodically, and can be dismissed
+        const adBubble = document.getElementById('adBubble');
+        let adTargetY = window.scrollY + 120;
+        let adRAF;
+        let adInterval;
+        let adInitialTimeout;
+        let adClosed = false;
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function animateAdBubble() {
+            if (!adBubble || adClosed) return;
+            const rect = adBubble.getBoundingClientRect();
+            const currentY = rect.top + window.scrollY;
+            const nextY = lerp(currentY, adTargetY, 0.15);
+            const translateY = nextY - window.scrollY;
+            adBubble.style.transform = `translateY(${translateY}px)`;
+            adRAF = requestAnimationFrame(animateAdBubble);
+        }
+
+        function handleScroll() {
+            adTargetY = window.scrollY + 120;
+        }
+
+        if (adBubble) {
+            window.addEventListener('scroll', handleScroll);
+            handleScroll();
+            animateAdBubble();
+        }
+
+        function toggleAdBubble() {
+            if (!adBubble || adClosed) return;
+            adBubble.classList.add('show');
+            setTimeout(() => adBubble.classList.remove('show'), 5000);
+        }
+
+        if (adBubble) {
+            adInitialTimeout = setTimeout(toggleAdBubble, 3000);
+            adInterval = setInterval(toggleAdBubble, 18000);
+        }
+
+        function closeAdBubble(ev) {
+            ev?.stopPropagation();
+            adClosed = true;
+            adBubble.classList.remove('show');
+            adBubble.style.display = 'none';
+            if (adInterval) clearInterval(adInterval);
+            if (adInitialTimeout) clearTimeout(adInitialTimeout);
+            if (adRAF) cancelAnimationFrame(adRAF);
+            window.removeEventListener('scroll', handleScroll);
+        }
+
+        function openAdsBubble() {
+            if (adClosed) return;
+            openChat();
+            const question = document.getElementById('questionInput');
+            const need = document.getElementById('needSelect');
+            if (need) need.value = 'otro';
+            document.getElementById('anunciar').scrollIntoView({behavior: 'smooth'});
+        }
+
+        // Conversational Commercial Chat state & handlers
+        let comLead = { nombre_negocio: "", descripcion: "", plan: "", contacto_email: "", contacto_telefono: "", language: "es" };
+
+        function openComercialChat() {
+            const modal = document.getElementById('comercialModal');
+            const q = document.getElementById('q-com')?.value?.trim();
+            const lang = document.getElementById('lang-com')?.value || 'es';
+            comLead = { nombre_negocio: "", descripcion: q || "", plan: "", contacto_email: "", contacto_telefono: "", language: lang };
+            ['com-step-1','com-step-2','com-step-3','com-step-4'].forEach(id => document.getElementById(id).style.display = 'none');
+            document.getElementById('com-step-1').style.display = 'block';
+            if (q) document.getElementById('comDesc').value = q;
+            modal.style.display = 'block';
+        }
+
+        function closeComercialChat() { document.getElementById('comercialModal').style.display = 'none'; }
+
+        function nextComStep(step) {
+            if (step === 1) {
+                const name = document.getElementById('comName').value.trim();
+                const desc = document.getElementById('comDesc').value.trim();
+                if (!name) { alert('Escribe el nombre del negocio'); return; }
+                comLead.nombre_negocio = name; comLead.descripcion = desc;
+                document.getElementById('com-step-1').style.display = 'none';
+                document.getElementById('com-step-2').style.display = 'block';
+                return;
+            }
+            if (step === 2) {
+                const sel = document.querySelector('input[name="comPlan"]:checked');
+                if (!sel) { alert('Elige un plan u opción'); return; }
+                comLead.plan = sel.value;
+                document.getElementById('com-step-2').style.display = 'none';
+                document.getElementById('com-step-3').style.display = 'block';
+                return;
+            }
+            if (step === 3) {
+                const email = document.getElementById('comEmail').value.trim();
+                const phone = document.getElementById('comPhone').value.trim();
+                if (!email && !phone) { alert('Añade email o teléfono'); return; }
+                comLead.contacto_email = email; comLead.contacto_telefono = phone;
+                const sum = document.getElementById('comSummary');
+                sum.innerHTML = `<strong>${comLead.nombre_negocio}</strong><br/>${comLead.descripcion || ''}<br/>Plan: ${comLead.plan}` +
+                  `<br/>Email: ${comLead.contacto_email || '-'} | Tel: ${comLead.contacto_telefono || '-'}`;
+                document.getElementById('com-step-3').style.display = 'none';
+                document.getElementById('com-step-4').style.display = 'block';
+                return;
+            }
+        }
+
+        function prevComStep(step) {
+            if (step === 2) { document.getElementById('com-step-2').style.display = 'none'; document.getElementById('com-step-1').style.display = 'block'; }
+            if (step === 3) { document.getElementById('com-step-3').style.display = 'none'; document.getElementById('com-step-2').style.display = 'block'; }
+            if (step === 4) { document.getElementById('com-step-4').style.display = 'none'; document.getElementById('com-step-3').style.display = 'block'; }
+        }
+
+        async function submitComLead() {
+            try {
+                const res = await fetch('/api/leads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(comLead) });
+                const data = await res.json();
+                if (data && data.ok) {
+                    alert('¡Gracias! Nuestro equipo te contactará por WhatsApp/Email.');
+                    closeComercialChat();
+                    const result = document.getElementById('result-com');
+                    result.innerHTML = `<div>Lead registrado (#${data.id}). Te escribiremos pronto.</div>`;
+                } else {
+                    alert('No se pudo registrar el lead. Intenta nuevamente.');
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        // Enter to send (Shift+Enter mantiene salto de línea)
+        function handleEnter(event, callback) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                callback();
+            }
+        }
+
+        function addEnterSubmit(id, callback) {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('keydown', ev => handleEnter(ev, callback));
+        }
+
+        addEnterSubmit('q-imm', consultarImmLanding);
+        addEnterSubmit('q-expat', consultarExpatLanding);
+        addEnterSubmit('q-com', openComercialChat);
+        addEnterSubmit('questionInput', sendQuery);
+    </script>
+</body>
+</html>

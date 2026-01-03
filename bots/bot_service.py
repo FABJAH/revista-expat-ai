@@ -36,4 +36,5 @@ def responder_consulta(pregunta, anunciantes=None, language="en"):
         }
         key_points.append(point)
 
-    return {"key_points": key_points, "json_data": info_servicio}
+        # Devolver lista completa; el orquestador aplicará limit/offset
+        return {"key_points": key_points, "json_data": info_servicio}

@@ -230,6 +230,24 @@ class ExpatAssistantWidget {
       // Agregar respuesta del bot
       this.addMessage(data.respuesta, 'bot');
 
+      // Mostrar consejos rápidos si existen
+      if (data.tips && data.tips.length) {
+        const tipsEl = document.createElement('div');
+        tipsEl.className = 'expat-message bot';
+        tipsEl.innerHTML = `
+          <div class="expat-message-avatar">💡</div>
+          <div class="expat-message-content">
+            <div class="expat-card">
+              <div class="expat-card-header">
+                <div class="expat-card-title">Consejos rápidos</div>
+                <span class="expat-card-badge guia">TIP</span>
+              </div>
+              <div class="expat-card-description"><ul style="padding-left:18px;list-style:disc;">${data.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+            </div>
+          </div>`;
+        this.elements.messagesContainer.appendChild(tipsEl);
+      }
+
       // Agregar guías si existen
       if (data.guias && data.guias.length > 0) {
         this.addGuides(data.guias);
@@ -265,7 +283,7 @@ class ExpatAssistantWidget {
     const welcome = this.elements.messagesContainer.querySelector('.expat-welcome');
     if (welcome) welcome.remove();
 
-    const messageEl = document.createElement('div');
+      const cardEl = document.createElement('div');
     messageEl.className = `expat-message ${isUser ? 'user' : 'bot'}`;
     messageEl.innerHTML = `
       <div class="expat-message-avatar">${isUser ? 'TÚ' : 'AI'}</div>
@@ -280,6 +298,7 @@ class ExpatAssistantWidget {
   }
 
   addGuides(guides) {
+              ${(advertiser.url || (advertiser.contacto && advertiser.contacto.web)) ? `<a href="${advertiser.url || advertiser.contacto.web}" target="_blank" rel="noopener" class="expat-card-tag" style="text-decoration:none">🔗 Ficha</a>` : ''}
     guides.forEach(guide => {
       const cardEl = document.createElement('div');
       cardEl.className = 'expat-message bot';
@@ -305,6 +324,17 @@ class ExpatAssistantWidget {
       });
 
       this.elements.messagesContainer.appendChild(cardEl);
+
+      // Track link clicks to directory
+      const linkEl = cardEl.querySelector('a.expat-card-tag');
+      if (linkEl) {
+        linkEl.addEventListener('click', () => {
+          this.trackEvent('directory_click', {
+            advertiser_id: advertiser.nombre,
+            url: linkEl.href
+          });
+        });
+      }
     });
 
     this.scrollToBottom();

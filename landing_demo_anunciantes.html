@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html id="htmlLang" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pageTitle">Revista Expats - Demo Landing</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+    /* HERO */
+    .hero {
+      color: white;
+      text-align: center;
+      padding: 60px 20px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 15px;
+      margin-bottom: 30px;
+    }
+    .hero h1 { font-size: 2.5em; margin-bottom: 15px; font-weight: 700; }
+    .hero p { font-size: 1.1em; opacity: 0.95; }
+
+    /* BANNER SECTION - DEMO DE PUBLICIDAD */
+    .banner-demo {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .banner-demo h3 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 1.5em;
+    }
+
+    .banner-demo .demo-label {
+      background: #ff6b6b;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .banner-showcase {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .banner-ad {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      padding: 30px;
+      border-radius: 10px;
+      color: white;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .banner-ad:hover { transform: scale(1.05); }
+    .banner-ad h4 { font-size: 1.3em; margin-bottom: 10px; }
+    .banner-ad p { font-size: 0.95em; opacity: 0.9; }
+
+    /* FEATURED ARTICLES - ARTÍCULOS PATROCINADOS */
+    .articles-section {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .article-card {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: box-shadow 0.3s;
+      background: white;
+    }
+
+    .article-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+    .article-image {
+      width: 100%;
+      height: 180px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3em;
+    }
+
+    .article-content {
+      padding: 20px;
+    }
+
+    .article-sponsor {
+      background: #ffeaa7;
+      color: #2d3436;
+      padding: 3px 10px;
+      border-radius: 3px;
+      font-size: 0.75em;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .article-card h4 {
+      color: #2d3436;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+    }
+
+    .article-card p {
+      color: #636e72;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+
+    /* EVENTS SECTION */
+    .events-section {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .event-card {
+      border-left: 4px solid #667eea;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .event-date {
+      background: #667eea;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 0.85em;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .event-card h4 {
+      color: #2d3436;
+      margin-bottom: 10px;
+    }
+
+    .event-sponsor-tag {
+      color: #667eea;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+
+    /* STATS */
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .stat {
+      flex: 1;
+      min-width: 180px;
+      text-align: center;
+      border-right: 1px solid #eee;
+    }
+    .stat:last-child { border-right: none; }
+    .stat-number { font-size: 2.2em; color: #667eea; font-weight: 700; }
+    .stat-label { color: #666; margin-top: 8px; font-size: 0.95em; }
+
+    /* ADVERTISING PACKAGES */
+    .packages {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .package-card {
+      background: white;
+      padding: 35px 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .package-card:hover { transform: translateY(-10px); }
+    .package-card h3 { color: #667eea; margin-bottom: 15px; }
+    .package-price { font-size: 2em; color: #2d3436; margin: 15px 0; font-weight: 700; }
+    .package-features {
+      list-style: none;
+      text-align: left;
+      margin: 20px 0;
+      color: #636e72;
+    }
+    .package-features li {
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f1f1;
+    }
+    .package-features li:before {
+      content: "✓ ";
+      color: #00b894;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s;
+      font-size: 1em;
+    }
+    .btn:hover { background: #764ba2; }
+
+    .footer {
+      text-align: center;
+      color: white;
+      padding: 20px;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 1.8em; }
+      .stat { border-right: none; border-bottom: 1px solid #eee; }
+      .stat:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- HERO -->
+    <div class="hero">
+      <h1>🌍 Revista Expats - Landing Demo</h1>
+      <p>Demostración de productos publicitarios para anunciantes</p>
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-number">25K+</div>
+        <div class="stat-label">Lectores semanales</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">9-10K</div>
+        <div class="stat-label">Visitantes diarios</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">500+</div>
+        <div class="stat-label">Negocios en directorio</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">Top 3</div>
+        <div class="stat-label">En Google SEO</div>
+      </div>
+    </div>
+
+    <!-- BANNER DEMO -->
+    <div class="banner-demo">
+      <span class="demo-label">🎯 PRODUCTO: Banners Destacados</span>
+      <h3>Banners Premium en Landing</h3>
+      <p style="color: #666; margin-bottom: 20px;">
+        Espacio destacado para captar la atención de 25,000+ expatriados semanales
+      </p>
+
+      <div class="banner-showcase">
+        <div class="banner-ad">
+          <h4>🏢 Tu Empresa Aquí</h4>
+          <p>Banner Premium - 300x250px</p>
+          <p style="margin-top: 10px; font-size: 0.85em;">Precio: 299€/mes</p>
+        </div>
+
+        <div class="banner-ad" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <h4>💼 Espacio Disponible</h4>
+          <p>Banner Estándar - 728x90px</p>
+          <p style="margin-top: 10px; font-size: 0.85em;">Precio: 199€/mes</p>
+        </div>
+
+        <div class="banner-ad" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+          <h4>✨ Promociona Tu Servicio</h4>
+          <p>Banner Sidebar - 160x600px</p>
+          <p style="margin-top: 10px; font-size: 0.85em;">Precio: 159€/mes</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEATURED ARTICLES -->
+    <div class="articles-section">
+      <span class="demo-label">📰 PRODUCTO: Artículos Patrocinados</span>
+      <h3>Artículos Destacados con SEO</h3>
+      <p style="color: #666; margin-bottom: 20px;">
+        Contenido optimizado para Google + promoción en newsletter
+      </p>
+
+      <div class="articles-grid">
+        <div class="article-card">
+          <div class="article-image">🏥</div>
+          <div class="article-content">
+            <span class="article-sponsor">PATROCINADO</span>
+            <h4>Clínica Dental Smile: Tu salud dental en Barcelona</h4>
+            <p>Descubre los mejores servicios dentales con profesionales de habla inglesa...</p>
+          </div>
+        </div>
+
+        <div class="article-card">
+          <div class="article-image">⚖️</div>
+          <div class="article-content">
+            <span class="article-sponsor">PATROCINADO</span>
+            <h4>Klev&Vera: Expertos en inmigración y NIE</h4>
+            <p>Todo lo que necesitas saber sobre tu residencia en España...</p>
+          </div>
+        </div>
+
+        <div class="article-card">
+          <div class="article-image">🏠</div>
+          <div class="article-content">
+            <span class="article-sponsor">PATROCINADO</span>
+            <h4>Mudanzas Express: Tu nueva vida en España</h4>
+            <p>Servicios completos de relocation para expatriados...</p>
+          </div>
+        </div>
+      </div>
+
+      <p style="text-align: center; margin-top: 25px; color: #666;">
+        <strong>Precio artículo patrocinado:</strong> 299€ | Incluye: SEO, newsletter, redes sociales
+      </p>
+    </div>
+
+    <!-- EVENTS PROMOTION -->
+    <div class="events-section">
+      <span class="demo-label">📅 PRODUCTO: Promoción de Eventos</span>
+      <h3>Eventos Destacados de Anunciantes</h3>
+      <p style="color: #666; margin-bottom: 20px;">
+        Promoción de webinars, talleres y eventos para la comunidad expat
+      </p>
+
+      <div class="events-grid">
+        <div class="event-card">
+          <span class="event-date">15 ENE 2026</span>
+          <h4>Webinar: "NIE y Residencia en España"</h4>
+          <p style="color: #636e72; margin: 10px 0;">Únete a nuestro webinar gratuito sobre trámites de inmigración.</p>
+          <p class="event-sponsor-tag">Organizado por: Klev&Vera Law Firm</p>
+        </div>
+
+        <div class="event-card" style="border-left-color: #00b894;">
+          <span class="event-date" style="background: #00b894;">20 ENE 2026</span>
+          <h4>Taller: "Fiscalidad para Expatriados"</h4>
+          <p style="color: #636e72; margin: 10px 0;">Aprende a optimizar tus impuestos como residente extranjero.</p>
+          <p class="event-sponsor-tag">Organizado por: EAFA Tax Advisors</p>
+        </div>
+
+        <div class="event-card" style="border-left-color: #fdcb6e;">
+          <span class="event-date" style="background: #fdcb6e; color: #2d3436;">25 ENE 2026</span>
+          <h4>Networking: "Expats in Barcelona"</h4>
+          <p style="color: #636e72; margin: 10px 0;">Conoce a otros expatriados y profesionales en Barcelona.</p>
+          <p class="event-sponsor-tag">Organizado por: Metropolitan Magazine</p>
+        </div>
+      </div>
+
+      <p style="text-align: center; margin-top: 25px; color: #666;">
+        <strong>Precio promoción evento:</strong> 199€ | Incluye: página dedicada, newsletter, redes sociales
+      </p>
+    </div>
+
+    <!-- ADVERTISING PACKAGES -->
+    <div class="packages">
+      <div class="package-card">
+        <h3>📍 Directorio</h3>
+        <div class="package-price">34€<span style="font-size: 0.5em;">/mes</span></div>
+        <ul class="package-features">
+          <li>Perfil en directorio</li>
+          <li>Visibilidad 25k+ lectores</li>
+          <li>Analytics básico</li>
+          <li>Soporte email</li>
+        </ul>
+        <a href="mailto:info@revista-expats.com" class="btn">Contratar</a>
+      </div>
+
+      <div class="package-card">
+        <h3>📢 Campaña</h3>
+        <div class="package-price">159-299€<span style="font-size: 0.5em;">/mes</span></div>
+        <ul class="package-features">
+          <li>Todo lo de Directorio +</li>
+          <li>4-6 artículos SEO/año</li>
+          <li>Eventos destacados</li>
+          <li>48-72 LIFTs sociales</li>
+          <li>Banner premium</li>
+        </ul>
+        <a href="mailto:info@revista-expats.com" class="btn">Contratar</a>
+      </div>
+
+      <div class="package-card">
+        <h3>📄 A la Carta</h3>
+        <div class="package-price">Desde 159€</div>
+        <ul class="package-features">
+          <li>Artículo: 299€</li>
+          <li>Banner: 159-299€/mes</li>
+          <li>Evento: 199€</li>
+          <li>Newsletter: 150€</li>
+        </ul>
+        <a href="mailto:info@revista-expats.com" class="btn">Consultar</a>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <p><strong>Esta es una LANDING DEMO</strong> para validar productos publicitarios</p>
+      <p style="margin-top: 10px;">&copy; 2026 Revista Expats | barcelona-metropolitan.com</p>
+      <p style="margin-top: 10px; font-size: 0.9em;">
+        <a href="https://www.barcelona-metropolitan.com/" style="color: white;">Ver sitio real →</a>
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>

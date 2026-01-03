@@ -2,11 +2,7 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 pydantic==2.5.0
-
-# CORS y compatibilidad
-flask==3.0.0
-flask-cors==4.0.0
-python-multipart==0.0.6
+pydantic-settings==2.1.0
 
 # ML y procesamiento de lenguaje natural
 sentence-transformers==2.2.2
@@ -14,3 +10,10 @@ torch==2.1.0
 
 # Servidor de producción
 gunicorn==21.2.0
+
+# RSS y scheduling
+feedparser==6.0.10
+APScheduler==3.10.4
+
+# Rate limiting y seguridad
+slowapi==0.1.9

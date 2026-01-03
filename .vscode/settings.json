@@ -1,3 +1,29 @@
 {
-    "CodeGPT.apiKey": "Claude Code"
+    "CodeGPT.apiKey": "Claude Code",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.venv": true,
+        "**/__pycache__": true,
+        "backups": true,
+        "docs": true,
+        "ARCHIVOS_DUPLICADOS.md": true,
+        "OPTIMIZACIONES_RENDIMIENTO.md": true,
+        "REPORTE_Revista_Expats_AI.pdf": true,
+        "ANALISIS_COMERCIAL_PROYECTO.md": true,
+        "CAMBIOS_FINALES_V2.txt": true,
+        "RESUMEN_CAMBIOS_V2.md": true,
+        "GUIA_IMPLEMENTACION_BM.md": true,
+        "INTEGRACION_PROFESIONAL.md": true,
+        "LUNA_*": true,
+        "MIGRATION_REPORT.txt": true,
+        "reporte.html": true,
+        "test_immigration.html": true,
+        "test_page.html": true,
+        "test_server.py": true,
+        "test_rss_integration.py": true,
+        "demo_luna_bot.py": true,
+        "*.pdf": true,
+        "**/*.md": true,
+        "README.md": false
+    }
 }

@@ -1,0 +1,683 @@
+{
+  "visados_espana": {
+    "descripcion": "Información sobre tipos de visados para España",
+    "paises": {
+      "Argentina": {
+        "nombre": "Argentina",
+        "codigo": "AR",
+        "visado_requerido": false,
+        "razon": "Ciudadano MERCOSUR - Libre circulación",
+        "dias_turistico": 90,
+        "renovable": true,
+        "dias_trabajo": 90,
+        "costoxmes": "N/A (libre)",
+        "requisitos": [
+          "Pasaporte válido",
+          "Demostrar solvencia económica (mínimo 900€/mes)",
+          "Certificado de antecedentes penales",
+          "No tener antecedentes en España"
+        ],
+        "links_utiles": [
+          "https://www.inclusion.gob.es/",
+          "https://www.ciudadaniaactiva.es/",
+          "https://www.seg-social.es/",
+          "https://www.aepd.es/"
+        ]
+      },
+      "Colombia": {
+        "nombre": "Colombia",
+        "codigo": "CO",
+        "visado_requerido": true,
+        "razon": "País no UE/EEE/MERCOSUR",
+        "dias_turistico": 90,
+        "renovable": false,
+        "dias_trabajo": 30,
+        "costoxmes": "80-150€",
+        "tipos_visa": [
+          "Turista: 90 días",
+          "Residencia: más de 1 año",
+          "Estudiante: duración programa",
+          "Trabajador: según contrato"
+        ],
+        "requisitos": [
+          "Pasaporte válido (mínimo 6 meses)",
+          "Foto carnet",
+          "Comprobante de fondos económicos",
+          "Certificado de antecedentes",
+          "Reserva de hotel o invitación",
+          "Seguro de viajes"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/bogota/",
+          "https://www.inclusion.gob.es/",
+          "https://www.seg-social.es/"
+        ]
+      },
+      "Mexico": {
+        "nombre": "México",
+        "codigo": "MX",
+        "visado_requerido": false,
+        "razon": "Acuerdo Schengen - 180 días",
+        "dias_turistico": 180,
+        "renovable": false,
+        "dias_trabajo": 0,
+        "costoxmes": "0€",
+        "tipos_visa": [
+          "Turista: 180 días (automático)"
+        ],
+        "requisitos": [
+          "Pasaporte válido",
+          "Billete de vuelta",
+          "Comprobante de fondos (mínimo 600€)",
+          "No tener antecedentes"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/mexico/",
+          "https://www.schengenvisainfo.com/"
+        ]
+      },
+      "Brasil": {
+        "nombre": "Brasil",
+        "codigo": "BR",
+        "visado_requerido": true,
+        "razon": "País no UE/EEE/MERCOSUR",
+        "dias_turistico": 90,
+        "renovable": false,
+        "dias_trabajo": 30,
+        "costoxmes": "90-120€",
+        "requisitos": [
+          "Pasaporte válido (mínimo 6 meses)",
+          "Comprobante de fondos económicos",
+          "Certificado de antecedentes penales",
+          "Reserva de alojamiento",
+          "Seguro de salud internacional",
+          "Justificación de viaje"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/brasilia/",
+          "https://www.seg-social.es/"
+        ]
+      },
+      "USA": {
+        "nombre": "Estados Unidos",
+        "codigo": "US",
+        "visado_requerido": false,
+        "razon": "Ciudadano USA - Acuerdo Schengen - 90 días sin visado",
+        "dias_turistico": 90,
+        "renovable": false,
+        "dias_trabajo": 0,
+        "costoxmes": "0€ (entrada)",
+        "tipos_visa": [
+          "Turista: 90 días (sin visado - ETIAS a partir 2025)",
+          "Trabajo: Visa de trabajo especializado",
+          "Estudiante: Visa de estudiante",
+          "Residencia: Visa de residencia temporal/permanente"
+        ],
+        "requisitos": [
+          "Pasaporte válido (mínimo 6 meses)",
+          "Billete de vuelta",
+          "Demostrar fondos (mínimo 1000€)",
+          "Certificado de antecedentes penales",
+          "No tener antecedentes criminales",
+          "Seguro de viajes (recomendado)"
+        ],
+        "nota_importante": "A partir de 2025, ciudadanos USA necesitarán ETIAS (autorización viaje) antes de llegar - costo 80€",
+        "tipos_visa_larga_duracion": {
+          "trabajo": {
+            "duracion": "1-3 años",
+            "requisitos_adicionales": ["Oferta de trabajo", "Licencia profesional"],
+            "costo": "300-500€"
+          },
+          "estudiante": {
+            "duracion": "Duración programa + 60 días",
+            "requisitos_adicionales": ["Carta admisión universidad", "Comprobante solvencia"],
+            "costo": "150-300€"
+          },
+          "residencia": {
+            "duracion": "1-5 años renovable",
+            "requisitos_adicionales": ["Comprobante ingresos 2000€+/mes", "Vivienda fija"],
+            "costo": "400-600€"
+          }
+        },
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/nuevayork/",
+          "https://www.schengenvisainfo.com/",
+          "https://www.etias.com.es/",
+          "https://www.inclusion.gob.es/"
+        ]
+      },
+      "Reino Unido": {
+        "nombre": "Reino Unido",
+        "codigo": "UK",
+        "visado_requerido": false,
+        "razon": "Ciudadano UK - Post-Brexit - 6 meses sin visado",
+        "dias_turistico": 180,
+        "renovable": false,
+        "dias_trabajo": 0,
+        "costoxmes": "0€ (entrada)",
+        "nota_brexit": "Post-Brexit: UK no es parte de Schengen pero acuerdo bilateral con España",
+        "tipos_visa": [
+          "Turista: 180 días (sin visado)",
+          "Visa de Trabajo",
+          "Visa de Estudiante",
+          "Visa de Residencia (BN/O para nómadas digitales)",
+          "Visa de Jubilación"
+        ],
+        "requisitos": [
+          "Pasaporte británico válido (mínimo 6 meses)",
+          "Billete de vuelta",
+          "Comprobante de fondos (mínimo 1500€)",
+          "Certificado de antecedentes",
+          "Seguro de viajes o sanidad privada",
+          "Comprobante de alojamiento"
+        ],
+        "visa_trabajo": {
+          "duracion": "2-5 años",
+          "requisitos": [
+            "Oferta de trabajo de empleador UK",
+            "Certificado de patrocinador",
+            "Comprobante de salario",
+            "Prueba de fondos"
+          ],
+          "costo": "719€ + healthcare surcharge"
+        },
+        "visa_estudiante": {
+          "duracion": "Duración programa + 4 meses",
+          "requisitos": [
+            "Carta de admisión universidad",
+            "Comprobante de fondos",
+            "Certificado nivel inglés"
+          ],
+          "costo": "719€ + healthcare surcharge"
+        },
+        "visa_digital_nomad": {
+          "duracion": "2 años",
+          "requisitos": [
+            "Comprobante ingresos £2,530/mes",
+            "Experiencia laboral verificable",
+            "Comprobante de fondos"
+          ],
+          "costo": "719€"
+        },
+        "links_utiles": [
+          "https://www.gov.uk/guidance/living-in-spain",
+          "https://www.exteriores.gob.es/Consulados/londres/",
+          "https://www.uk.gov.es/",
+          "https://www.seg-social.es/cgi-bin/Tratados"
+        ]
+      },
+      "Alemania": {
+        "nombre": "Alemania",
+        "codigo": "DE",
+        "visado_requerido": false,
+        "razon": "Ciudadano UE - Libre circulación Schengen",
+        "dias_turistico": "Ilimitado",
+        "renovable": true,
+        "dias_trabajo": "Ilimitado",
+        "costoxmes": "N/A",
+        "requisitos": [
+          "DNI o pasaporte válido",
+          "Demostrar fondos (mínimo 800€/mes)"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/berlin/",
+          "https://www.inclusion.gob.es/"
+        ]
+      },
+      "Francia": {
+        "nombre": "Francia",
+        "codigo": "FR",
+        "visado_requerido": false,
+        "razon": "Ciudadano UE - Libre circulación Schengen",
+        "dias_turistico": "Ilimitado",
+        "renovable": true,
+        "dias_trabajo": "Ilimitado",
+        "costoxmes": "N/A",
+        "requisitos": [
+          "DNI o pasaporte válido",
+          "Demostrar fondos (mínimo 800€/mes)"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/paris/",
+          "https://www.inclusion.gob.es/"
+        ]
+      },
+      "Italia": {
+        "nombre": "Italia",
+        "codigo": "IT",
+        "visado_requerido": false,
+        "razon": "Ciudadano UE - Libre circulación Schengen",
+        "dias_turistico": "Ilimitado",
+        "renovable": true,
+        "dias_trabajo": "Ilimitado",
+        "costoxmes": "N/A",
+        "requisitos": [
+          "DNI o pasaporte válido",
+          "Demostrar fondos (mínimo 800€/mes)"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/roma/",
+          "https://www.inclusion.gob.es/"
+        ]
+      },
+      "Países Bajos": {
+        "nombre": "Países Bajos",
+        "codigo": "NL",
+        "visado_requerido": false,
+        "razon": "Ciudadano UE - Libre circulación Schengen",
+        "dias_turistico": "Ilimitado",
+        "renovable": true,
+        "dias_trabajo": "Ilimitado",
+        "costoxmes": "N/A",
+        "requisitos": [
+          "DNI o pasaporte válido",
+          "Demostrar fondos (mínimo 900€/mes)"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/amsterdam/",
+          "https://www.inclusion.gob.es/"
+        ]
+      },
+      "Portugal": {
+        "nombre": "Portugal",
+        "codigo": "PT",
+        "visado_requerido": false,
+        "razon": "Ciudadano UE - Libre circulación Schengen",
+        "dias_turistico": "Ilimitado",
+        "renovable": true,
+        "dias_trabajo": "Ilimitado",
+        "costoxmes": "N/A",
+        "requisitos": [
+          "DNI o pasaporte válido",
+          "Demostrar fondos (mínimo 700€/mes)"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/lisboa/",
+          "https://www.inclusion.gob.es/"
+        ]
+      },
+      "Suiza": {
+        "nombre": "Suiza",
+        "codigo": "CH",
+        "visado_requerido": false,
+        "razon": "Acuerdo bilateral - 90 días sin visado",
+        "dias_turistico": 90,
+        "renovable": false,
+        "dias_trabajo": 0,
+        "costoxmes": "0€",
+        "requisitos": [
+          "Pasaporte válido",
+          "Comprobante de fondos",
+          "Billete de vuelta"
+        ],
+        "nota_importante": "No es UE pero parte del área Schengen",
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/berna/",
+          "https://www.state.gov/countries-areas/switzerland/"
+        ]
+      },
+      "Noruega": {
+        "nombre": "Noruega",
+        "codigo": "NO",
+        "visado_requerido": false,
+        "razon": "Acuerdo Schengen - 90 días",
+        "dias_turistico": 90,
+        "renovable": false,
+        "dias_trabajo": 0,
+        "costoxmes": "0€",
+        "requisitos": [
+          "Pasaporte válido",
+          "Comprobante de fondos",
+          "Seguro de viajes"
+        ],
+        "nota_importante": "No es UE pero parte del EEE",
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/oslo/",
+          "https://www.udi.no/"
+        ]
+      },
+      "Irlanda": {
+        "nombre": "Irlanda",
+        "codigo": "IE",
+        "visado_requerido": false,
+        "razon": "UE - Libre circulación (acuerdo bilateral con UK/Irlanda)",
+        "dias_turistico": "Ilimitado",
+        "renovable": true,
+        "dias_trabajo": "Ilimitado",
+        "costoxmes": "N/A",
+        "requisitos": [
+          "DNI o pasaporte válido",
+          "Demostrar fondos (mínimo 800€/mes)"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/dublin/",
+          "https://www.inclusion.gob.es/"
+        ]
+      },
+      "Canadá": {
+        "nombre": "Canadá",
+        "codigo": "CA",
+        "visado_requerido": false,
+        "razon": "Acuerdo Schengen - 90 días eVisitor (AVE)",
+        "dias_turistico": 90,
+        "renovable": false,
+        "dias_trabajo": 0,
+        "costoxmes": "0€ (entrada), 7€ eVisitor",
+        "tipos_visa": [
+          "Turista: 90 días sin visado",
+          "Trabajo: Permiso de trabajo",
+          "Estudiante: Visa de estudiante",
+          "Residencia: Visa de residencia temporal"
+        ],
+        "requisitos": [
+          "Pasaporte canadiense válido (mínimo 6 meses)",
+          "Billete de vuelta",
+          "Comprobante de fondos (mínimo 1200€)",
+          "No tener antecedentes",
+          "Seguro de viajes"
+        ],
+        "eVisitor": {
+          "duracion": "3 años",
+          "ingresos": "Múltiples entradas",
+          "costo": "7€ CAD (aprox 5€)",
+          "tramite": "Online - 24-72 horas"
+        },
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/toronto/",
+          "https://www.canada.ca/",
+          "https://www.schengenvisainfo.com/"
+        ]
+      },
+      "Australia": {
+        "nombre": "Australia",
+        "codigo": "AU",
+        "visado_requerido": true,
+        "razon": "País no UE/Schengen - Requiere visado",
+        "dias_turistico": 90,
+        "renovable": false,
+        "dias_trabajo": 0,
+        "costoxmes": "80€ (visa turista)",
+        "tipos_visa": [
+          "Turista: 90 días",
+          "eVisitor: 1 año múltiples entradas",
+          "Trabajo: Visa de trabajo",
+          "Estudiante: Visa de estudiante",
+          "Residencia: Visa de residencia permanente"
+        ],
+        "requisitos": [
+          "Pasaporte válido (mínimo 6 meses)",
+          "Comprobante de fondos (mínimo 1500€)",
+          "Billete de vuelta",
+          "Certificado de antecedentes",
+          "Seguro de viajes obligatorio"
+        ],
+        "eVisitor": {
+          "duracion": "1 año",
+          "ingresos": "Múltiples entradas",
+          "costo": "20€ AUD (aprox 12€)",
+          "tramite": "Online - 1-2 días"
+        },
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/sidney/",
+          "https://immi.homeaffairs.gov.au/",
+          "https://www.australia.gov.au/"
+        ]
+      },
+      "Nueva Zelanda": {
+        "nombre": "Nueva Zelanda",
+        "codigo": "NZ",
+        "visado_requerido": true,
+        "razon": "País no UE/Schengen - Requiere visado",
+        "dias_turistico": 90,
+        "renovable": false,
+        "dias_trabajo": 0,
+        "costoxmes": "85€",
+        "tipos_visa": [
+          "Turista: 90 días",
+          "Trabajo: Visa de trabajo",
+          "Estudiante: Visa de estudiante",
+          "Residencia: Visa de residencia permanente"
+        ],
+        "requisitos": [
+          "Pasaporte válido (mínimo 6 meses)",
+          "Comprobante de fondos (mínimo 1500€)",
+          "Billete de vuelta",
+          "Certificado antecedentes",
+          "Seguro de viajes"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/auckland/",
+          "https://www.immigration.govt.nz/",
+          "https://www.newzealand.com/"
+        ]
+      },
+      "China": {
+        "nombre": "China",
+        "codigo": "CN",
+        "visado_requerido": true,
+        "razon": "País asiático",
+        "dias_turistico": 90,
+        "renovable": false,
+        "dias_trabajo": 30,
+        "costoxmes": "100-150€",
+        "requisitos": [
+          "Pasaporte válido (mínimo 6 meses)",
+          "Foto carnet 4x4",
+          "Carta de invitación o reserva hotel",
+          "Comprobante económico",
+          "Certificado de antecedentes",
+          "Carta de empleador"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/pekin/",
+          "https://www.seg-social.es/"
+        ]
+      },
+      "India": {
+        "nombre": "India",
+        "codigo": "IN",
+        "visado_requerido": true,
+        "razon": "País asiático",
+        "dias_turistico": 90,
+        "renovable": false,
+        "dias_trabajo": 30,
+        "costoxmes": "80-120€",
+        "requisitos": [
+          "Pasaporte válido (mínimo 6 meses)",
+          "Fotos carnet",
+          "Prueba de fondos suficientes",
+          "Reserva de hotel",
+          "Certificado de antecedentes",
+          "Justificación de viaje",
+          "Comprobante de no ser criminal"
+        ],
+        "links_utiles": [
+          "https://www.exteriores.gob.es/Consulados/nuevadelhi/",
+          "https://www.inclusion.gob.es/"
+        ]
+      }
+    },
+    "tipos_visado_comunes": {
+      "turista": {
+        "nombre": "Visado de Turista",
+        "duracion": "90 días (no renovable)",
+        "pueden_trabajar": false,
+        "costo": "0-150€ según país",
+        "requisitos_basicos": [
+          "Pasaporte válido",
+          "Comprobante de fondos",
+          "Reserva alojamiento",
+          "Seguro de viajes (recomendado)"
+        ]
+      },
+      "estudiante": {
+        "nombre": "Visado de Estudiante",
+        "duracion": "Duración del programa + 60 días",
+        "pueden_trabajar": true,
+        "costo": "150-300€",
+        "requisitos": [
+          "Pasaporte válido",
+          "Carta de admisión universidad",
+          "Comprobante de fondos",
+          "Seguro de salud",
+          "Certificado antecedentes"
+        ]
+      },
+      "trabajo": {
+        "nombre": "Visado de Trabajo",
+        "duracion": "1-3 años (renovable)",
+        "pueden_trabajar": true,
+        "costo": "300-500€",
+        "requisitos": [
+          "Pasaporte válido",
+          "Oferta de trabajo",
+          "Comprobante de sponsorship empleador",
+          "Cualificación profesional",
+          "Seguro de salud"
+        ]
+      },
+      "residencia": {
+        "nombre": "Visado de Residencia",
+        "duracion": "Más de 1 año (renovable)",
+        "pueden_trabajar": true,
+        "costo": "400-600€",
+        "requisitos": [
+          "Pasaporte válido",
+          "Comprobante de ingresos/fondos",
+          "Vivienda asegurada",
+          "Certificado antecedentes",
+          "Seguro de salud"
+        ]
+      }
+    }
+  },
+  "nie_informacion": {
+    "descripcion": "Número de Identidad de Extranjero",
+    "que_es": "Identificador único asignado por la administración española a extranjeros para fines legales, fiscales y administrativos",
+    "quien_puede_solicitarlo": [
+      "Extranjeros residentes en España",
+      "Trabajadores extranjeros",
+      "Estudiantes extranjeros",
+      "Autónomos extranjeros",
+      "Inversores extranjeros"
+    ],
+    "documentos_requeridos": [
+      "Pasaporte original y fotocopia",
+      "Formulario EX-15 (solicitud NIE) - rellenado",
+      "Comprobante de empadronamiento (certificado del ayuntamiento)",
+      "Prueba del motivo de solicitud (contrato laboral, matrícula universidad, etc.)",
+      "Fotografía carnet tamaño 4x4",
+      "Comprobante de pago (si aplica)"
+    ],
+    "donde_solicitarlo": [
+      "Comisaría de Policía Nacional",
+      "Oficina de Extranjería",
+      "Consulado español en el extranjero (antes de viajar)"
+    ],
+    "tiempo_tramite": {
+      "dias": "5-10",
+      "nota": "Varía según comisaría y carga de trabajo"
+    },
+    "costo": "0€ (gratuito)",
+    "validez": "Indefinida (no caduca)",
+    "tramite_online": {
+      "disponible": true,
+      "enlace": "https://www.cita-previa-ext.es",
+      "duracion": "1-2 semanas"
+    },
+    "usos_principales": [
+      "Identificación ante administraciones",
+      "Abrir cuenta bancaria",
+      "Trabajar como autónomo",
+      "Acceder a servicios públicos",
+      "Alquilar vivienda",
+      "Comprar propiedades",
+      "Declaración de impuestos",
+      "Tramitaciones administrativas"
+    ]
+  },
+  "empadronamiento": {
+    "descripcion": "Registro oficial de residencia",
+    "que_es": "Documento que certifica que una persona reside en una vivienda específica en territorio español",
+    "importancia": [
+      "Requisito previo para solicitar NIE",
+      "Acceso a servicios de salud pública",
+      "Acceso a servicios sociales",
+      "Empadronamiento en zona de colegio",
+      "Comprobante de residencia"
+    ],
+    "donde_solicitarlo": [
+      "Ayuntamiento de la ciudad/municipio",
+      "Oficina de registro civil",
+      "En línea (varía según municipio)"
+    ],
+    "documentos_necesarios": [
+      "Pasaporte o DNI",
+      "Contrato de alquiler o escritura de propiedad",
+      "Permiso del propietario (formulario)",
+      "Comprobante de servicios (agua, luz, teléfono)"
+    ],
+    "tiempo": "1 día (trámite rápido)",
+    "costo": "0€ (gratuito)",
+    "validez": "Indefinida mientras vivas en la dirección",
+    "renovacion": {
+      "requerida": true,
+      "cada": "Anualmente, si no se actualiza, caducidad automática"
+    },
+    "pasos": [
+      "1. Obtener permiso del propietario",
+      "2. Dirigirse al ayuntamiento con documentación",
+      "3. Rellenar formulario (facilitado por ayuntamiento)",
+      "4. Recibir certificado de empadronamiento"
+    ]
+  },
+  "seguridad_social": {
+    "descripcion": "Acceso al sistema de salud español",
+    "como_funciona": "Todos los residentes en España con empadronamiento tienen acceso a sanidad pública",
+    "pasos": [
+      "1. Hacer empadronamiento",
+      "2. Solicitar NIE",
+      "3. Registrarse en centro de salud local",
+      "4. Recibir tarjeta de usuario del SNS"
+    ],
+    "documentos": [
+      "Pasaporte",
+      "NIE",
+      "Comprobante de empadronamiento",
+      "Comprobante de ingresos (si aplica)"
+    ],
+    "beneficios": [
+      "Atención médica gratuita",
+      "Medicinas con descuento",
+      "Atención especializada",
+      "Hospitalizaciones",
+      "Urgencias"
+    ]
+  },
+  "cuenta_bancaria": {
+    "descripcion": "Requisitos para abrir cuenta bancaria en España",
+    "documentos_necesarios": [
+      "Pasaporte o NIE",
+      "Comprobante de empadronamiento",
+      "Comprobante de ingresos (nómina, oferta trabajo)",
+      "Referencia de banco anterior (opcional)",
+      "Teléfono y email"
+    ],
+    "tiempo": "1-3 días",
+    "costo": "Varía según banco (0-50€ aprox.)",
+    "bancos_principales": [
+      "BBVA",
+      "CaixaBank",
+      "Sabadell",
+      "Santander",
+      "ING",
+      "Revolut",
+      "N26"
+    ],
+    "tipos_cuenta": [
+      "Cuenta corriente (uso general)",
+      "Cuenta de ahorro (depósitos)",
+      "Cuenta nómina (para trabajadores)"
+    ]
+  }
+}

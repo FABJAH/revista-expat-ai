@@ -345,25 +345,6 @@
     });
   </script>
 
-  <!-- ============================================================ -->
-  <!-- LUNA ADVERTISING WIDGET -->
-  <!-- ============================================================ -->
-  <link rel="stylesheet" href="widget/luna-advertising.css">
-  <script src="widget/luna-advertising.js"></script>
-  <script>
-    // Inicializar Luna Bot Widget
-    document.addEventListener('DOMContentLoaded', function() {
-      const lunaWidget = new LunaAdvertisingWidget({
-        position: 'bottom-right',
-        language: 'es', // 'es' o 'en'
-        autoOpen: true,
-        autoOpenDelay: 4000, // 4 segundos después de cargar
-        apiEndpoint: 'http://127.0.0.1:8000/api/bot/advertising',
-        theme: 'default' // 'default' o 'dark'
-      });
-
-      console.log('🦉 Luna Widget activado en landing page');
-    });
-  </script>
+  <!-- Widget Luna comentado - se activará cuando esté listo -->
 </body>
 </html>

@@ -1,0 +1,471 @@
+"""
+Bot de Ventas de Espacios Publicitarios - Bilingüe
+Ayuda a comercios y empresas a anunciarse en la Revista de Expatriados
+Ofrece planes flexibles y dinámicos conversacionales
+"""
+
+import json
+from typing import List, Dict, Optional
+from .logger import logger
+from config import settings
+
+# ============================================================================
+# PLANES Y PRECIOS (Flexible - fácil de ajustar)
+# ============================================================================
+
+ADVERTISING_PLANS = {
+    "es": {
+        "directorio_mensual": {
+            "nombre": "Directorio - Mensual",
+            "precio": "34€/mes",
+            "precio_num": 34,
+            "duracion": "1 mes",
+            "beneficios": [
+                "✅ Listing en directorio digital",
+                "✅ Perfil completo con foto y descripción",
+                "✅ Categorías sin límite",
+                "✅ Visible para 12,000+ usuarios/mes",
+                "✅ Analytics de visitas y clics",
+                "✅ Soporte por email",
+                "✅ Actualización ilimitada de perfil"
+            ],
+            "ideal_para": "Todos los negocios"
+        },
+        "directorio_anual": {
+            "nombre": "Directorio - Anual (10% Descuento)",
+            "precio": "367€/año",
+            "precio_num": 367.2,
+            "precio_original": 408,
+            "duracion": "12 meses",
+            "beneficios": [
+                "✅ TODO lo del plan mensual",
+                "✅ 10% DESCUENTO (34€ x 12 = 408€ → 367€/año)",
+                "✅ Visibilidad garantizada todo el año",
+                "✅ 1 sesión de asesoramiento estratégico GRATIS",
+                "✅ Soporte prioritario",
+                "✅ Newsletter semanal exclusiva",
+                "✅ Acceso a eventos de la revista"
+            ],
+            "ahorro": "10%",
+            "ideal_para": "Compromisos a largo plazo - Ahorro garantizado"
+        },
+        "campana_especial": {
+            "nombre": "Campañas Especiales",
+            "precio": "Personalizado",
+            "precio_num": 0,
+            "duracion": "Variable",
+            "beneficios": [
+                "✅ Trato PREFERENTE con revista",
+                "✅ Precios especiales negociables",
+                "✅ Acompañamiento profesional de nuestro equipo",
+                "✅ Estrategia personalizada para impacto",
+                "✅ Visibilidad aumentada en el directorio",
+                "✅ Newsletter promocional dedicada",
+                "✅ Soporte VIP durante la campaña",
+                "✅ Análisis y reporte de resultados"
+            ],
+            "ideal_para": "Negocios que quieren crecer rápido",
+            "nota": "Disponible para clientes anuales"
+        }
+    },
+    "en": {
+        "directorio_mensual": {
+            "nombre": "Directory - Monthly",
+            "precio": "34€/month",
+            "precio_num": 34,
+            "duracion": "1 month",
+            "beneficios": [
+                "✅ Digital directory listing",
+                "✅ Complete profile with photo and description",
+                "✅ Unlimited categories",
+                "✅ Visible to 12,000+ users/month",
+                "✅ Analytics of visits and clicks",
+                "✅ Email support",
+                "✅ Unlimited profile updates"
+            ],
+            "ideal_para": "All businesses"
+        },
+        "directorio_anual": {
+            "nombre": "Directory - Annual (10% Discount)",
+            "precio": "367€/year",
+            "precio_num": 367.2,
+            "precio_original": 408,
+            "duracion": "12 months",
+            "beneficios": [
+                "✅ EVERYTHING from monthly plan",
+                "✅ 10% DISCOUNT (34€ x 12 = 408€ → 367€/year)",
+                "✅ Guaranteed visibility all year",
+                "✅ 1 FREE strategic consultation session",
+                "✅ Priority support",
+                "✅ Exclusive weekly newsletter",
+                "✅ Access to magazine events"
+            ],
+            "ahorro": "10%",
+            "ideal_para": "Long-term commitments - Guaranteed savings"
+        },
+        "campana_especial": {
+            "nombre": "Special Campaigns",
+            "precio": "Custom",
+            "precio_num": 0,
+            "duracion": "Variable",
+            "beneficios": [
+                "✅ PREFERRED treatment with magazine",
+                "✅ Special negotiable pricing",
+                "✅ Professional support from our team",
+                "✅ Personalized strategy for impact",
+                "✅ Increased visibility in directory",
+                "✅ Dedicated promotional newsletter",
+                "✅ VIP support during campaign",
+                "✅ Results analysis and report"
+            ],
+            "ideal_para": "Businesses wanting rapid growth",
+            "nota": "Available for annual customers"
+        }
+    }
+}
+
+# ============================================================================
+# MENSAJES PROACTIVOS (Burbujas de diálogo que se abren)
+# ============================================================================
+
+PROACTIVE_MESSAGES = {
+    "es": {
+        "greeting_morning": "¡Hola! 👋 ¿Quieres que tu negocio aparezca en nuestro directorio? Solo 34€/mes.",
+        "greeting_afternoon": "¡Hey! 🌟 Negocios como el tuyo ya están en nuestro directorio. ¿Te unes?",
+        "greeting_evening": "¡Buenas noches! 🌙 Aparece en nuestro directorio desde 34€/mes.",
+        "business_pitch": "💼 ¿Buscas aumentar visibilidad? Únete a 280+ negocios en nuestro directorio.",
+        "testimonial": "😊 Otros negocios han triplicado consultas con nosotros...",
+        "campaign_offer": "🚀 ¿Quieres impulsar tu campaña? Ofrecemos acompañamiento profesional.",
+        "annual_savings": "🎁 Contratando por un año: 10% descuento = 367€ en vez de 408€",
+    },
+    "en": {
+        "greeting_morning": "Hello! 👋 Want your business in our directory? Just 34€/month.",
+        "greeting_afternoon": "Hey! 🌟 Businesses like yours are already in our directory. Join us?",
+        "greeting_evening": "Good evening! 🌙 Appear in our directory from 34€/month.",
+        "business_pitch": "💼 Looking to increase visibility? Join 280+ businesses in our directory.",
+        "testimonial": "😊 Other businesses have tripled consultations with us...",
+        "campaign_offer": "🚀 Want to boost your campaign? We offer professional support.",
+        "annual_savings": "🎁 Annual subscription: 10% discount = 367€ instead of 408€",
+    }
+}
+
+# ============================================================================
+# MASCOTA/AVATAR DESCRIPTION
+# ============================================================================
+
+MASCOT = {
+    "name_es": "Luna",
+    "name_en": "Luna",
+    "description_es": "Un simpático búho con grandes ojos curiosos 🦉",
+    "description_en": "A cute owl with big curious eyes 🦉",
+    "emoji": "🦉",
+    "color": "#FF6B6B",  # Rojo coral cálido
+    "personality": "Amigable, curioso, motivador"
+}
+
+# ============================================================================
+# FLUJO DE CONVERSACIÓN DE VENTA
+# ============================================================================
+
+class AdvertisingSalesBot:
+    """
+    Bot dinámico para vender espacios publicitarios en la revista.
+
+    Responsabilidades:
+    - Presentar planes de forma atractiva
+    - Responder preguntas sobre beneficios
+    - Iniciar conversaciones proactivas
+    - Capturar información de interesados
+    """
+
+    def __init__(self):
+        self.plans = ADVERTISING_PLANS
+        self.messages = PROACTIVE_MESSAGES
+        self.mascot = MASCOT
+        logger.info("AdvertisingSalesBot inicializado")
+
+    def get_greeting(self, language: str = "es", time_of_day: str = "morning") -> Dict:
+        """
+        Retorna un saludo dinámico basado en la hora del día.
+
+        Args:
+            language: "es" o "en"
+            time_of_day: "morning", "afternoon", "evening"
+
+        Returns:
+            Dict con mensaje y opciones de respuesta
+        """
+        lang_messages = self.messages.get(language, self.messages["es"])
+        key = f"greeting_{time_of_day}"
+        message = lang_messages.get(key, lang_messages["greeting_morning"])
+
+        return {
+            "type": "greeting",
+            "message": message,
+            "mascot": {
+                "emoji": self.mascot["emoji"],
+                "name": self.mascot["name_es"] if language == "es" else self.mascot["name_en"],
+            },
+            "quick_replies": [
+                {"text": "Sí, necesito ayuda" if language == "es" else "Yes, I need help", "action": "help"},
+                {"text": "Soy un negocio" if language == "es" else "I'm a business", "action": "business"},
+                {"text": "Solo navegando" if language == "es" else "Just browsing", "action": "browse"},
+            ]
+        }
+
+    def get_plans_comparison(self, language: str = "es") -> Dict:
+        """
+        Retorna comparativa visual de planes.
+
+        Muestra:
+        - Tabla con planes lado a lado
+        - Precios destacados
+        - Botones de CTA
+        """
+        lang_plans = self.plans.get(language, self.plans["es"])
+
+        plans_data = []
+        for plan_key, plan_info in lang_plans.items():
+            plans_data.append({
+                "id": plan_key,
+                "nombre": plan_info["nombre"],
+                "precio": plan_info["precio"],
+                "duracion": plan_info["duracion"],
+                "beneficios": plan_info["beneficios"],
+                "ideal_para": plan_info["ideal_para"],
+                "cta_text": "Elegir este plan" if language == "es" else "Choose this plan"
+            })
+
+        return {
+            "type": "plans_comparison",
+            "title": "Nuestros Planes" if language == "es" else "Our Plans",
+            "subtitle": "Elige el perfecto para tu negocio" if language == "es" else "Choose the perfect one for your business",
+            "plans": plans_data,
+            "note": "Todos incluyen soporte 24/7 y garantía de satisfacción" if language == "es" else "All include 24/7 support and satisfaction guarantee"
+        }
+
+    def get_plan_details(self, plan_id: str, language: str = "es") -> Dict:
+        """
+        Retorna detalles detallados de un plan específico.
+        """
+        lang_plans = self.plans.get(language, self.plans["es"])
+
+        if plan_id not in lang_plans:
+            logger.warning(f"Plan no encontrado: {plan_id}")
+            return {"error": f"Plan '{plan_id}' not found"}
+
+        plan = lang_plans[plan_id]
+
+        return {
+            "type": "plan_details",
+            "plan_id": plan_id,
+            "nombre": plan["nombre"],
+            "precio": plan["precio"],
+            "duracion": plan["duracion"],
+            "beneficios": plan["beneficios"],
+            "ideal_para": plan["ideal_para"],
+            "cta_primary": {
+                "text": "Contratar ahora" if language == "es" else "Get started now",
+                "action": f"contract_plan:{plan_id}"
+            },
+            "cta_secondary": {
+                "text": "Más información" if language == "es" else "Learn more",
+                "action": "contact_sales"
+            }
+        }
+
+    def respond_to_question(self, question: str, language: str = "es") -> Dict:
+        """
+        Responde preguntas frecuentes sobre planes y beneficios.
+
+        Usa búsqueda simple de keywords para matchear preguntas.
+        """
+        question_lower = question.lower()
+
+        # FAQ Map por idioma
+        faq_map = {
+            "es": {
+                "precio|costo|cuanto": "Nuestros precios varían desde 19€/mes (Plan Básico) hasta 199€/año (Directorio Anual). Todos incluyen garantía de satisfacción.",
+                "beneficio|incluye": "Cada plan incluye listado digital, analytics, y visibilidad entre nuestros usuarios. Los planes premium añaden featured status y más categorías.",
+                "cancelar|devolucion|dinero": "Puedes cancelar en cualquier momento. Si no estás satisfecho en los primeros 30 días, devolvemos el 100% de tu dinero.",
+                "como funciona|como se": "1️⃣ Elige tu plan 2️⃣ Crea tu perfil 3️⃣ Aparece en el directorio 4️⃣ Los usuarios te encuentran!",
+                "categoria|servicio": "Puedes elegir hasta 5-10 categorías dependiendo de tu plan (Abogado, Médico, Restaurante, Escuela, Alojamiento, etc.).",
+                "soporte|ayuda": "¡Claro! Tenemos soporte 24/7 en español e inglés. Whatsapp, email o teléfono.",
+                "analytic|estadisticas": "Todos nuestros planes incluyen analytics. Ve cuántos usuarios te encuentran, cuántos clics recibes, y más.",
+            },
+            "en": {
+                "price|cost|much": "Our prices range from 19€/month (Basic Plan) to 199€/year (Annual Directory). All include satisfaction guarantee.",
+                "benefit|include": "Each plan includes digital listing, analytics, and visibility among our users. Premium plans add featured status and more categories.",
+                "cancel|refund|money": "You can cancel anytime. If unsatisfied within 30 days, we return 100% of your money.",
+                "how|work": "1️⃣ Choose your plan 2️⃣ Create your profile 3️⃣ Appear in directory 4️⃣ Users find you!",
+                "category|service": "You can choose up to 5-10 categories depending on your plan (Lawyer, Doctor, Restaurant, School, Accommodation, etc.).",
+                "support|help": "Sure! We have 24/7 support in Spanish & English. Whatsapp, email, or phone.",
+                "analytic|statistic": "All our plans include analytics. See how many users find you, how many clicks you get, and more.",
+            }
+        }
+
+        lang_faq = faq_map.get(language, faq_map["es"])
+
+        # Busca match en keywords
+        for keywords, answer in lang_faq.items():
+            keyword_list = keywords.split("|")
+            if any(kw in question_lower for kw in keyword_list):
+                return {
+                    "type": "faq_answer",
+                    "question": question,
+                    "answer": answer,
+                    "follow_up": {
+                        "text": "¿Quieres contratar?" if language == "es" else "Want to get started?",
+                        "action": "show_plans"
+                    }
+                }
+
+        # Si no hay match, respuesta genérica
+        return {
+            "type": "generic_response",
+            "answer": "Excelente pregunta. Contacta con nuestro equipo de ventas para más detalles." if language == "es" else "Great question. Contact our sales team for more details.",
+            "follow_up": {
+                "text": "Hablar con ventas" if language == "es" else "Talk to sales",
+                "action": "contact_sales"
+            }
+        }
+
+    def get_testimonials(self, language: str = "es") -> Dict:
+        """
+        Retorna testimonios de negocios exitosos.
+        """
+        testimonials = {
+            "es": [
+                {
+                    "nombre": "Juan López",
+                    "negocio": "Abogado - Especialista en NIE",
+                    "plan": "Plan Premium",
+                    "testimonial": "En 3 meses triplicamos nuestras consultas. Recomendado 100%.",
+                    "emoji": "⭐⭐⭐⭐⭐"
+                },
+                {
+                    "nombre": "Marta García",
+                    "negocio": "Clínica Dental",
+                    "plan": "Plan Featured",
+                    "testimonial": "Los analytics nos muestran exactamente dónde vienen nuestros pacientes. Increíble ROI.",
+                    "emoji": "⭐⭐⭐⭐⭐"
+                },
+                {
+                    "nombre": "Carlos Müller",
+                    "negocio": "Academia de Idiomas",
+                    "plan": "Plan Anual",
+                    "testimonial": "30% de ahorro con el plan anual y 40% más estudiantes. La mejor inversión.",
+                    "emoji": "⭐⭐⭐⭐⭐"
+                }
+            ],
+            "en": [
+                {
+                    "nombre": "John Smith",
+                    "negocio": "Lawyer - NIE Specialist",
+                    "plan": "Premium Plan",
+                    "testimonial": "Tripled our consultations in 3 months. Highly recommended.",
+                    "emoji": "⭐⭐⭐⭐⭐"
+                },
+                {
+                    "nombre": "Sarah Miller",
+                    "negocio": "Dental Clinic",
+                    "plan": "Featured Plan",
+                    "testimonial": "Analytics show us exactly where our patients come from. Incredible ROI.",
+                    "emoji": "⭐⭐⭐⭐⭐"
+                },
+                {
+                    "nombre": "Miguel Pérez",
+                    "negocio": "Language Academy",
+                    "plan": "Annual Plan",
+                    "testimonial": "30% savings with annual plan and 40% more students. Best investment ever.",
+                    "emoji": "⭐⭐⭐⭐⭐"
+                }
+            ]
+        }
+
+        lang_testimonials = testimonials.get(language, testimonials["es"])
+
+        return {
+            "type": "testimonials",
+            "title": "Lo que dicen nuestros clientes" if language == "es" else "What our clients say",
+            "testimonials": lang_testimonials
+        }
+
+    def create_inquiry(self, name: str, email: str, business_name: str,
+                      phone: str, language: str = "es") -> Dict:
+        """
+        Captura información de un cliente interesado.
+
+        Guarda en data/inquiries/ para seguimiento.
+        """
+        from pathlib import Path
+        import datetime
+
+        inquiry_data = {
+            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "name": name,
+            "email": email,
+            "business_name": business_name,
+            "phone": phone,
+            "language": language,
+            "status": "new"
+        }
+
+        # Guardar inquiry
+        try:
+            inquiries_dir = Path(settings.DATA_DIR) / "inquiries"
+            inquiries_dir.mkdir(parents=True, exist_ok=True)
+
+            filename = f"inquiry_{inquiry_data['timestamp'].replace(':', '-')}.json"
+            filepath = inquiries_dir / filename
+
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(inquiry_data, f, ensure_ascii=False, indent=2)
+
+            logger.info(f"Inquiry guardado: {business_name} ({email})")
+
+            return {
+                "success": True,
+                "message": "¡Gracias! Nos pondremos en contacto en 24 horas." if language == "es" else "Thank you! We'll contact you within 24 hours.",
+                "inquiry_id": filename
+            }
+
+        except Exception as e:
+            logger.error(f"Error guardando inquiry: {e}")
+            return {
+                "success": False,
+                "message": "Error al procesar tu solicitud. Intenta de nuevo.",
+                "error": str(e)
+            }
+
+
+# ============================================================================
+# ENDPOINT PRINCIPAL
+# ============================================================================
+
+def responder_consulta_ventas(pregunta: str, language: str = "es") -> Dict:
+    """
+    Punto de entrada principal para el bot de ventas.
+
+    Detects intención y enruta a la función correcta.
+    """
+    bot = AdvertisingSalesBot()
+    pregunta_lower = pregunta.lower()
+
+    # Detección de intención
+    if any(word in pregunta_lower for word in ["plan", "precio", "costo", "incluye"]):
+        return bot.get_plans_comparison(language)
+
+    elif any(word in pregunta_lower for word in ["anunciar", "advertise", "publicidad", "advertising"]):
+        return {
+            "type": "advertising_intro",
+            "message": "¡Excelente! Los negocios como el tuyo crecen con nosotros. 📈" if language == "es" else "Excellent! Businesses like yours grow with us. 📈",
+            "next": bot.get_plans_comparison(language)
+        }
+
+    elif any(word in pregunta_lower for word in ["testimonial", "client", "cliente", "review"]):
+        return bot.get_testimonials(language)
+
+    else:
+        # Pregunta abierta - responder con FAQ
+        return bot.respond_to_question(pregunta, language)

@@ -3,6 +3,7 @@
     {
       "nombre": "W Hotel",
       "descripcion": "Hotel frente a la playa en la Barceloneta, ideal para ocio y descanso.",
+      "es_anunciante": true,
       "contacto": "93 295 28 00",
       "beneficios": ["Ubicación frente a playa", "Piscina y spa", "Restaurante de lujo"],
       "precio": "€150-300 / noche",
@@ -13,6 +14,7 @@
     {
       "nombre": "Enjoy Apartments Barcelona",
       "descripcion": "Alquiler de apartamentos turísticos en el centro de Barcelona.",
+      "es_anunciante": true,
       "contacto": "933437074 / info@enjoyapartments.com",
       "beneficios": ["Apartamentos completamente equipados", "Ubicación céntrica", "Flexibilidad en duración"],
       "precio": "€70-150 / noche",
@@ -23,6 +25,7 @@
     {
       "nombre": "Hotel Novotel Barcelona City",
       "descripcion": "Hotel moderno en la Avenida Diagonal, ideal para negocios y turismo.",
+      "es_anunciante": true,
       "contacto": "933 26 24 99",
       "beneficios": ["Ubicación en Avenida Diagonal", "Gym y negocios center", "Desayuno incluido"],
       "precio": "€100-200 / noche",
@@ -31,10 +34,48 @@
       "faq": [{"q": "¿Hay Wi-Fi?", "a": "Sí, Wi-Fi gratuito en todo el hotel."}, {"q": "¿Cancelación gratuita?", "a": "Sí, cancelación gratuita hasta 24h antes."}]
     }
   ],
+  "Arts and Culture": [
+    {
+      "nombre": "Santi Font",
+      "descripcion": "Fotografía / arte y cultura en Barcelona.",
+      "url": "https://www.barcelona-metropolitan.com/locations/santi-font/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Ajuntament de Barcelona",
+      "descripcion": "Institución cultural y cívica con agenda y recursos urbanos.",
+      "url": "https://www.barcelona-metropolitan.com/locations/ajuntament-de-barcelona/",
+      "idiomas": "Catalán, Español, Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Antiga Seu Editorial Gustavo Gili",
+      "descripcion": "Espacio histórico vinculado a diseño, arquitectura y cultura visual.",
+      "url": "https://www.barcelona-metropolitan.com/locations/antiga-seu-editorial-gustavo-gili/",
+      "idiomas": "Español, Catalán, Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Fundació Photographic Social Vision",
+      "descripcion": "Proyectos y exposiciones de fotografía documental y social.",
+      "url": "https://www.barcelona-metropolitan.com/locations/fundacio-photographic-social-vision/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Berta Sumpsi",
+      "descripcion": "Artista / proyectos culturales en Barcelona.",
+      "url": "https://www.barcelona-metropolitan.com/locations/berta-sumpsi/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
+    }
+  ],
   "Legal and Financial": [
     {
       "nombre": "Klev&Vera International Law Firm",
       "descripcion": "Abogados especializados en inmigración, familia y bienes raíces.",
+      "es_anunciante": true,
       "contacto": "info@klevvera.com",
       "beneficios": ["Abogados inglés-parlantes", "Experiencia internacional", "Consulta inicial gratuita"],
       "precio": "€150-300 / hora",
@@ -97,12 +138,48 @@
     {
       "nombre": "Hard Rock Cafe Barcelona",
       "descripcion": "Restaurante de cocina americana en Plaça Catalunya.",
+      "es_anunciante": true,
       "contacto": "93 270 2305",
       "beneficios": ["Ubicación céntrica", "Atmósfera internacional", "Menú variado"],
       "precio": "€20-35 menú",
       "idiomas": "Español, Inglés, Catalán",
       "ubicacion": "Plaça Catalunya, Barcelona",
       "faq": [{"q": "¿Directo o reserva?", "a": "Se aceptan ambos, pero recomendamos reservar."}, {"q": "¿Happy hour?", "a": "Sí, de 17:00 a 19:00 de lunes a viernes."}]
+    } ,
+    {
+      "nombre": "Imprfecto Poblenou",
+      "descripcion": "Bar/Restaurante en Poblenou.",
+      "url": "https://www.barcelona-metropolitan.com/locations/imprfecto-poblenou/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Poblenou, Barcelona"
+    },
+    {
+      "nombre": "Els Quatre Gats",
+      "descripcion": "Histórico restaurante modernista de Barcelona.",
+      "url": "https://www.barcelona-metropolitan.com/locations/els-quatre-gats",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Gòtic, Barcelona"
+    },
+    {
+      "nombre": "Club Sauvage",
+      "descripcion": "Restaurante/club con ambiente nocturno.",
+      "url": "https://www.barcelona-metropolitan.com/locations/club-sauvage/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Rice & Spice Cooking",
+      "descripcion": "Cocina asiática / talleres culinarios.",
+      "url": "https://www.barcelona-metropolitan.com/locations/rice-spice-cooking/",
+      "idiomas": "Inglés, Español",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Cal Marius",
+      "descripcion": "Restaurante / delicatessen",
+      "url": "https://www.barcelona-metropolitan.com/locations/cal-marius/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
     }
   ],
   "Healthcare": [
@@ -125,6 +202,37 @@
       "idiomas": "Español, Inglés, Alemán, Francés",
       "ubicacion": "Passeig de Gràcia 55, Barcelona",
       "faq": [{"q": "¿Emergencias 24h?", "a": "Sí, línea de emergencias disponible."}, {"q": "¿Certificados médicos?", "a": "Sí, emitimos certificados oficiales."}]
+    },
+    {
+      "nombre": "Dr. Sapna Sehgal",
+      "descripcion": "Servicios médicos / salud internacional.",
+      "es_anunciante": true,
+      "url": "https://www.barcelona-metropolitan.com/locations/dr-sapna-sehgal/",
+      "idiomas": "Inglés, Español",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Andrea Ramírez Hypnotherapy",
+      "descripcion": "Hipnoterapia / salud mental.",
+      "url": "https://www.barcelona-metropolitan.com/locations/andrea-ramirez-hypnotherapy/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "DentalSpa Clinics",
+      "descripcion": "Clínica dental.",
+      "es_anunciante": true,
+      "url": "https://www.barcelona-metropolitan.com/locations/dentalspaclinics/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Kulumna Centre Quiropràctic",
+      "descripcion": "Quiropráctica y bienestar.",
+      "es_anunciante": true,
+      "url": "https://www.barcelona-metropolitan.com/locations/kulumna-centre-quiropractic/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
     }
   ],
   "Education": [
@@ -167,6 +275,43 @@
       "idiomas": "Español, Inglés, Catalán",
       "ubicacion": "Ciutadella - Barcelona",
       "faq": [{"q": "¿Admisión internacional?", "a": "Sí, proceso específico para estudiantes internacionales."}, {"q": "¿Alojamiento?", "a": "Servicio de orientación para residencias."}]
+    },
+    {
+      "nombre": "St. Peter's School",
+      "descripcion": "Colegio internacional en Barcelona.",
+      "es_anunciante": true,
+      "url": "https://www.barcelona-metropolitan.com/locations/st.-peter%27s-school/",
+      "idiomas": "Inglés, Español",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Benjamin Franklin International School",
+      "descripcion": "Colegio internacional en Barcelona.",
+      "es_anunciante": true,
+      "url": "https://www.barcelona-metropolitan.com/locations/benjamin-franklin-international-school-barcelona/",
+      "idiomas": "Inglés, Español",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Language Department",
+      "descripcion": "Academia de idiomas.",
+      "url": "https://www.barcelona-metropolitan.com/locations/language-department_1/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Eliana Paner",
+      "descripcion": "Profesora / coaching educativo.",
+      "url": "https://www.barcelona-metropolitan.com/locations/eliana-paner/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "MAKE",
+      "descripcion": "Espacio formativo / creativo.",
+      "url": "https://www.barcelona-metropolitan.com/locations/make/",
+      "idiomas": "Inglés, Español",
+      "ubicacion": "Barcelona"
     }
   ],
   "Comercial": [
@@ -199,6 +344,70 @@
       "idiomas": "Español, Inglés",
       "ubicacion": "Barcelona",
       "faq": [{"q": "¿Cuántas personas asisten?", "a": "Típicamente 150-300 profesionales."}, {"q": "¿Materiales?", "a": "Sí, incluye mesa y materiales promocionales básicos."}]
+    }
+  ],
+  "Beauty and Well-Being": [
+    {
+      "nombre": "Heaven Massage Barcelona",
+      "descripcion": "Centro de masajes y bienestar.",
+      "url": "https://www.barcelona-metropolitan.com/locations/heaven-massage-barcelona/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Sharlene Halbert – Relationship & Intimacy Coach",
+      "descripcion": "Coaching de relaciones e intimidad.",
+      "url": "https://www.barcelona-metropolitan.com/locations/sharlene-halbert-relationship-and-intimacy-coach/",
+      "idiomas": "Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Heltia",
+      "descripcion": "Bienestar integral / salud digital.",
+      "url": "https://www.barcelona-metropolitan.com/locations/heltia/",
+      "idiomas": "Inglés, Español",
+      "ubicacion": "Barcelona"
+    }
+  ],
+  "Home Services": [
+    {
+      "nombre": "Nicla D Interiors",
+      "descripcion": "Interiorismo y diseño.",
+      "url": "https://www.barcelona-metropolitan.com/locations/nicla-d-interiors/",
+      "idiomas": "Inglés, Español",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "White Design Concept",
+      "descripcion": "Diseño y reformas.",
+      "url": "https://www.barcelona-metropolitan.com/locations/white-design-concept/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
+    },
+    {
+      "nombre": "Mudanzas Diagonal",
+      "descripcion": "Servicios de mudanzas.",
+      "url": "https://www.barcelona-metropolitan.com/locations/mudanzas-diagonal/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
+    }
+  ],
+  "Recreation and Leisure": [
+    {
+      "nombre": "Vaya Sports",
+      "descripcion": "Deporte y ocio.",
+      "url": "https://www.barcelona-metropolitan.com/locations/vaya-sports/",
+      "idiomas": "Inglés, Español",
+      "ubicacion": "Barcelona"
+    }
+  ],
+  "Retail": [
+    {
+      "nombre": "Conti",
+      "descripcion": "Retail / moda.",
+      "url": "https://www.barcelona-metropolitan.com/locations/conti/",
+      "idiomas": "Español, Inglés",
+      "ubicacion": "Barcelona"
     }
   ]
 }

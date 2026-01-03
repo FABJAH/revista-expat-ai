@@ -1,0 +1,525 @@
+"""
+Configuración de Luna - Bot de Publicidad
+Archivo centralizado para fácil personalización
+"""
+
+import json
+from pathlib import Path
+from typing import Dict, List, Optional
+
+# ============================================================================
+# CONFIGURACIÓN DE MASCOTA
+# ============================================================================
+
+MASCOT_CONFIG = {
+    "name": "Luna",
+    "emoji": "🦉",
+    "description": "Un simpático búho con grandes ojos curiosos",
+    "color_primary": "#FF6B6B",
+    "color_secondary": "#FB5607",
+    "personality": "Amigable, curioso, motivador",
+    "animation_speed": "normal"  # "slow", "normal", "fast"
+}
+
+# ============================================================================
+# CONFIGURACIÓN DE PLANES
+# ============================================================================
+
+PLANS_CONFIG = {
+    "es": [
+        {
+            "id": "directorio_mensual",
+            "nombre": "Directorio - Mensual",
+            "emoji": "📍",
+            "precio": 34,
+            "moneda": "€",
+            "periodo": "mes",
+            "descripcion_corta": "Aparece en nuestro directorio",
+            "beneficios": [
+                "✅ Listing en directorio digital",
+                "✅ Perfil completo (foto, descripción, contacto)",
+                "✅ Categorías sin límite",
+                "✅ Visible para 12,000+ usuarios/mes",
+                "✅ Analytics de visitas y clics",
+                "✅ Soporte por email",
+                "✅ Actualización ilimitada de perfil"
+            ],
+            "limite_categorias": 999,
+            "limite_fotos": 5,
+            "analytics": True,
+            "featured": False,
+            "ideal_para": "Todos los negocios",
+            "cta": "Contratar mensualmente",
+            "popular": False
+        },
+        {
+            "id": "directorio_anual",
+            "nombre": "Directorio - Anual (10% Descuento)",
+            "emoji": "🎁",
+            "precio": 367.2,
+            "precio_original": 408,
+            "moneda": "€",
+            "periodo": "año",
+            "descripcion_corta": "Contrata por un año y ahorra",
+            "beneficios": [
+                "✅ TODO lo del plan mensual",
+                "✅ 10% DESCUENTO (34€ x 12 = 408€ → 367.2€/año)",
+                "✅ Visibilidad garantizada todo el año",
+                "✅ 1 sesión de asesoramiento estratégico GRATIS",
+                "✅ Soporte prioritario",
+                "✅ Newsletter semanal exclusiva",
+                "✅ Acceso a eventos de la revista"
+            ],
+            "limite_categorias": 999,
+            "limite_fotos": 5,
+            "analytics": True,
+            "featured": False,
+            "ahorro_porcentaje": 10,
+            "ideal_para": "Compromisos a largo plazo",
+            "cta": "Contratar anualmente (10% OFF)",
+            "popular": True
+        },
+        {
+            "id": "campana_especial",
+            "nombre": "Campañas Especiales",
+            "emoji": "🚀",
+            "precio": "Personalizado",
+            "moneda": "€",
+            "periodo": "variable",
+            "descripcion_corta": "Impulsa tu negocio con una campaña",
+            "beneficios": [
+                "✅ Trato PREFERENTE con revista",
+                "✅ Precios especiales negociables",
+                "✅ Acompañamiento profesional",
+                "✅ Estrategia personalizada para impacto",
+                "✅ Visibilidad aumentada en el directorio",
+                "✅ Newsletter promocional dedicada",
+                "✅ Soporte VIP durante la campaña",
+                "✅ Análisis y reporte de resultados"
+            ],
+            "limite_categorias": 999,
+            "limite_fotos": 10,
+            "analytics": True,
+            "featured": True,
+            "campana": True,
+            "ideal_para": "Negocios que quieren crecer rápido",
+            "cta": "Solicitar campaña personalizada",
+            "popular": False,
+            "nota": "Disponible para clientes anuales o bajo consulta"
+        }
+    ],
+    "en": [
+        {
+            "id": "directorio_mensual",
+            "nombre": "Directory - Monthly",
+            "emoji": "📍",
+            "precio": 34,
+            "moneda": "€",
+            "periodo": "month",
+            "descripcion_corta": "Appear in our directory",
+            "beneficios": [
+                "✅ Digital directory listing",
+                "✅ Complete profile (photo, description, contact)",
+                "✅ Unlimited categories",
+                "✅ Visible to 12,000+ users/month",
+                "✅ Analytics of visits and clicks",
+                "✅ Email support",
+                "✅ Unlimited profile updates"
+            ],
+            "limite_categorias": 999,
+            "limite_fotos": 5,
+            "analytics": True,
+            "featured": False,
+            "ideal_para": "All businesses",
+            "cta": "Subscribe monthly",
+            "popular": False
+        },
+        {
+            "id": "directorio_anual",
+            "nombre": "Directory - Annual (10% Discount)",
+            "emoji": "🎁",
+            "precio": 367.2,
+            "precio_original": 408,
+            "moneda": "€",
+            "periodo": "year",
+            "descripcion_corta": "Annual subscription with savings",
+            "beneficios": [
+                "✅ EVERYTHING from monthly plan",
+                "✅ 10% DISCOUNT (34€ x 12 = 408€ → 367.2€/year)",
+                "✅ Guaranteed visibility all year",
+                "✅ 1 FREE strategic consultation session",
+                "✅ Priority support",
+                "✅ Exclusive weekly newsletter",
+                "✅ Access to magazine events"
+            ],
+            "limite_categorias": 999,
+            "limite_fotos": 5,
+            "analytics": True,
+            "featured": False,
+            "ahorro_porcentaje": 10,
+            "ideal_para": "Long-term commitments",
+            "cta": "Subscribe annually (10% OFF)",
+            "popular": True
+        },
+        {
+            "id": "campana_especial",
+            "nombre": "Special Campaigns",
+            "emoji": "🚀",
+            "precio": "Custom",
+            "moneda": "€",
+            "periodo": "variable",
+            "descripcion_corta": "Boost your business with a campaign",
+            "beneficios": [
+                "✅ PREFERRED treatment with magazine",
+                "✅ Special negotiable pricing",
+                "✅ Professional support & guidance",
+                "✅ Personalized strategy for impact",
+                "✅ Increased visibility in directory",
+                "✅ Dedicated promotional newsletter",
+                "✅ VIP support during campaign",
+                "✅ Results analysis and report"
+            ],
+            "limite_categorias": 999,
+            "limite_fotos": 10,
+            "analytics": True,
+            "featured": True,
+            "campana": True,
+            "ideal_para": "Businesses wanting rapid growth",
+            "cta": "Request custom campaign",
+            "popular": False,
+            "nota": "Available for annual customers or upon consultation"
+        }
+    ]
+}
+
+# ============================================================================
+# MENSAJES DINÁMICOS
+# ============================================================================
+
+DYNAMIC_MESSAGES = {
+    "es": {
+        # Saludos por hora
+        "greeting": {
+            "morning": "¡Hola! 👋 ¿Es tu primer día en Barcelona? Tengo recursos que necesitas.",
+            "afternoon": "¡Hey! 🌟 ¿Buscas servicios en Barcelona? Puedo ayudarte.",
+            "evening": "¡Buenas noches! 🌙 ¿Necesitas algo urgente? Estoy aquí."
+        },
+
+        # Preguntas proactivas
+        "proactive_questions": [
+            "¿Eres una empresa? 💼 Nos encantaría que te unas a nuestro directorio.",
+            "¿Quieres aumentar tu visibilidad? 📈 Mira nuestros planes de publicidad.",
+            "😊 Otros negocios como el tuyo han crecido con nosotros. ¿Te interesa saber cómo?",
+            "⏰ Oferta especial: 20% OFF en planes anuales (solo esta semana)",
+            "¿Necesitas más clientes? 🎯 Te mostramos cómo otros lo logran."
+        ],
+
+        # Mensajes de venta
+        "sales": {
+            "intro": "Nos encantaría ayudarte a vender tus espacios publicitarios. ¿Por dónde empezamos?",
+            "benefits": "Nuestro directorio tiene {count} usuarios activos cada mes. ¿Te interesa saber más?",
+            "urgency": "Muchas empresas se están uniendo esta semana. ¿Quieres ser uno de ellos?"
+        }
+    },
+    "en": {
+        "greeting": {
+            "morning": "Hello! 👋 Is this your first day in Barcelona? I have resources you need.",
+            "afternoon": "Hey! 🌟 Looking for services in Barcelona? I can help.",
+            "evening": "Good evening! 🌙 Need something urgent? I'm here."
+        },
+        "proactive_questions": [
+            "Are you a business? 💼 We'd love to have you in our directory.",
+            "Want to increase your visibility? 📈 Check out our advertising plans.",
+            "😊 Other businesses like yours have grown with us. Interested in learning how?",
+            "⏰ Special offer: 20% OFF annual plans (this week only)",
+            "Need more customers? 🎯 Let's show you how others are doing it."
+        ],
+        "sales": {
+            "intro": "We'd love to help you sell your advertising spaces. Where shall we start?",
+            "benefits": "Our directory has {count} active users every month. Want to know more?",
+            "urgency": "Many businesses are joining this week. Want to be one of them?"
+        }
+    }
+}
+
+# ============================================================================
+# CONFIGURACIÓN DEL WIDGET
+# ============================================================================
+
+WIDGET_CONFIG = {
+    "position": "bottom-right",  # "bottom-right", "bottom-left", "top-right", "top-left"
+    "auto_open": True,
+    "auto_open_delay": 3000,  # ms
+    "auto_message_interval": 30000,  # ms entre burbujas
+    "animation_duration": 300,  # ms
+    "chat_width": 420,  # px
+    "chat_height": 600,  # px
+    "show_notification_badge": True,
+    "notification_badge_pulse": True,
+    "responsive": True,
+    "mobile_full_screen": True,
+    "theme": "light"  # "light", "dark", "auto"
+}
+
+# ============================================================================
+# CATEGORÍAS DISPONIBLES
+# ============================================================================
+
+CATEGORIES = {
+    "es": [
+        {"id": "legal", "nombre": "Abogados & Legal", "emoji": "⚖️"},
+        {"id": "healthcare", "nombre": "Médicos & Salud", "emoji": "🏥"},
+        {"id": "accommodation", "nombre": "Alojamiento", "emoji": "🏠"},
+        {"id": "education", "nombre": "Educación & Idiomas", "emoji": "📚"},
+        {"id": "restaurants", "nombre": "Restaurantes & Bares", "emoji": "🍽️"},
+        {"id": "services", "nombre": "Servicios", "emoji": "🔧"},
+        {"id": "retail", "nombre": "Tiendas", "emoji": "🛍️"},
+        {"id": "entertainment", "nombre": "Entretenimiento", "emoji": "🎭"},
+        {"id": "sports", "nombre": "Deporte & Fitness", "emoji": "⚽"},
+        {"id": "work", "nombre": "Empleo & Trabajo", "emoji": "💼"},
+    ],
+    "en": [
+        {"id": "legal", "nombre": "Lawyers & Legal", "emoji": "⚖️"},
+        {"id": "healthcare", "nombre": "Doctors & Health", "emoji": "🏥"},
+        {"id": "accommodation", "nombre": "Accommodation", "emoji": "🏠"},
+        {"id": "education", "nombre": "Education & Languages", "emoji": "📚"},
+        {"id": "restaurants", "nombre": "Restaurants & Bars", "emoji": "🍽️"},
+        {"id": "services", "nombre": "Services", "emoji": "🔧"},
+        {"id": "retail", "nombre": "Shops", "emoji": "🛍️"},
+        {"id": "entertainment", "nombre": "Entertainment", "emoji": "🎭"},
+        {"id": "sports", "nombre": "Sports & Fitness", "emoji": "⚽"},
+        {"id": "work", "nombre": "Jobs & Work", "emoji": "💼"},
+    ]
+}
+
+# ============================================================================
+# TESTIMONIOS
+# ============================================================================
+
+TESTIMONIALS = {
+    "es": [
+        {
+            "nombre": "Juan López",
+            "negocio": "Abogado - Especialista en NIE",
+            "plan": "Plan Premium",
+            "testimonial": "En 3 meses triplicamos nuestras consultas. Recomendado 100%.",
+            "rating": 5
+        },
+        {
+            "nombre": "Marta García",
+            "negocio": "Clínica Dental",
+            "plan": "Plan Featured",
+            "testimonial": "Los analytics nos muestran exactamente dónde vienen nuestros pacientes. Increíble ROI.",
+            "rating": 5
+        },
+        {
+            "nombre": "Carlos Müller",
+            "negocio": "Academia de Idiomas",
+            "plan": "Plan Anual",
+            "testimonial": "30% de ahorro con el plan anual y 40% más estudiantes. La mejor inversión.",
+            "rating": 5
+        }
+    ],
+    "en": [
+        {
+            "nombre": "John Smith",
+            "negocio": "Lawyer - NIE Specialist",
+            "plan": "Premium Plan",
+            "testimonial": "Tripled our consultations in 3 months. Highly recommended.",
+            "rating": 5
+        },
+        {
+            "nombre": "Sarah Miller",
+            "negocio": "Dental Clinic",
+            "plan": "Featured Plan",
+            "testimonial": "Analytics show us exactly where our patients come from. Incredible ROI.",
+            "rating": 5
+        },
+        {
+            "nombre": "Miguel Pérez",
+            "negocio": "Language Academy",
+            "plan": "Annual Plan",
+            "testimonial": "30% savings with annual plan and 40% more students. Best investment ever.",
+            "rating": 5
+        }
+    ]
+}
+
+# ============================================================================
+# MÉTRICAS Y ESTADÍSTICAS
+# ============================================================================
+
+PLATFORM_METRICS = {
+    "es": {
+        "total_users": 12000,
+        "monthly_active": 8500,
+        "engagement_rate": "87%",
+        "avg_session_time": "15 minutos",
+        "featured_businesses": 280,
+        "categories": 10,
+        "testimonials_count": 45,
+        "years_in_market": "28 años (desde 1996)",
+        "success_stories": [
+            "3x más consultas en promedio",
+            "45% aumento de clientes",
+            "ROI positivo en 45 días",
+            "Audiencia de expatriados consolidada"
+        ]
+    },
+    "en": {
+        "total_users": 12000,
+        "monthly_active": 8500,
+        "engagement_rate": "87%",
+        "avg_session_time": "15 minutes",
+        "featured_businesses": 280,
+        "categories": 10,
+        "testimonials_count": 45,
+        "years_in_market": "28 years (since 1996)",
+        "success_stories": [
+            "3x more consultations on average",
+            "45% increase in customers",
+            "Positive ROI in 45 days",
+            "Established expat audience"
+        ]
+    }
+}
+
+# ============================================================================
+# FAQ
+# ============================================================================
+
+FAQ = {
+    "es": [
+        {
+            "id": "precio",
+            "pregunta": "¿Cuál es el precio?",
+            "keywords": ["precio", "costo", "cuanto"],
+            "respuesta": "Nuestros precios varían desde 19€/mes (Plan Básico) hasta 199€/año (Directorio Anual). Todos incluyen garantía de satisfacción.",
+            "planes_sugeridos": ["basico", "premium"]
+        },
+        {
+            "id": "beneficios",
+            "pregunta": "¿Qué beneficios tiene cada plan?",
+            "keywords": ["beneficio", "incluye", "que viene"],
+            "respuesta": "Cada plan incluye listado digital, analytics, y visibilidad. Los planes premium añaden featured status y más categorías.",
+            "show_plans": True
+        },
+        {
+            "id": "cancelar",
+            "pregunta": "¿Puedo cancelar en cualquier momento?",
+            "keywords": ["cancelar", "devolucion", "dinero"],
+            "respuesta": "Claro. Si no estás satisfecho en los primeros 30 días, devolvemos el 100% de tu dinero.",
+            "follow_up": "¿Te gustaría comenzar con un plan?"
+        }
+    ],
+    "en": [
+        {
+            "id": "precio",
+            "pregunta": "What's the price?",
+            "keywords": ["price", "cost", "how much"],
+            "respuesta": "Our prices range from 19€/month (Basic Plan) to 199€/year (Annual Directory). All include satisfaction guarantee.",
+            "planes_sugeridos": ["basico", "premium"]
+        },
+        {
+            "id": "beneficios",
+            "pregunta": "What are the benefits of each plan?",
+            "keywords": ["benefit", "include", "what comes"],
+            "respuesta": "Each plan includes digital listing, analytics, and visibility. Premium plans add featured status and more categories.",
+            "show_plans": True
+        },
+        {
+            "id": "cancelar",
+            "pregunta": "Can I cancel anytime?",
+            "keywords": ["cancel", "refund", "money"],
+            "respuesta": "Yes. If you're not satisfied within 30 days, we refund 100% of your money.",
+            "follow_up": "Would you like to start with a plan?"
+        }
+    ]
+}
+
+# ============================================================================
+# FUNCIONES DE UTILIDAD
+# ============================================================================
+
+def get_plan(plan_id: str, language: str = "es") -> Optional[Dict]:
+    """Obtener configuración de un plan específico."""
+    plans = PLANS_CONFIG.get(language, PLANS_CONFIG["es"])
+    for plan in plans:
+        if plan["id"] == plan_id:
+            return plan
+    return None
+
+
+def get_all_plans(language: str = "es") -> List[Dict]:
+    """Obtener todos los planes."""
+    return PLANS_CONFIG.get(language, PLANS_CONFIG["es"])
+
+
+def get_categories(language: str = "es") -> List[Dict]:
+    """Obtener todas las categorías."""
+    return CATEGORIES.get(language, CATEGORIES["es"])
+
+
+def get_metric(metric_name: str, language: str = "es") -> any:
+    """Obtener métrica específica."""
+    metrics = PLATFORM_METRICS.get(language, PLATFORM_METRICS["es"])
+    return metrics.get(metric_name)
+
+
+def get_faq_by_id(faq_id: str, language: str = "es") -> Optional[Dict]:
+    """Obtener FAQ específico."""
+    faq_list = FAQ.get(language, FAQ["es"])
+    for faq in faq_list:
+        if faq["id"] == faq_id:
+            return faq
+    return None
+
+
+def load_config_from_file(filepath: str) -> Dict:
+    """
+    Cargar configuración desde archivo JSON.
+    Útil para cambiar configuración sin editar código.
+    """
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"Archivo de configuración no encontrado: {filepath}")
+        return {}
+    except json.JSONDecodeError:
+        print(f"Error al parsear JSON: {filepath}")
+        return {}
+
+
+def save_config_to_file(config: Dict, filepath: str):
+    """Guardar configuración a archivo JSON."""
+    try:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(config, f, ensure_ascii=False, indent=2)
+        print(f"Configuración guardada en: {filepath}")
+    except Exception as e:
+        print(f"Error al guardar configuración: {e}")
+
+
+# ============================================================================
+# EXPORTAR
+# ============================================================================
+
+if __name__ == "__main__":
+    # Ejemplo de uso
+    print("🦉 Luna Bot Configuration")
+    print("=" * 50)
+
+    print("\nMascota:", MASCOT_CONFIG["name"], MASCOT_CONFIG["emoji"])
+
+    print("\nPlanes disponibles (español):")
+    for plan in get_all_plans("es"):
+        print(f"  - {plan['nombre']}: {plan['precio']}€/{plan['periodo']}")
+
+    print("\nCategorías:")
+    for cat in get_categories("es"):
+        print(f"  {cat['emoji']} {cat['nombre']}")
+
+    print("\nTesrimonios:")
+    for testimonial in TESTIMONIALS["es"]:
+        print(f"  ⭐ {testimonial['nombre']} - {testimonial['negocio']}")

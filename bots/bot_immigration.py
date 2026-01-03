@@ -438,6 +438,10 @@ EMPADRONAMIENTO_INFO = {
 class ImmigrationBot:
     """Bot especializado en información de inmigración y primeros pasos."""
 
+    # OPTIMIZACIÓN: Caché de clase para evitar recargar JSON en cada instancia
+    _legal_ads_cache = None
+    _cache_loaded = False
+
     def __init__(self, language: str = "es"):
         self.language = language.lower()
         if self.language not in ["es", "en"]:
@@ -469,6 +473,10 @@ class ImmigrationBot:
         return header + "\n" + "\n".join(lines)
 
     def _load_legal_ads(self) -> List[Dict]:
+        # OPTIMIZACIÓN: Usa caché de clase para evitar leer JSON en cada instancia (mejora 10-50ms)
+        if ImmigrationBot._cache_loaded:
+            return ImmigrationBot._legal_ads_cache or []
+
         data_path = Path(__file__).resolve().parent.parent / "data" / "anunciantes.json"
         try:
             with data_path.open(encoding="utf-8") as f:
@@ -479,8 +487,14 @@ class ImmigrationBot:
             ]
             if not legal_list:
                 legal_list = data.get("Legal and Financial", [])[:2]
-            return legal_list[:3]
+
+            # Guardar en caché
+            ImmigrationBot._legal_ads_cache = legal_list[:3]
+            ImmigrationBot._cache_loaded = True
+            return ImmigrationBot._legal_ads_cache
         except Exception:
+            ImmigrationBot._cache_loaded = True  # Evitar reintentos
+            ImmigrationBot._legal_ads_cache = []
             return []
 
     def get_greeting(self) -> str:
