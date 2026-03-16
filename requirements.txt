@@ -14,10 +14,10 @@ APScheduler==3.10.4
 # Rate limiting y seguridad
 slowapi==0.1.9
 
-# REMOVIDO: ML dependencies (sentence-transformers, torch) para compatibilidad con Railway
-# sentence-transformers>=2.7.0
-# torch>=2.0.0
-# transformers>=4.30.0
-# Pillow>=10.0.0
-# numpy>=1.21.0
-# scipy>=1.7.0
+# ML dependencies para clasificación semántica - Versiones compatibles
+sentence-transformers>=2.7.0
+torch>=2.0.0
+transformers>=4.36.0
+Pillow>=10.1.0
+numpy>=1.21.0
+scipy>=1.7.0

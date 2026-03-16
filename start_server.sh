@@ -12,7 +12,7 @@ source .venv/bin/activate
 
 # Verificar que las dependencias estén instaladas
 echo "📦 Verificando dependencias..."
-python -c "import fastapi, uvicorn" 2>/dev/null
+python -c "import fastapi, uvicorn, sentence_transformers, torch" 2>/dev/null
 if [ $? -ne 0 ]; then
     echo "❌ Dependencias faltantes. Ejecuta: pip install -r requirements.txt"
     exit 1

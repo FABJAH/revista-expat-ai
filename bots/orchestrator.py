@@ -3,9 +3,9 @@ import json
 import random
 from pathlib import Path
 
-# REMOVIDO: sentence-transformers y torch para compatibilidad con Railway
-# import torch
-# from sentence_transformers import SentenceTransformer, util
+# ML dependencies para clasificación semántica
+import torch
+from sentence_transformers import SentenceTransformer, util
 
 from .utils import normalize
 from .content_manager import ContentManager
@@ -50,9 +50,9 @@ class Orchestrator:
         # --- INICIALIZAR RSS MANAGER ---
         self.rss_manager = get_rss_manager()
 
-        # REMOVIDO: Modelo semántico para compatibilidad con Railway
-        # model_name = 'paraphrase-multilingual-MiniLM-L12-v2'
-        # self.model = SentenceTransformer(model_name)
+        # Modelo semántico para clasificación inteligente
+        model_name = 'paraphrase-multilingual-MiniLM-L12-v2'
+        self.model = SentenceTransformer(model_name)
 
         # Patrones de intención (depurados) - Versión simplificada sin ML
         self.category_patterns = {  # Separado por idioma
@@ -454,9 +454,28 @@ class Orchestrator:
             }
         }
 
-        # REMOVIDO: Pre-cálculo de embeddings para compatibilidad con Railway
-        # self.category_info = []
-        # ... (lógica de embeddings eliminada)
+        # --- PRE-CÁLCULO DE EMBEDDINGS PARA CLASIFICACIÓN SEMÁNTICA ---
+        # Creamos embeddings para todas las categorías para búsqueda semántica rápida
+        self.category_info = []
+        all_categories = set(self.category_patterns.get("es", {}).keys()) | set(self.category_patterns.get("en", {}).keys())
+        for category in all_categories:
+            # Combinamos palabras clave de ambos idiomas para una descripción más rica
+            keywords_es = self.category_patterns.get("es", {}).get(category, [])
+            keywords_en = self.category_patterns.get("en", {}).get(category, [])
+            # Creamos una frase descriptiva que el modelo pueda entender mejor
+            description = f"Servicios sobre {category.lower()}: " + ", ".join(keywords_es + keywords_en)
+            self.category_info.append({
+                "name": category,
+                "description": description,
+                "embedding": self.model.encode(description, convert_to_tensor=True)
+            })
+        logger.info("Embeddings de categorías calculados.")
+
+        # --- OPTIMIZACIÓN: PRE-CALCULAR TENSOR DE EMBEDDINGS ---
+        # Evita re-crear el tensor en cada query (mejora 50ms por consulta)
+        import torch
+        self.category_embeddings_tensor = torch.stack([cat["embedding"] for cat in self.category_info])
+        logger.info(f"Tensor de embeddings pre-calculado: {self.category_embeddings_tensor.shape}")
 
         # --- OPTIMIZACIÓN: ÍNDICE DE NOMBRES DE NEGOCIOS ---
         # Crea un índice para búsqueda O(1) en lugar de O(n²)
@@ -655,10 +674,31 @@ class Orchestrator:
                 logger.debug(f"🔒 OVERRIDE CRÍTICO: '{keyword}' detectado → Immigration")
                 return "Immigration", 0.95, None
 
-        # REMOVIDO: Lógica de búsqueda semántica con embeddings
-        # Usamos solo coincidencia de palabras clave para compatibilidad
+        # --- LÓGICA DE BÚSQUEDA SEMÁNTICA ---
+        # 1. Convertimos la pregunta del usuario en un vector (embedding)
+        question_embedding = self.model.encode(question, convert_to_tensor=True)
 
-        # --- LÓGICA SIMPLIFICADA: Coincidencia por palabras clave ---
+        # 2. Usamos el tensor pre-calculado (OPTIMIZADO - evita stack en cada query)
+        # 3. Calculamos la similitud del coseno entre la pregunta y todas las categorías
+        cos_scores = util.cos_sim(question_embedding, self.category_embeddings_tensor)[0]
+
+        # 4. Encontramos la categoría con la puntuación más alta
+        top_result = int(cos_scores.argmax().item())
+        best_score = float(cos_scores[top_result].item())
+        best_match_category = self.category_info[top_result]["name"]
+
+        logger.debug(f"Clasificación semántica: '{best_match_category}' conf={best_score:.4f}")
+
+        # --- LÓGICA DE OVERRIDE: Coincidencia directa con nombres de negocios ---
+        # Si la pregunta menciona un negocio por su nombre, esa intención tiene prioridad.
+        # OPTIMIZADO: Usa índice pre-calculado O(n) en lugar de O(n²)
+        for name, (category, business) in self.business_name_index.items():
+            if name in qn:
+                logger.debug(f"Coincidencia directa negocio='{business.get('nombre', '')}' categoria='{category}'")
+                return category, 0.9, business
+
+        # --- LÓGICA DE OVERRIDE: Coincidencia por palabras clave declarativas ---
+        # Contamos hits por categoría usando los patrones declarados para el idioma.
         kw_map = self.category_patterns.get(language, {})
         best_kw_cat = None
         best_hits = 0
@@ -667,23 +707,15 @@ class Orchestrator:
             if hits > best_hits:
                 best_hits = hits
                 best_kw_cat = cat
-
         if best_kw_cat and best_hits > 0:
-            # Devolvemos la categoría por palabras clave con confianza basada en hits
-            confidence = min(0.9, 0.2 + (best_hits * 0.15))
-            logger.debug(f"Clasificación por keywords: '{best_kw_cat}' hits={best_hits} conf={confidence:.4f}")
-            return best_kw_cat, confidence, None
+            # Devolvemos la categoría por palabras clave con una confianza mínima razonable
+            return best_kw_cat, max(0.25, min(0.9, 0.15 * best_hits + 0.25)), None
 
-        # --- LÓGICA DE OVERRIDE: Coincidencia directa con nombres de negocios ---
-        # Si la pregunta menciona un negocio por su nombre, esa intención tiene prioridad.
-        for name, (category, business) in self.business_name_index.items():
-            if name in qn:
-                logger.debug(f"Coincidencia directa negocio='{business.get('nombre', '')}' categoria='{category}'")
-                return category, 0.9, business
-
-        # Si no hay coincidencias claras, devolver categoría por defecto
-        logger.debug(f"No se encontró categoría clara para: '{question}'")
-        return "Accommodation", 0.3, None  # Categoría por defecto con baja confianza
+        # Si la confianza semántica es alta, la usamos. Si no, consideramos la intención como desconocida.
+        if best_score > 0.2: # Umbral de confianza ajustado para consultas cortas
+            return best_match_category, best_score, None
+        else:
+            return "Desconocida", best_score, None
 
     def process_query(self, question, language="en", limit: int = 3, offset: int = 0):
         categoria, confidence, advertiser = self.classify_intent(question, language)

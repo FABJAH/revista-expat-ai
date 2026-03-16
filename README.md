@@ -2,7 +2,7 @@
 
 Asistente virtual inteligente para expatriados en Barcelona con bots orquestadores especializados.
 
-**Nota:** Esta versión usa clasificación por palabras clave en lugar de modelos de ML para máxima compatibilidad con plataformas de despliegue gratuito.
+**Nota:** Esta versión incluye clasificación semántica avanzada con ML para máxima precisión en la detección de intenciones.
 
 ## 🚀 Instalación
 

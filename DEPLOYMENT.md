@@ -4,13 +4,41 @@
 Permitir que cualquier persona acceda a la aplicación 24/7 sin necesidad de que el servidor local esté siempre corriendo.
 
 ## ✅ Cambios Recientes
-- **REMOVIDO:** Dependencias de ML (PyTorch, sentence-transformers) para compatibilidad con Railway
-- **SIMPLIFICADO:** Clasificación de intenciones usando solo palabras clave
-- **OPTIMIZADO:** Para despliegue en plataformas gratuitas
+- **AGREGADO:** Dependencias de ML completas (PyTorch, sentence-transformers) para clasificación semántica avanzada
+- **RESTAURADO:** Clasificación inteligente con embeddings para máxima precisión
+- **REQUIERE:** Plan pago en Railway o servidor con recursos suficientes
 
 ## 📋 Opciones de Despliegue
 
-### 1. 🌐 Ngrok (Más simple - Gratis con límites)
+### 1. 🚂 Railway (Recomendado - Plan Pago)
+**Ventajas:**
+- ✅ Despliegue automático desde GitHub
+- ✅ Dominio personalizado gratuito
+- ✅ Escalado automático
+- ✅ Compatible con ML completo
+
+**Requisitos:**
+- Plan pago ($5/mes) para recursos de ML
+- Conexión a GitHub repository
+
+**Pasos:**
+1. Ve a [railway.app](https://railway.app) y actualiza a plan pago
+2. Conecta tu repo: `FABJAH/revista-expat-ai`
+3. Railway detectará automáticamente la configuración
+4. ¡Despliega!
+
+### 2. 🌐 Ngrok (Para testing - Gratis con límites)
+**Limitaciones:**
+- ❌ URL temporal (cambia cada reinicio)
+- ❌ Límite de 8 horas/día
+- ❌ No apto para producción
+
+### 3. 🖥️ VPS/Cloud Server (Para producción completa)
+**Opciones:**
+- DigitalOcean ($6/mes)
+- Linode ($5/mes)
+- AWS Lightsail ($3.50/mes)
+- Google Cloud Run (pago por uso)
 **Para pruebas rápidas y feedback**
 ```bash
 # Instalar
