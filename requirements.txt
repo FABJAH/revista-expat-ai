@@ -5,8 +5,10 @@ pydantic==2.5.0
 pydantic-settings==2.1.0
 
 # ML y procesamiento de lenguaje natural
-sentence-transformers==2.2.2
-torch==2.1.0
+sentence-transformers>=2.7.0
+torch>=2.0.0
+transformers>=4.30.0
+Pillow>=10.0.0
 
 # Servidor de producción
 gunicorn==21.2.0
@@ -17,3 +19,7 @@ APScheduler==3.10.4
 
 # Rate limiting y seguridad
 slowapi==0.1.9
+
+# Dependencias adicionales para compatibilidad
+numpy>=1.21.0
+scipy>=1.7.0

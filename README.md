@@ -36,6 +36,15 @@ El frontend se sirve automáticamente desde la carpeta `frontend/`.
 ### Página de prueba de API
 Abre `http://127.0.0.1:8000/landing.html` para probar la conexión con el backend.
 
+## 🌐 Despliegue para Acceso Público
+
+Para que otras personas puedan acceder sin que tengas que mantener el servidor local corriendo, consulta el archivo [DEPLOYMENT.md](DEPLOYMENT.md) con opciones de despliegue en la nube.
+
+**Opciones rápidas:**
+- **Railway** (Recomendado): Despliegue automático desde GitHub
+- **Ngrok**: Exposición temporal del servidor local
+- **Render**: Alternativa gratuita similar a Railway
+
 ## 📁 Estructura del Proyecto
 
 ```

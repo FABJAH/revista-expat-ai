@@ -199,7 +199,7 @@ def manual_sync_rss():
 
 
 @app.post("/api/query")
-@limiter.limit("20/minute")
+# @limiter.limit("20/minute")  # Temporarily disabled due to async issues
 async def handle_query(request_obj: Request,
                        request: QueryRequest):
     """Endpoint principal para consultas al asistente"""
