@@ -3,6 +3,11 @@
 ## 🎯 Objetivo
 Permitir que cualquier persona acceda a la aplicación 24/7 sin necesidad de que el servidor local esté siempre corriendo.
 
+## ✅ Cambios Recientes
+- **REMOVIDO:** Dependencias de ML (PyTorch, sentence-transformers) para compatibilidad con Railway
+- **SIMPLIFICADO:** Clasificación de intenciones usando solo palabras clave
+- **OPTIMIZADO:** Para despliegue en plataformas gratuitas
+
 ## 📋 Opciones de Despliegue
 
 ### 1. 🌐 Ngrok (Más simple - Gratis con límites)

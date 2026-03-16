@@ -30,6 +30,16 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
     ]
 
+    # Producción
+    PRODUCTION: bool = False
+
+    # Luna Bot
+    LUNA_DEFAULT_LANGUAGE: str = "es"
+    LUNA_WIDGET_POSITION: str = "bottom-right"
+    LUNA_AUTO_OPEN: bool = True
+    LUNA_AUTO_OPEN_DELAY: int = 3000
+    LUNA_ADMIN_EMAIL: str = "admin@revistaexpatriados.es"
+
     # RSS/Feeds
     FEED_URLS: List[str] = [
         "https://www.barcelona-metropolitan.com/directory/index.rss",

@@ -332,3 +332,21 @@ def track_analytics(event: AnalyticsEvent):
 app.mount("/widget", StaticFiles(directory="widget"), name="widget")
 app.mount("/", StaticFiles(directory="frontend", html=True),
           name="static")
+
+
+# --- Iniciar servidor ---
+if __name__ == "__main__":
+    import uvicorn
+
+    port = int(os.getenv("PORT", 8000))
+    host = os.getenv("HOST", "127.0.0.1")
+
+    logger.info(f"Iniciando servidor en {host}:{port}")
+
+    uvicorn.run(
+        "main:app",
+        host=host,
+        port=port,
+        reload=False,
+        log_level="info"
+    )
