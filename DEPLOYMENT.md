@@ -27,23 +27,29 @@ ngrok config add-authtoken TU_TOKEN
 - ❌ URL cambia cada vez
 - ❌ Límite de 8 horas/día gratis
 
-### 2. 🚂 Railway (Recomendado - Gratis para proyectos pequeños)
-**Para despliegue permanente**
-```bash
-# 1. Sube tu código a GitHub
-git add .
-git commit -m "Ready for deployment"
-git push origin main
+### 2. 🚂 Railway (RECOMENDADO - Gratis para proyectos pequeños)
+**Para producción permanente - ¡Ya está configurado!**
 
-# 2. Ve a railway.app y conecta tu repo
-# 3. Railway detecta automáticamente Python/FastAPI
-```
+**Estado:** ✅ **LISTO PARA DESPLEGAR**
 
 **Ventajas:**
-- ✅ Siempre disponible
+- ✅ Siempre disponible (24/7)
 - ✅ URL permanente
 - ✅ Escalado automático
+- ✅ Despliegue desde GitHub
 - ✅ Base de datos incluida
+- ✅ Fácil de mantener
+
+**Desventajas:**
+- ❌ Límite de uso gratis (512MB RAM, 1GB disco)
+
+**Para desplegar ahora:**
+1. Ve a [railway.app](https://railway.app)
+2. Conecta tu GitHub
+3. Selecciona el repo `revista-expat-ai`
+4. Railway hace todo automáticamente
+
+**Guía detallada:** Ver [RAILWAY_DEPLOY.md](RAILWAY_DEPLOY.md)
 
 ### 3. 🎨 Render (Alternativa gratuita)
 **Similar a Railway**
