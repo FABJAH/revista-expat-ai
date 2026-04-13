@@ -378,6 +378,22 @@ def get_prometheus_metrics():
     )
 
 
+@app.get("/dashboard")
+def get_dashboard():
+    """Sirve el dashboard HTML para visualizar métricas en tiempo real."""
+    dashboard_path = Path(__file__).parent / "dashboard.html"
+    if not dashboard_path.exists():
+        return JSONResponse(
+            status_code=404,
+            content={"error": "Dashboard no encontrado"}
+        )
+
+    with open(dashboard_path, "r", encoding="utf-8") as f:
+        html_content = f.read()
+
+    return PlainTextResponse(content=html_content, media_type="text/html")
+
+
 @app.get("/api/categories")
 def get_categories():
     """Retorna las categorías disponibles"""
