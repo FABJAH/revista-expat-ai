@@ -296,6 +296,75 @@
             margin-bottom: 20px;
         }
 
+        .history-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 150px;
+            padding: 10px 0;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 2px;
+            position: relative;
+            min-height: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+            transform: scaleY(1.05);
+        }
+
+        .chart-bar-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 5px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            margin-bottom: 5px;
+        }
+
+        .chart-bar:hover .chart-bar-tooltip {
+            opacity: 1;
+        }
+
+        .peak-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .peak-row:first-child {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .peak-row:hover {
+            background: #f8f9fa;
+        }
+
+        .peak-value {
+            font-family: monospace;
+            font-weight: 500;
+        }
+
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -366,6 +435,28 @@
                 <div id="alertsContainer">
                     <div class="loading">
                         <span class="spinner"></span>Cargando...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Latencia -->
+            <div class="card wide-card">
+                <h2>📈 Histórico de Latencia P95 (últimas 24h)</h2>
+                <button class="refresh-btn" onclick="loadLatencyHistory()" style="margin-bottom: 10px;">Cargar histórico</button>
+                <div id="latencyHistoryContainer">
+                    <div style="text-align: center; color: #999; padding: 20px;">
+                        Haz clic en "Cargar histórico" para ver tendencias
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Picos de Error -->
+            <div class="card wide-card">
+                <h2>🔴 Top Picos de Error (últimas 24h)</h2>
+                <button class="refresh-btn" onclick="loadErrorPeaks()" style="margin-bottom: 10px;">Cargar picos</button>
+                <div id="errorPeaksContainer">
+                    <div style="text-align: center; color: #999; padding: 20px;">
+                        Haz clic en "Cargar picos" para ver momentos críticos
                     </div>
                 </div>
             </div>
@@ -578,6 +669,114 @@
             updateAlerts(metrics);
             updateEndpoints(metrics);
             updateTimestamp();
+        }
+
+        async function loadLatencyHistory() {
+            try {
+                const response = await fetch('/api/metrics/history?hours=24');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+
+                // Extraer todas las muestras de latencia
+                const allSamples = [];
+                for (const [endpoint, records] of Object.entries(data.data)) {
+                    for (const record of records) {
+                        if (record.latency_p95_ms !== null) {
+                            allSamples.push({
+                                timestamp: record.timestamp,
+                                value: record.latency_p95_ms,
+                                endpoint: endpoint
+                            });
+                        }
+                    }
+                }
+
+                if (allSamples.length === 0) {
+                    document.getElementById('latencyHistoryContainer')
+                        .innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">Sin datos de latencia</div>';
+                    return;
+                }
+
+                // Crear gráfico de barras
+                const maxValue = Math.max(...allSamples.map(s => s.value));
+                const bars = allSamples.slice(-100).map(sample => {
+                    const height = (sample.value / maxValue) * 100;
+                    return `<div class="chart-bar" style="height: ${height}%">
+                        <div class="chart-bar-tooltip">${sample.value.toFixed(0)}ms</div>
+                    </div>`;
+                }).join('');
+
+                const html = `<div class="history-chart">${bars}</div>
+                    <div style="text-align: center; color: #999; font-size: 12px; margin-top: 10px;">
+                        Últimas 100 muestras (máximo: ${maxValue.toFixed(1)}ms)
+                    </div>`;
+
+                document.getElementById('latencyHistoryContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading latency history:', error);
+                document.getElementById('latencyHistoryContainer')
+                    .innerHTML = `<div style="color: red;">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function loadErrorPeaks() {
+            try {
+                const response = await fetch('/api/metrics/history?hours=24');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+
+                // Extraer todos los momentos con sus tasas de error
+                const allRecords = [];
+                for (const [endpoint, records] of Object.entries(data.data)) {
+                    for (const record of records) {
+                        allRecords.push({
+                            timestamp: record.timestamp,
+                            error_rate: record.error_rate_pct,
+                            endpoint: endpoint,
+                            errors: record.error_count,
+                            requests: record.request_count
+                        });
+                    }
+                }
+
+                // Ordenar y tomar top 10
+                const topPeaks = allRecords
+                    .sort((a, b) => b.error_rate - a.error_rate)
+                    .slice(0, 10);
+
+                if (topPeaks.length === 0) {
+                    document.getElementById('errorPeaksContainer')
+                        .innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">Sin errores registrados</div>';
+                    return;
+                }
+
+                const rows = topPeaks.map(peak => `
+                    <div class="peak-row">
+                        <div>${new Date(peak.timestamp).toLocaleTimeString('es-ES')}</div>
+                        <div class="peak-value">${peak.endpoint}</div>
+                        <div class="peak-value">${peak.error_rate.toFixed(2)}%</div>
+                        <div class="peak-value">${peak.errors}/${peak.requests}</div>
+                    </div>
+                `).join('');
+
+                const html = `
+                    <div style="overflow-x: auto;">
+                        <div class="peak-row">
+                            <div><strong>Hora</strong></div>
+                            <div><strong>Endpoint</strong></div>
+                            <div><strong>Tasa Error</strong></div>
+                            <div><strong>Errores/Requests</strong></div>
+                        </div>
+                        ${rows}
+                    </div>
+                `;
+
+                document.getElementById('errorPeaksContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading error peaks:', error);
+                document.getElementById('errorPeaksContainer')
+                    .innerHTML = `<div style="color: red;">Error: ${error.message}</div>`;
+            }
         }
 
         // Inicializar

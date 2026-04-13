@@ -23,12 +23,15 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from bots.orchestrator import Orchestrator
 from bots.rss_manager import get_rss_manager
 from bots.logger import logger
+from metrics_storage import MetricsDB
 
 
 # --- Configurar scheduler en background ---
 scheduler = BackgroundScheduler()
 orchestrator = None
 orchestrator_lock = threading.Lock()
+metrics_db = None
+metrics_db_lock = threading.Lock()
 
 MAX_ANALYTICS_DATA_CHARS = 8000
 MAX_SESSION_ID_LEN = 128
@@ -52,6 +55,18 @@ def sync_rss_feeds():
         logger.info(f"RSS Sync completado: {new_count} artículos nuevos")
     except Exception as e:
         logger.error(f"Error sincronizando RSS: {e}")
+
+
+def save_metrics_to_db():
+    """Tarea para guardar snapshot de métricas cada 60 segundos"""
+    global metrics_db
+    try:
+        if metrics_db is None:
+            return
+        snapshot = get_metrics_snapshot()
+        metrics_db.save_snapshot(snapshot)
+    except Exception as e:
+        logger.error(f"Error guardando snapshot de métricas: {e}")
 
 
 def has_json_content_type(request: Request) -> bool:
@@ -213,7 +228,13 @@ def build_prometheus_metrics(metrics: dict) -> str:
 async def lifespan(app: FastAPI):
     """Lifecycle manager para startup y shutdown"""
     # Startup
+    global metrics_db
     logger.info("Iniciando servidor...")
+
+    # Inicializar base de datos de métricas
+    metrics_db = MetricsDB("metrics.db")
+    logger.info("Base de datos de métricas inicializada")
+
     rss_mgr = get_rss_manager()
 
     # Sync inicial en background para no bloquear startup
@@ -228,8 +249,11 @@ async def lifespan(app: FastAPI):
     threading.Thread(target=initial_sync, daemon=True).start()
 
     scheduler.add_job(sync_rss_feeds, 'interval', hours=6)
+    scheduler.add_job(save_metrics_to_db, 'interval', seconds=60)
     scheduler.start()
-    logger.info("Scheduler iniciado: feeds sincronizarán cada 6 horas")
+    logger.info(
+        "Scheduler iniciado: feeds cada 6h, métricas cada 60s"
+    )
 
     yield
 
@@ -376,6 +400,51 @@ def get_prometheus_metrics():
         content=build_prometheus_metrics(metrics),
         media_type="text/plain; version=0.0.4",
     )
+
+
+@app.get("/api/metrics/history")
+def get_metrics_history(hours: int = 24, endpoint: str | None = None):
+    """
+    Retorna histórico de métricas.
+
+    Args:
+        hours: Horas a consultar (default 24)
+        endpoint: Endpoint específico (opcional)
+
+    Returns:
+        Dict con histórico organizadopor endpoint
+    """
+    global metrics_db
+    if metrics_db is None:
+        return {"error": "Database not initialized", "data": {}}
+
+    history = metrics_db.get_history(hours=hours, endpoint=endpoint)
+    return {
+        "period_hours": hours,
+        "endpoint_filter": endpoint,
+        "total_snapshots": sum(len(v) for v in history.values()),
+        "data": history
+    }
+
+
+@app.get("/api/metrics/trends/{endpoint}")
+def get_endpoint_trends(endpoint: str, hours: int = 24):
+    """
+    Retorna análisis de tendencias para un endpoint.
+
+    Args:
+        endpoint: Nombre del endpoint (ej: /api/query)
+        hours: Horas a analizar (default 24)
+
+    Returns:
+        Dict con estadísticas y tendencias
+    """
+    global metrics_db
+    if metrics_db is None:
+        return {"error": "Database not initialized", "data": {}}
+
+    trends = metrics_db.get_trends(endpoint=endpoint, hours=hours)
+    return trends
 
 
 @app.get("/dashboard")
