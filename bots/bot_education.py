@@ -1,5 +1,5 @@
 # bots/bot_education.py
-from .utils import filter_advertisers_by_keywords
+from .utils import filter_advertisers_by_keywords, build_key_points
 from .maps_integration import search_healthcare_barcelona
 
 def responder_consulta(pregunta, anunciantes, language="en"):
@@ -62,15 +62,7 @@ def responder_consulta(pregunta, anunciantes, language="en"):
                 "es_anunciante": False
             })
 
-    # Extraer puntos clave de los 2 mejores resultados
-    key_points = []
-    for advertiser in selected_advertisers[:2]:
-        point = {
-            "nombre": advertiser.get("nombre"),
-            "descripcion": advertiser.get("descripcion"),
-            "beneficios": advertiser.get("beneficios", [])
-        }
-        key_points.append(point)
+    key_points = build_key_points(selected_advertisers)
 
     # Devolver lista completa; el orquestador aplicará limit/offset
     return {"key_points": key_points, "json_data": selected_advertisers}

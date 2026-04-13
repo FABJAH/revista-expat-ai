@@ -1,4 +1,6 @@
 
+from .utils import build_key_points
+
 
 def responder_consulta(pregunta, anunciantes=None, language="en"):
     """
@@ -26,15 +28,7 @@ def responder_consulta(pregunta, anunciantes=None, language="en"):
         }
     ]
 
-    # Extraer puntos clave de los 2 mejores resultados
-    key_points = []
-    for advertiser in info_servicio[:2]:
-        point = {
-            "nombre": advertiser.get("nombre"),
-            "descripcion": advertiser.get("descripcion"),
-            "beneficios": advertiser.get("beneficios", [])
-        }
-        key_points.append(point)
+    key_points = build_key_points(info_servicio)
 
-        # Devolver lista completa; el orquestador aplicará limit/offset
-        return {"key_points": key_points, "json_data": info_servicio}
+    # Devolver lista completa; el orquestador aplicará limit/offset
+    return {"key_points": key_points, "json_data": info_servicio}

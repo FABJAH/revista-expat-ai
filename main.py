@@ -36,6 +36,12 @@ def sync_rss_feeds():
         logger.error(f"Error sincronizando RSS: {e}")
 
 
+def has_json_content_type(request: Request) -> bool:
+    """Valida Content-Type JSON (acepta parámetros como charset)."""
+    content_type = request.headers.get("content-type", "")
+    return content_type.split(";")[0].strip().lower() == "application/json"
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifecycle manager para startup y shutdown"""
@@ -205,8 +211,14 @@ async def handle_query(request_obj: Request,
                        request: QueryRequest):
     """Endpoint principal para consultas al asistente"""
     try:
+        if not has_json_content_type(request_obj):
+            return JSONResponse(
+                status_code=415,
+                content={"error": "Content-Type debe ser application/json"}
+            )
+
         # Validar input
-        question = request.get_question()
+        question = request.get_question().strip()
         if not question:
             return JSONResponse(
                 status_code=400,
@@ -225,10 +237,14 @@ async def handle_query(request_obj: Request,
             request.language = "es"
 
         # Validar paginación
-        if request.limit and request.limit < 0:
+        if request.limit is None or request.limit <= 0:
             request.limit = 5
+        if request.limit > 20:
+            request.limit = 20
         if request.offset < 0:
             request.offset = 0
+        if request.offset > 1000:
+            request.offset = 1000
 
         logger.info(
             f"Query: '{question}' lang={request.language} "
@@ -288,9 +304,15 @@ def flush_analytics_buffer():
 
 
 @app.post("/api/analytics")
-def track_analytics(event: AnalyticsEvent):
+def track_analytics(request_obj: Request, event: AnalyticsEvent):
     """Trackea eventos de analytics"""
     try:
+        if not has_json_content_type(request_obj):
+            return JSONResponse(
+                status_code=415,
+                content={"error": "Content-Type debe ser application/json"}
+            )
+
         # Validar input
         if not event.event:
             return JSONResponse(
@@ -331,7 +353,10 @@ def track_analytics(event: AnalyticsEvent):
         logger.error(f"Error tracking analytics: {e}", exc_info=True)
         return JSONResponse(
             status_code=500,
-            content={"status": "error", "message": "Error interno del servidor"}
+            content={
+                "status": "error",
+                "message": "Error interno del servidor"
+            }
         )
 
 

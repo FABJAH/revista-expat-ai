@@ -28,6 +28,11 @@ def handle_immigration_query():
     }
     """
     try:
+        if not request.is_json:
+            return jsonify({
+                "error": "Content-Type debe ser application/json"
+            }), 415
+
         data = request.get_json()
 
         if not data:
@@ -42,6 +47,14 @@ def handle_immigration_query():
             return jsonify({
                 "error": "El campo 'message' es obligatorio y no puede estar vacío"
             }), 400
+
+        if len(message) > 1000:
+            return jsonify({
+                "error": "El campo 'message' supera el máximo de 1000 caracteres"
+            }), 400
+
+        if language not in ['es', 'en']:
+            language = 'es'
 
         # Crear instancia del bot de inmigración
         bot = ImmigrationBot(language=language)
