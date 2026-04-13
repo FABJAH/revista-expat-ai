@@ -24,6 +24,12 @@ from bots.logger import logger
 
 # --- Configurar scheduler en background ---
 scheduler = BackgroundScheduler()
+orchestrator = None
+orchestrator_lock = threading.Lock()
+
+MAX_ANALYTICS_DATA_CHARS = 8000
+MAX_SESSION_ID_LEN = 128
+STRICT_JSON_POST_PATHS = {"/api/query", "/api/analytics"}
 
 
 def sync_rss_feeds():
@@ -40,6 +46,19 @@ def has_json_content_type(request: Request) -> bool:
     """Valida Content-Type JSON (acepta parámetros como charset)."""
     content_type = request.headers.get("content-type", "")
     return content_type.split(";")[0].strip().lower() == "application/json"
+
+
+def get_orchestrator() -> Orchestrator:
+    """Inicializa el orquestador una sola vez de forma thread-safe."""
+    global orchestrator
+    if orchestrator is not None:
+        return orchestrator
+
+    with orchestrator_lock:
+        if orchestrator is None:
+            orchestrator = Orchestrator()
+            logger.info("Orquestador inicializado correctamente.")
+    return orchestrator
 
 
 @asynccontextmanager
@@ -111,6 +130,21 @@ app = FastAPI(
 # Middleware: GZip compression
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+
+@app.middleware("http")
+async def enforce_json_post_content_type(request: Request, call_next):
+    """Aplica Content-Type JSON a rutas POST críticas antes del parseo."""
+    if (
+        request.method == "POST"
+        and request.url.path in STRICT_JSON_POST_PATHS
+        and not has_json_content_type(request)
+    ):
+        return JSONResponse(
+            status_code=415,
+            content={"error": "Content-Type debe ser application/json"}
+        )
+    return await call_next(request)
+
 # Middleware: Rate Limiting
 limiter = Limiter(key_func=get_remote_address,
                   default_limits=["100/minute"])
@@ -137,21 +171,6 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
-
-# Inicializar orquestador
-try:
-    orchestrator = Orchestrator()
-    logger.info("Orquestador inicializado correctamente.")
-except Exception as e:
-    error_msg = (
-        f"ERROR FATAL: No se pudo inicializar el Orquestador. "
-        f"Causa: {e}"
-    )
-    logger.critical(error_msg)
-    raise SystemExit(
-        "El servidor no puede arrancar sin el Orquestador."
-    )
-
 
 # --- Endpoints de la API ---
 
@@ -207,18 +226,12 @@ def manual_sync_rss():
 
 @app.post("/api/query")
 @limiter.limit("20/minute")
-async def handle_query(request_obj: Request,
-                       request: QueryRequest):
+async def handle_query(request: Request,
+                       query: QueryRequest):
     """Endpoint principal para consultas al asistente"""
     try:
-        if not has_json_content_type(request_obj):
-            return JSONResponse(
-                status_code=415,
-                content={"error": "Content-Type debe ser application/json"}
-            )
-
         # Validar input
-        question = request.get_question().strip()
+        question = query.get_question().strip()
         if not question:
             return JSONResponse(
                 status_code=400,
@@ -233,29 +246,29 @@ async def handle_query(request_obj: Request,
             )
 
         # Validar idioma
-        if request.language not in ["es", "en"]:
-            request.language = "es"
+        if query.language not in ["es", "en"]:
+            query.language = "es"
 
         # Validar paginación
-        if request.limit is None or request.limit <= 0:
-            request.limit = 5
-        if request.limit > 20:
-            request.limit = 20
-        if request.offset < 0:
-            request.offset = 0
-        if request.offset > 1000:
-            request.offset = 1000
+        if query.limit is None or query.limit <= 0:
+            query.limit = 5
+        if query.limit > 20:
+            query.limit = 20
+        if query.offset < 0:
+            query.offset = 0
+        if query.offset > 1000:
+            query.offset = 1000
 
         logger.info(
-            f"Query: '{question}' lang={request.language} "
-            f"limit={request.limit} offset={request.offset}"
+            f"Query: '{question}' lang={query.language} "
+            f"limit={query.limit} offset={query.offset}"
         )
 
-        response_data = orchestrator.process_query(
+        response_data = get_orchestrator().process_query(
             question,
-            request.language,
-            limit=request.limit,
-            offset=request.offset,
+            query.language,
+            limit=query.limit,
+            offset=query.offset,
         )
 
         logger.info(
@@ -264,6 +277,24 @@ async def handle_query(request_obj: Request,
         )
         return response_data
 
+    except ValueError as e:
+        logger.warning(f"Validación fallida en /api/query: {e}")
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Solicitud inválida"}
+        )
+    except TimeoutError as e:
+        logger.error(f"Timeout en /api/query: {e}", exc_info=True)
+        return JSONResponse(
+            status_code=504,
+            content={"error": "Tiempo de espera agotado"}
+        )
+    except RuntimeError as e:
+        logger.error(f"Error operativo en /api/query: {e}", exc_info=True)
+        return JSONResponse(
+            status_code=503,
+            content={"error": "Servicio temporalmente no disponible"}
+        )
     except Exception as e:
         logger.error(f"ERROR en /api/query: {e}", exc_info=True)
         return JSONResponse(
@@ -330,11 +361,25 @@ def track_analytics(request_obj: Request, event: AnalyticsEvent):
                 f"Evento desconocido: {event.event}"
             )
 
+        if event.session_id and len(event.session_id) > MAX_SESSION_ID_LEN:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "session_id excede el tamaño permitido"}
+            )
+
+        data_payload = event.data or {}
+        data_payload_str = json.dumps(data_payload, ensure_ascii=False)
+        if len(data_payload_str) > MAX_ANALYTICS_DATA_CHARS:
+            return JSONResponse(
+                status_code=413,
+                content={"error": "Payload de analytics demasiado grande"}
+            )
+
         event_data = {
             "timestamp": event.timestamp or datetime.utcnow(
             ).isoformat(),
             "event": event.event,
-            "data": event.data or {},
+            "data": data_payload,
             "session_id": event.session_id
         }
 
