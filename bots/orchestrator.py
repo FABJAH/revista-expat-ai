@@ -53,6 +53,13 @@ class Orchestrator:
         # Esto intenta conectar con Barcelona Metropolitan
         # Si falla, usa anunciantes.json como fallback
         self.directory = get_directory_connector()
+        self.use_remote_directory = not (
+            os.getenv("PRODUCTION", "false").lower() == "true"
+            or os.getenv("FORCE_LOCAL_DIRECTORY", "false").lower() == "true"
+        )
+        self.enable_recommendation_tracking = (
+            os.getenv("ENABLE_RECOMMENDATION_TRACKING", "false").lower() == "true"
+        )
 
         # Cargar anunciantes desde directorio real (o JSON local)
         self.advertisers = self._load_advertisers_from_directory()
@@ -617,6 +624,10 @@ class Orchestrator:
             Dict con estructura: {"Categoría": [anunciantes]}
         """
         try:
+            if not self.use_remote_directory:
+                logger.info("Modo local activo: cargando anunciantes desde JSON local")
+                return self._load_local_json()
+
             logger.info(
             "🔄 Cargando anunciantes desde directorio Barcelona Metropolitan..."
         )
@@ -782,7 +793,7 @@ class Orchestrator:
                 next_offset = (offset + (limit or 0)) if has_more else None
 
                 # 2.5 NUEVO: Trackear recomendaciones en el directorio
-                if sliced:
+                if sliced and self.enable_recommendation_tracking:
                     session_id = f"session_{offset}_{hash(question) % 10000}"
                     for advertiser in sliced[:limit or 3]:
                         advertiser_id = advertiser.get('id', advertiser.get('nombre', 'unknown'))
