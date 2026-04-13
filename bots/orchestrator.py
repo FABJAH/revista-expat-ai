@@ -1,5 +1,6 @@
 # bots/orchestrator.py
 import json
+import os
 import random
 from pathlib import Path
 
@@ -14,6 +15,10 @@ except ImportError:
     torch = None
     SentenceTransformer = None
     st_util = None
+
+# En producción evitamos cargar modelos pesados para estabilidad.
+if os.getenv("PRODUCTION", "false").lower() == "true" or os.getenv("DISABLE_ML", "false").lower() == "true":
+    ML_AVAILABLE = False
 
 from .utils import normalize
 from .content_manager import ContentManager
