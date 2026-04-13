@@ -144,6 +144,17 @@
       ? 'http://127.0.0.1:8000'
       : window.location.origin;
 
+    // Escapa caracteres HTML para prevenir XSS
+    function esc(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function selectPath(path) {
       const immigrantContent = document.getElementById('immigrant-content');
       const expatContent = document.getElementById('expat-content');
@@ -203,19 +214,19 @@
             const adCard = document.createElement('div');
             adCard.style.cssText = 'border: 2px solid #667eea; padding: 15px; border-radius: 8px; background: #f9f9ff;';
             adCard.innerHTML = `
-              <strong style="color: #667eea; font-size: 1.1em;">${ad.nombre || 'Firma Legal'}</strong><br/>
-              <small style="color: #666;">${ad.descripcion || ''}</small><br/>
+              <strong style="color: #667eea; font-size: 1.1em;">${esc(ad.nombre) || 'Firma Legal'}</strong><br/>
+              <small style="color: #666;">${esc(ad.descripcion)}</small><br/>
               <div style="margin-top: 8px;">
-                ${ad.contacto ? `📞 <strong>${ad.contacto}</strong><br/>` : ''}
-                ${ad.precio ? `💰 ${ad.precio}<br/>` : ''}
-                ${ad.idiomas ? `🗣️ ${ad.idiomas}<br/>` : ''}
-                ${ad.ubicacion ? `📍 ${ad.ubicacion}` : ''}
+                ${ad.contacto ? `📞 <strong>${esc(ad.contacto)}</strong><br/>` : ''}
+                ${ad.precio ? `💰 ${esc(ad.precio)}<br/>` : ''}
+                ${ad.idiomas ? `🗣️ ${esc(ad.idiomas)}<br/>` : ''}
+                ${ad.ubicacion ? `📍 ${esc(ad.ubicacion)}` : ''}
               </div>
               ${ad.beneficios && ad.beneficios.length ? `
                 <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd;">
                   <strong>Beneficios:</strong>
                   <ul style="margin: 5px 0; padding-left: 20px;">
-                    ${ad.beneficios.map(b => `<li>${b}</li>`).join('')}
+                    ${ad.beneficios.map(b => `<li>${esc(b)}</li>`).join('')}
                   </ul>
                 </div>
               ` : ''}
@@ -229,7 +240,7 @@
         statusDiv.textContent = 'Respuesta recibida.';
       } catch (err) {
         statusDiv.textContent = 'Error: ' + err.message;
-        resultDiv.innerHTML = '<div style="color: #c00; padding: 10px;">No se pudo conectar con el servidor. Asegúrate de que el servidor esté corriendo en http://127.0.0.1:8000</div>';
+        resultDiv.textContent = 'No se pudo conectar con el servidor. Asegúrate de que el servidor esté corriendo en http://127.0.0.1:8000';
       }
     }
 
@@ -255,7 +266,7 @@
         });
 
         const data = await res.json();
-        resultDiv.innerHTML = `<strong>Respuesta:</strong> ${data.respuesta || 'Sin respuesta'}<br/>
+        resultDiv.innerHTML = `<strong>Respuesta:</strong> ${esc(data.respuesta) || 'Sin respuesta'}<br/>
           ${data.json && data.json.length ? '<strong>Resultados:</strong>' : ''}`;
 
         if (data.json && data.json.length) {
@@ -270,7 +281,7 @@
             card.style.padding = '12px';
             card.style.borderRadius = '6px';
             card.style.background = '#fafafa';
-            card.innerHTML = `<strong>${opt.nombre}</strong><br/><small>${opt.descripcion || ''}</small><br/>📞 ${opt.contacto || 'N/A'}`;
+            card.innerHTML = `<strong>${esc(opt.nombre)}</strong><br/><small>${esc(opt.descripcion)}</small><br/>📞 ${esc(opt.contacto) || 'N/A'}`;
             list.appendChild(card);
           });
           document.getElementById('parsed').appendChild(list);
@@ -310,10 +321,15 @@
         el.id = 'resourceErrors';
         el.style.marginTop = '12px';
         el.style.color = '#b00';
-        el.innerHTML = '<strong>Errores de recursos detectados:</strong><br/>' + msg;
+        const label = document.createElement('strong');
+        label.textContent = 'Errores de recursos detectados:';
+        el.appendChild(label);
+        el.appendChild(document.createElement('br'));
+        el.appendChild(document.createTextNode(msg));
         statusDiv.parentNode.insertBefore(el, resultDiv);
       } else {
-        prev.innerHTML += '<br/>' + msg;
+        prev.appendChild(document.createElement('br'));
+        prev.appendChild(document.createTextNode(msg));
       }
       console.warn('Resource failure:', msg);
     }

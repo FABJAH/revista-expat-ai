@@ -672,6 +672,17 @@
         </div>
     </div>
     <script>
+        // Escapa caracteres HTML para prevenir XSS
+        function esc(str) {
+            if (str == null) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         const directories = {
             legal: [
                 { name: "Abogacía López & Martín", rating: 4.9, reviews: 87, speciality: "NIE, Visa, Residencia", response: "2h", contact: "Llamar" },
@@ -718,22 +729,26 @@
             document.getElementById('directoryTitle').textContent = titles[category] || 'Servicios';
             document.getElementById('resultCount').textContent = results.length;
             const grid = document.getElementById('resultsGrid');
-            grid.innerHTML = results.map(r => `
-                <div class="result-card">
+            grid.innerHTML = '';
+            results.forEach(r => {
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.innerHTML = `
                     <div class="result-info">
-                        <div class="result-name">${r.name}</div>
+                        <div class="result-name">${esc(r.name)}</div>
                         <div class="result-meta">
-                            <div class="meta-item"><span class="rating">⭐ ${r.rating}</span><span style="color: #999;">(${r.reviews} opiniones)</span></div>
-                            <div class="meta-item">⏱️ ${r.response}</div>
+                            <div class="meta-item"><span class="rating">⭐ ${esc(String(r.rating))}</span><span style="color: #999;">(${esc(String(r.reviews))} opiniones)</span></div>
+                            <div class="meta-item">⏱️ ${esc(r.response)}</div>
                         </div>
-                        <div style="color: #666; font-size: 0.9rem;">📍 ${r.speciality}</div>
+                        <div style="color: #666; font-size: 0.9rem;">📍 ${esc(r.speciality)}</div>
                     </div>
                     <div class="result-actions">
-                        <button class="btn-small primary" onclick="agendaWithProvider('${r.name}')">${r.contact}</button>
-                        <button class="btn-small" onclick="shareProvider('${r.name}')">Compartir</button>
+                        <button class="btn-small primary" onclick="agendaWithProvider('${esc(r.name)}')">Contactar</button>
+                        <button class="btn-small" onclick="shareProvider('${esc(r.name)}')">Compartir</button>
                     </div>
-                </div>
-            `).join('');
+                `;
+                grid.appendChild(card);
+            });
             document.getElementById('directoryPreview').style.display = 'block';
             document.getElementById('directoryPreview').scrollIntoView({behavior: 'smooth'});
         }
@@ -772,7 +787,7 @@
                 card.style.padding = '0.75rem';
                 card.style.borderRadius = '8px';
                 card.style.background = '#fff';
-                card.innerHTML = `<strong>${ad.nombre || 'Profesional'}</strong><br/><small>${ad.descripcion || ''}</small><br/>${ad.contacto ? '📞 ' + ad.contacto : ''}`;
+                card.innerHTML = `<strong>${esc(ad.nombre) || 'Profesional'}</strong><br/><small>${esc(ad.descripcion)}</small><br/>${ad.contacto ? '📞 ' + esc(ad.contacto) : ''}`;
                 grid.appendChild(card);
             });
             container.appendChild(grid);
@@ -789,7 +804,10 @@
                 const res = await fetch('/api/immigration', {method: 'POST', headers: { 'Content-Type': 'application/json' },body: JSON.stringify({ message: q, language: lang })});
                 const data = await res.json();
                 const msg = data.message || data.respuesta || 'Sin respuesta';
-                result.innerHTML = `<div style="margin-bottom:0.6rem;">${msg}</div>`;
+                const msgDiv = document.createElement('div');
+                msgDiv.style.marginBottom = '0.6rem';
+                msgDiv.textContent = msg;
+                result.appendChild(msgDiv);
                 if (data.legal_ads) renderAds(result, data.legal_ads);
                 status.textContent = 'Respuesta recibida.';
             } catch (e) {
@@ -810,20 +828,23 @@
         const res = await fetch('/api/query', {method: 'POST',headers: { 'Content-Type': 'application/json' },body: JSON.stringify({ question: q, language: lang })});
         const data = await res.json();
         const msg = data.respuesta || 'Sin respuesta';
-        result.innerHTML = `<div style="margin-bottom:0.6rem;">${msg}</div>`;
+        const msgDiv = document.createElement('div');
+        msgDiv.style.marginBottom = '0.6rem';
+        msgDiv.textContent = msg;
+        result.appendChild(msgDiv);
         if (data.json && data.json.length) {
         const grid = document.createElement('div');
         grid.style.display = 'grid';
         grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(240px,1fr))';
         grid.style.gap = '0.75rem';
         data.json.forEach(item => {
-        const benefits = (item.beneficios || []).map(b => `<li>${b}</li>`).join('');
+        const benefits = (item.beneficios || []).map(b => `<li>${esc(b)}</li>`).join('');
         const card = document.createElement('div');
         card.style.border = '1px solid var(--border)';
         card.style.padding = '0.75rem';
         card.style.borderRadius = '8px';
         card.style.background = '#fff';
-        card.innerHTML = `<strong>${item.nombre || 'Opción comercial'}</strong><br/><small>${item.descripcion || ''}</small>${item.contacto ? `<div style=\"margin-top:0.4rem;\">📞 ${item.contacto}</div>` : ''}${benefits ? `<ul style=\"margin-top:0.6rem; padding-left:1.1rem; color:#555; font-size:0.9rem; list-style: disc;\">${benefits}</ul>` : ''}`;
+        card.innerHTML = `<strong>${esc(item.nombre) || 'Opción comercial'}</strong><br/><small>${esc(item.descripcion)}</small>${item.contacto ? `<div style=\"margin-top:0.4rem;\">📞 ${esc(item.contacto)}</div>` : ''}${benefits ? `<ul style=\"margin-top:0.6rem; padding-left:1.1rem; color:#555; font-size:0.9rem; list-style: disc;\">${benefits}</ul>` : ''}`;
         grid.appendChild(card);
         });
         result.appendChild(grid);
@@ -852,7 +873,10 @@
                 });
                 const data = await res.json();
                 const msg = data.respuesta || 'Sin respuesta';
-                result.innerHTML = `<div style="margin-bottom:0.6rem;">${msg}</div>`;
+                const msgDiv = document.createElement('div');
+                msgDiv.style.marginBottom = '0.6rem';
+                msgDiv.textContent = msg;
+                result.appendChild(msgDiv);
 
                 if (data.json && data.json.length) {
                     const grid = document.createElement('div');
@@ -861,13 +885,13 @@
                     grid.style.gap = '0.75rem';
 
                     data.json.forEach(item => {
-                        const benefits = (item.beneficios || []).map(b => `<li>${b}</li>`).join('');
+                        const benefits = (item.beneficios || []).map(b => `<li>${esc(b)}</li>`).join('');
                         const card = document.createElement('div');
                         card.style.border = '1px solid var(--border)';
                         card.style.padding = '0.75rem';
                         card.style.borderRadius = '8px';
                         card.style.background = '#fff';
-                        card.innerHTML = `<strong>${item.nombre || 'Opción comercial'}</strong><br/><small>${item.descripcion || ''}</small>${item.contacto ? `<div style=\"margin-top:0.4rem;\">📞 ${item.contacto}</div>` : ''}${benefits ? `<ul style=\"margin-top:0.6rem; padding-left:1.1rem; color:#555; font-size:0.9rem; list-style: disc;\">${benefits}</ul>` : ''}`;
+                        card.innerHTML = `<strong>${esc(item.nombre) || 'Opción comercial'}</strong><br/><small>${esc(item.descripcion)}</small>${item.contacto ? `<div style=\"margin-top:0.4rem;\">📞 ${esc(item.contacto)}</div>` : ''}${benefits ? `<ul style=\"margin-top:0.6rem; padding-left:1.1rem; color:#555; font-size:0.9rem; list-style: disc;\">${benefits}</ul>` : ''}`;
                         grid.appendChild(card);
                     });
 
@@ -999,8 +1023,8 @@
                 if (!email && !phone) { alert('Añade email o teléfono'); return; }
                 comLead.contacto_email = email; comLead.contacto_telefono = phone;
                 const sum = document.getElementById('comSummary');
-                sum.innerHTML = `<strong>${comLead.nombre_negocio}</strong><br/>${comLead.descripcion || ''}<br/>Plan: ${comLead.plan}` +
-                  `<br/>Email: ${comLead.contacto_email || '-'} | Tel: ${comLead.contacto_telefono || '-'}`;
+                                sum.innerHTML = `<strong>${esc(comLead.nombre_negocio)}</strong><br/>${esc(comLead.descripcion) || ''}<br/>Plan: ${esc(comLead.plan)}` +
+                                    `<br/>Email: ${esc(comLead.contacto_email) || '-'} | Tel: ${esc(comLead.contacto_telefono) || '-'}`;
                 document.getElementById('com-step-3').style.display = 'none';
                 document.getElementById('com-step-4').style.display = 'block';
                 return;

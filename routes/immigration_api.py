@@ -62,8 +62,7 @@ def handle_immigration_query():
     except Exception as e:
         print(f"❌ Error en immigration_api: {e}")
         return jsonify({
-            "error": "Error interno del servidor",
-            "details": str(e)
+            "error": "Error interno del servidor"
         }), 500
 
 

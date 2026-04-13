@@ -192,14 +192,15 @@ def manual_sync_rss():
             "total_articles": len(rss_mgr.articles)
         }
     except Exception as e:
+        logger.error(f"Error en /api/sync-rss: {e}", exc_info=True)
         return JSONResponse(
             status_code=500,
-            content={"error": str(e)}
+            content={"error": "Ocurrió un error interno en el servidor."}
         )
 
 
 @app.post("/api/query")
-# @limiter.limit("20/minute")  # Temporarily disabled due to async issues
+@limiter.limit("20/minute")
 async def handle_query(request_obj: Request,
                        request: QueryRequest):
     """Endpoint principal para consultas al asistente"""
@@ -252,22 +253,25 @@ async def handle_query(request_obj: Request,
         return JSONResponse(
             status_code=500,
             content={
-                "error": "Ocurrió un error interno en el servidor.",
-                "details": str(e)
+                "error": "Ocurrió un error interno en el servidor."
             }
         )
 
 
 # --- Analytics con buffer ---
 analytics_buffer = []
+analytics_lock = threading.Lock()
 BUFFER_SIZE = 50
 
 
 def flush_analytics_buffer():
     """Escribe eventos de analytics acumulados"""
     global analytics_buffer
-    if not analytics_buffer:
-        return
+    with analytics_lock:
+        if not analytics_buffer:
+            return
+        events_to_flush = analytics_buffer
+        analytics_buffer = []
 
     try:
         analytics_dir = Path("data/analytics")
@@ -275,11 +279,10 @@ def flush_analytics_buffer():
         analytics_file = analytics_dir / "events.jsonl"
 
         with open(analytics_file, "a", encoding="utf-8") as f:
-            for event_data in analytics_buffer:
+            for event_data in events_to_flush:
                 f.write(json.dumps(event_data, ensure_ascii=False) + "\n")
 
-        logger.info(f"Analytics: {len(analytics_buffer)} eventos guardados")
-        analytics_buffer = []
+        logger.info(f"Analytics: {len(events_to_flush)} eventos guardados")
     except Exception as e:
         logger.warning(f"Error escribiendo analytics: {e}")
 
@@ -313,18 +316,22 @@ def track_analytics(event: AnalyticsEvent):
             "session_id": event.session_id
         }
 
-        analytics_buffer.append(event_data)
+        should_flush = False
+        with analytics_lock:
+            analytics_buffer.append(event_data)
+            if len(analytics_buffer) >= BUFFER_SIZE:
+                should_flush = True
 
-        if len(analytics_buffer) >= BUFFER_SIZE:
+        if should_flush:
             flush_analytics_buffer()
 
         return {"status": "tracked", "event": event.event}
 
     except Exception as e:
-        logger.warning(f"Error tracking analytics: {e}")
+        logger.error(f"Error tracking analytics: {e}", exc_info=True)
         return JSONResponse(
             status_code=500,
-            content={"status": "error", "message": str(e)}
+            content={"status": "error", "message": "Error interno del servidor"}
         )
 
 
