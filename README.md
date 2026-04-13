@@ -1,86 +1,127 @@
 # Revista Expats AI
+# Revista Expats AI
 
-Asistente virtual inteligente para expatriados en Barcelona con bots orquestadores especializados.
+**Revista digital inteligente para expatriados en Barcelona.**
 
-**Nota:** Esta versión incluye clasificación semántica avanzada con ML para máxima precisión en la detección de intenciones.
+Plataforma full-stack con frontend web completo, asistente de chat integrado y bots especializados por categoría (alojamiento, salud, legal, educación, inmigración y más). Desplegada en Render con sincronización automática de contenido RSS.
 
-## 🚀 Instalación
+🌐 **Demo en vivo:** [https://revista-expats-ai.onrender.com](https://revista-expats-ai.onrender.com)
 
-1. **Clona el repositorio**
-   ```bash
-   git clone <tu-repo>
-   cd Revista-expats-ai
-   ```
+---
 
-2. **Crea y activa el entorno virtual**
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate  # En Linux/Mac
-   # .venv\Scripts\activate   # En Windows
-   ```
+## ✨ Características
 
-3. **Instala las dependencias**
-   ```bash
-   pip install -r requirements.txt
-   ```
+- **Frontend web completo** — revista digital con secciones de artículos, guías y servicios
+- **Asistente de chat** — widget integrado que entiende preguntas en español e inglés
+- **Bots especializados** — 9 bots independientes (alojamiento, salud, legal, educación, trabajo, inmigración, restaurantes, comercial y más)
+- **Directorio de anunciantes** — integración con directorio de Barcelona Metropolitan
+- **RSS automático** — sincronización de artículos cada 6 horas
+- **Dashboard de métricas** — panel interno con exportación CSV/JSON/HTML
+- **Rate limiting y CORS** — protección de API en producción
+- **Despliegue en Render** — configurado con `render.yaml` para auto-deploy desde GitHub
 
-## 🏃 Ejecución
+---
 
-### Servidor principal (FastAPI + Frontend)
+## 🚀 Instalación local
+
 ```bash
+git clone https://github.com/FABJAH/revista-expat-ai.git
+cd revista-expat-ai
+python3 -m venv .venv
+source .venv/bin/activate        # Linux/Mac
+# .venv\Scripts\activate         # Windows
+pip install -r requirements.txt  # incluye torch para clasificación semántica ML
 uvicorn main:app --reload --port 8000
 ```
 
-Luego abre en tu navegador: `http://127.0.0.1:8000`
+Abre `http://127.0.0.1:8000` — el frontend se sirve automáticamente.
 
-El frontend se sirve automáticamente desde la carpeta `frontend/`.
+> **Nota:** `requirements.txt` incluye `torch` y `sentence-transformers` para clasificación semántica avanzada. Para producción/Render se usa `requirements-prod.txt` (sin ML, clasificación por palabras clave).
 
-### Página de prueba de API
-Abre `http://127.0.0.1:8000/landing.html` para probar la conexión con el backend.
+---
 
-## 🌐 Despliegue para Acceso Público
+## 🌐 Despliegue en Render
 
-Para que otras personas puedan acceder sin que tengas que mantener el servidor local corriendo, consulta el archivo [DEPLOYMENT.md](DEPLOYMENT.md) con opciones de despliegue en la nube.
+El repositorio incluye `render.yaml` preconfigurado. Para desplegar:
 
-**Opciones rápidas:**
-- **Railway** (Recomendado): Despliegue automático desde GitHub
-- **Ngrok**: Exposición temporal del servidor local
-- **Render**: Alternativa gratuita similar a Railway
+1. Conecta este repositorio en [render.com](https://render.com)
+2. Render detecta `render.yaml` automáticamente y usa `requirements-prod.txt`
+3. Cada push a `main` dispara un re-despliegue automático
 
-## 📁 Estructura del Proyecto
+---
 
-```
-Revista-expats-ai/
-├── frontend/              # Frontend (HTML, CSS, JS)
-│   ├── index.html        # Página principal
-│   ├── script.js         # Lógica del chat
-│   └── styles.css        # Estilos
-├── bots/                 # Bots especializados
-│   ├── orchestrator.py   # Orquestador principal
-│   ├── bot_*.py          # Bots por categoría
-│   └── utils.py          # Utilidades
-├── data/                 # Base de datos
-│   └── anunciantes.json  # Datos de anunciantes
-├── main.py               # ⭐ Servidor principal FastAPI
-├── landing.html          # Página de prueba de API
-└── requirements.txt      # Dependencias
+## 📁 Estructura del proyecto
 
 ```
+revista-expat-ai/
+├── frontend/                # Frontend web (servido en /)
+│   ├── index.html           # Página principal de la revista
+│   ├── script.js            # Chat widget + lógica de la UI
+│   ├── styles.css           # Estilos
+│   └── assets/images/       # Imágenes de artículos
+├── bots/
+│   ├── orchestrator.py      # Clasificador de intención + router
+│   ├── bot_immigration.py   # Bot de inmigración y visados
+│   ├── bot_healthcare.py    # Bot de salud
+│   ├── bot_legal.py         # Bot legal y financiero
+│   ├── bot_education.py     # Bot de educación
+│   ├── bot_accommodation.py # Bot de alojamiento
+│   ├── bot_work.py          # Bot de empleo
+│   ├── bot_service.py       # Bot de servicios
+│   ├── bot_comercial.py     # Bot comercial/publicidad
+│   ├── rss_manager.py       # Gestor de feeds RSS
+│   └── directory_connector.py # Conector directorio BM
+├── widget/                  # Widget Luna (embebible)
+├── routes/                  # Rutas adicionales de la API
+├── data/
+│   ├── anunciantes.json     # Base de datos de anunciantes
+│   └── guides/              # Guías editoriales JSON
+├── main.py                  # Servidor FastAPI principal
+├── metrics_storage.py       # Almacenamiento SQLite de métricas
+├── dashboard.html           # Dashboard interno de métricas
+├── render.yaml              # Configuración de despliegue Render
+├── requirements.txt         # Deps local (con ML)
+└── requirements-prod.txt    # Deps producción (sin torch)
+```
 
-## 🤖 Bots Disponibles
+---
 
-- **Accommodation** - Alojamiento y vivienda
-- **Healthcare** - Servicios médicos y salud
-- **Legal and Financial** - Asesoría legal y financiera
-- **Education** - Cursos, escuelas y universidades
-- **Restaurants** - Gastronomía y restaurantes
-- **Comercial** - Publicidad y marketing
-- **BotService** - Chatbots personalizados
+## 🤖 Bots disponibles
+
+| Bot | Categoría | Descripción |
+|-----|-----------|-------------|
+| `bot_immigration` | Inmigración | NIE, visados, empadronamiento, residencia |
+| `bot_healthcare` | Salud | Médicos, clínicas, seguros, farmacias |
+| `bot_legal` | Legal y financiero | Abogados, gestorías, bancos, impuestos |
+| `bot_education` | Educación | Escuelas, idiomas, universidades, cursos |
+| `bot_accommodation` | Alojamiento | Pisos, alquiler, barrios, agencias |
+| `bot_work` | Empleo | Trabajo, networking, CV, sectores |
+| `bot_service` | Servicios bot | Chatbots personalizados para negocios |
+| `bot_comercial` | Comercial | Publicidad en la revista |
+| Generic | Resto | Restaurantes, ocio, retail, cultura |
+
+---
+
+## 📊 API principal
+
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/` | GET | Frontend web principal |
+| `/api/query` | POST | Consulta al asistente |
+| `/api/status` | GET | Estado del servidor |
+| `/api/metrics` | GET | Métricas en tiempo real |
+| `/api/export/metrics` | GET | Exportar métricas (CSV/JSON/HTML) |
+| `/dashboard` | GET | Dashboard interno |
+| `/docs` | GET | Documentación Swagger automática |
+
+---
 
 ## 🛠️ Tecnologías
 
-- **Backend**: FastAPI, Sentence Transformers, Torch
-- **Frontend**: Vanilla JavaScript, CSS3
-- **IA**: Clasificación semántica de intenciones con ML
+- **Backend:** FastAPI, Uvicorn, APScheduler, SlowAPI
+- **Frontend:** HTML5, CSS3, Vanilla JavaScript
+- **Datos:** SQLite (métricas), JSON (anunciantes/guías), RSS feeds
+- **ML (opcional local):** sentence-transformers, torch — clasificación semántica de intenciones
+- **Despliegue:** Render (render.yaml)
 
 

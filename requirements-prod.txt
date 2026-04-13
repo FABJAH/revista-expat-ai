@@ -1,0 +1,18 @@
+# Dependencias de producción (sin torch/ML para despliegue ligero en Render)
+# La clasificación semántica cae en modo keyword-only cuando torch no está disponible.
+
+# Backend Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Servidor de producción
+gunicorn==21.2.0
+
+# RSS y scheduling
+feedparser==6.0.10
+APScheduler==3.10.4
+
+# Rate limiting y seguridad
+slowapi==0.1.9

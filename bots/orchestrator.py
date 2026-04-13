@@ -4,8 +4,16 @@ import random
 from pathlib import Path
 
 # ML dependencies para clasificación semántica
-import torch
-from sentence_transformers import SentenceTransformer, util
+# ML dependencies para clasificación semántica (opcionales en producción)
+try:
+    import torch
+    from sentence_transformers import SentenceTransformer, util as st_util
+    ML_AVAILABLE = True
+except ImportError:
+    ML_AVAILABLE = False
+    torch = None
+    SentenceTransformer = None
+    st_util = None
 
 from .utils import normalize
 from .content_manager import ContentManager
@@ -51,8 +59,13 @@ class Orchestrator:
         self.rss_manager = get_rss_manager()
 
         # Modelo semántico para clasificación inteligente
-        model_name = 'paraphrase-multilingual-MiniLM-L12-v2'
-        self.model = SentenceTransformer(model_name)
+        # Modelo semántico para clasificación inteligente (opcional)
+        if ML_AVAILABLE:
+            model_name = 'paraphrase-multilingual-MiniLM-L12-v2'
+            self.model = SentenceTransformer(model_name)
+        else:
+            self.model = None
+            logger.warning("Torch/sentence-transformers no disponible. Clasificación por palabras clave.")
 
         # Patrones de intención (depurados) - Versión simplificada sin ML
         self.category_patterns = {  # Separado por idioma
@@ -455,27 +468,24 @@ class Orchestrator:
         }
 
         # --- PRE-CÁLCULO DE EMBEDDINGS PARA CLASIFICACIÓN SEMÁNTICA ---
-        # Creamos embeddings para todas las categorías para búsqueda semántica rápida
+        # --- PRE-CÁLCULO DE EMBEDDINGS (solo si ML disponible) ---
         self.category_info = []
-        all_categories = set(self.category_patterns.get("es", {}).keys()) | set(self.category_patterns.get("en", {}).keys())
-        for category in all_categories:
-            # Combinamos palabras clave de ambos idiomas para una descripción más rica
-            keywords_es = self.category_patterns.get("es", {}).get(category, [])
-            keywords_en = self.category_patterns.get("en", {}).get(category, [])
-            # Creamos una frase descriptiva que el modelo pueda entender mejor
-            description = f"Servicios sobre {category.lower()}: " + ", ".join(keywords_es + keywords_en)
-            self.category_info.append({
-                "name": category,
-                "description": description,
-                "embedding": self.model.encode(description, convert_to_tensor=True)
-            })
-        logger.info("Embeddings de categorías calculados.")
-
-        # --- OPTIMIZACIÓN: PRE-CALCULAR TENSOR DE EMBEDDINGS ---
-        # Evita re-crear el tensor en cada query (mejora 50ms por consulta)
-        import torch
-        self.category_embeddings_tensor = torch.stack([cat["embedding"] for cat in self.category_info])
-        logger.info(f"Tensor de embeddings pre-calculado: {self.category_embeddings_tensor.shape}")
+        self.category_embeddings_tensor = None
+        if ML_AVAILABLE and self.model is not None:
+            all_categories = set(self.category_patterns.get("es", {}).keys()) | set(self.category_patterns.get("en", {}).keys())
+            for category in all_categories:
+                keywords_es = self.category_patterns.get("es", {}).get(category, [])
+                keywords_en = self.category_patterns.get("en", {}).get(category, [])
+                description = f"Servicios sobre {category.lower()}: " + ", ".join(keywords_es + keywords_en)
+                self.category_info.append({
+                    "name": category,
+                    "description": description,
+                    "embedding": self.model.encode(description, convert_to_tensor=True)
+                })
+            self.category_embeddings_tensor = torch.stack([cat["embedding"] for cat in self.category_info])
+            logger.info(f"Tensor de embeddings pre-calculado: {self.category_embeddings_tensor.shape}")
+        else:
+            logger.info("Clasificación semántica deshabilitada. Usando solo palabras clave.")
 
         # --- OPTIMIZACIÓN: ÍNDICE DE NOMBRES DE NEGOCIOS ---
         # Crea un índice para búsqueda O(1) en lugar de O(n²)
@@ -675,19 +685,16 @@ class Orchestrator:
                 return "Immigration", 0.95, None
 
         # --- LÓGICA DE BÚSQUEDA SEMÁNTICA ---
-        # 1. Convertimos la pregunta del usuario en un vector (embedding)
-        question_embedding = self.model.encode(question, convert_to_tensor=True)
-
-        # 2. Usamos el tensor pre-calculado (OPTIMIZADO - evita stack en cada query)
-        # 3. Calculamos la similitud del coseno entre la pregunta y todas las categorías
-        cos_scores = util.cos_sim(question_embedding, self.category_embeddings_tensor)[0]
-
-        # 4. Encontramos la categoría con la puntuación más alta
-        top_result = int(cos_scores.argmax().item())
-        best_score = float(cos_scores[top_result].item())
-        best_match_category = self.category_info[top_result]["name"]
-
-        logger.debug(f"Clasificación semántica: '{best_match_category}' conf={best_score:.4f}")
+        # --- LÓGICA DE BÚSQUEDA SEMÁNTICA (solo si ML disponible) ---
+        best_score = 0.0
+        best_match_category = None
+        if ML_AVAILABLE and self.model is not None and self.category_embeddings_tensor is not None:
+            question_embedding = self.model.encode(question, convert_to_tensor=True)
+            cos_scores = st_util.cos_sim(question_embedding, self.category_embeddings_tensor)[0]
+            top_result = int(cos_scores.argmax().item())
+            best_score = float(cos_scores[top_result].item())
+            best_match_category = self.category_info[top_result]["name"]
+            logger.debug(f"Clasificación semántica: '{best_match_category}' conf={best_score:.4f}")
 
         # --- LÓGICA DE OVERRIDE: Coincidencia directa con nombres de negocios ---
         # Si la pregunta menciona un negocio por su nombre, esa intención tiene prioridad.
