@@ -365,6 +365,53 @@
             font-weight: 500;
         }
 
+        .export-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .export-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .export-field label {
+            color: #555;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .export-input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 13px;
+        }
+
+        .export-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .export-preview {
+            margin-top: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #334155;
+            max-height: 220px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -459,6 +506,40 @@
                         Haz clic en "Cargar picos" para ver momentos críticos
                     </div>
                 </div>
+            </div>
+
+            <!-- Exportar Métricas -->
+            <div class="card wide-card">
+                <h2>⬇️ Exportar Métricas</h2>
+                <div class="export-controls">
+                    <div class="export-field">
+                        <label for="exportFormat">Formato</label>
+                        <select id="exportFormat" class="export-input">
+                            <option value="csv">CSV</option>
+                            <option value="json">JSON</option>
+                            <option value="html">HTML</option>
+                        </select>
+                    </div>
+                    <div class="export-field">
+                        <label for="exportEndpoint">Endpoint (opcional)</label>
+                        <input
+                            id="exportEndpoint"
+                            class="export-input"
+                            list="exportEndpointList"
+                            placeholder="/api/query"
+                        >
+                        <datalist id="exportEndpointList"></datalist>
+                    </div>
+                    <div class="export-field">
+                        <label for="exportHours">Horas</label>
+                        <input id="exportHours" class="export-input" type="number" min="1" max="720" value="24">
+                    </div>
+                </div>
+                <div class="export-actions">
+                    <button class="refresh-btn" onclick="downloadMetricsExport()">Descargar export</button>
+                    <button class="refresh-btn" onclick="previewMetricsExport()">Previsualizar</button>
+                </div>
+                <div id="exportPreview" class="export-preview">Previsualizaci\u00f3n vac\u00eda.</div>
             </div>
 
             <!-- Endpoints Detallados -->
@@ -654,6 +735,87 @@
             document.getElementById('endpointsContainer').innerHTML = html;
         }
 
+        function updateExportEndpointOptions(metrics) {
+            const datalist = document.getElementById('exportEndpointList');
+            const endpointNames = Object.keys(metrics.endpoints || {}).sort();
+            datalist.innerHTML = endpointNames
+                .map(endpoint => `<option value="${endpoint}"></option>`)
+                .join('');
+        }
+
+        function buildExportQuery(formatOverride = null) {
+            const formatInput = document.getElementById('exportFormat').value;
+            const endpoint = document.getElementById('exportEndpoint').value.trim();
+            const hoursRaw = Number(document.getElementById('exportHours').value || 24);
+            const hours = Number.isFinite(hoursRaw) && hoursRaw > 0 ? hoursRaw : 24;
+
+            const params = new URLSearchParams();
+            params.set('format', formatOverride || formatInput);
+            params.set('hours', String(hours));
+            if (endpoint) {
+                params.set('endpoint', endpoint);
+            }
+
+            return params;
+        }
+
+        function parseDownloadFilename(headers, fallback) {
+            const contentDisposition = headers.get('content-disposition') || '';
+            const match = contentDisposition.match(/filename=\"?([^\";]+)\"?/i);
+            return match ? match[1] : fallback;
+        }
+
+        async function downloadMetricsExport() {
+            try {
+                const params = buildExportQuery();
+                const format = params.get('format') || 'csv';
+                const response = await fetch(`/api/export/metrics?${params.toString()}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                const fallbackName = `metrics_export.${format}`;
+                const filename = parseDownloadFilename(response.headers, fallbackName);
+                const url = URL.createObjectURL(blob);
+
+                const anchor = document.createElement('a');
+                anchor.href = url;
+                anchor.download = filename;
+                document.body.appendChild(anchor);
+                anchor.click();
+                anchor.remove();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error downloading export:', error);
+                showError(`No se pudo descargar export: ${error.message}`);
+            }
+        }
+
+        async function previewMetricsExport() {
+            const preview = document.getElementById('exportPreview');
+            preview.textContent = 'Generando previsualizaci\u00f3n...';
+
+            try {
+                const params = buildExportQuery('json');
+                const response = await fetch(`/api/export/metrics?${params.toString()}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const payload = await response.json();
+                const compact = JSON.stringify(payload, null, 2)
+                    .split('\n')
+                    .slice(0, 24)
+                    .join('\n');
+                preview.textContent = compact;
+            } catch (error) {
+                console.error('Error generating preview:', error);
+                preview.textContent = `Error al previsualizar: ${error.message}`;
+            }
+        }
+
         function updateTimestamp() {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('es-ES');
@@ -668,6 +830,7 @@
             updateAgents(metrics);
             updateAlerts(metrics);
             updateEndpoints(metrics);
+            updateExportEndpointOptions(metrics);
             updateTimestamp();
         }
 

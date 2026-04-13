@@ -2,6 +2,7 @@
 Pruebas básicas para validar el dashboard HTML
 """
 from pathlib import Path
+import pytest
 
 
 def test_dashboard_file_exists():
@@ -24,6 +25,10 @@ def test_dashboard_has_required_html_elements():
     assert "id=\"agentBars\"" in html
     assert "id=\"alertsContainer\"" in html
     assert "id=\"endpointsContainer\"" in html
+    assert "id=\"exportFormat\"" in html
+    assert "id=\"exportEndpoint\"" in html
+    assert "id=\"exportHours\"" in html
+    assert "id=\"exportPreview\"" in html
 
 
 def test_dashboard_has_js_functions():
@@ -40,6 +45,10 @@ def test_dashboard_has_js_functions():
     assert "function updateEndpoints(metrics)" in html
     assert "function refreshMetrics()" in html
     assert "function updateTimestamp()" in html
+    assert "function updateExportEndpointOptions(metrics)" in html
+    assert "function buildExportQuery(formatOverride = null)" in html
+    assert "async function downloadMetricsExport()" in html
+    assert "async function previewMetricsExport()" in html
 
 
 def test_dashboard_api_integration():
@@ -50,6 +59,7 @@ def test_dashboard_api_integration():
 
     # Verificar que hace fetch a /api/metrics
     assert "fetch('/api/metrics')" in html
+    assert "fetch(`/api/export/metrics?${params.toString()}`)" in html
 
     # Verificar parámetros de refresh
     assert "REFRESH_INTERVAL = 5000" in html  # 5 segundos
@@ -66,5 +76,9 @@ def test_dashboard_has_styling():
     assert ".endpoint-table {" in html
     assert ".alert-box {" in html
     assert ".metric-pill {" in html
+    assert ".export-controls {" in html
+    assert ".export-preview {" in html
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

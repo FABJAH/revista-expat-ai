@@ -12,7 +12,7 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -445,6 +445,83 @@ def get_endpoint_trends(endpoint: str, hours: int = 24):
 
     trends = metrics_db.get_trends(endpoint=endpoint, hours=hours)
     return trends
+
+
+@app.get("/api/export/metrics")
+def export_metrics(format: str = "csv", endpoint: str = None, hours: int = 24):
+    """
+    Exporta métricas en CSV, JSON o HTML format.
+
+    Args:
+        format: Formato de export (csv, json, html) - default csv
+        endpoint: Endpoint específico a exportar (opcional, None = todos)
+        hours: Horas a incluir (default 24)
+
+    Returns:
+        Response con descarga adjunta en el formato solicitado
+    """
+    global metrics_db
+    if metrics_db is None:
+        return JSONResponse(
+            status_code=503,
+            content={"error": "Database not initialized"}
+        )
+
+    # Validar format
+    valid_formats = ["csv", "json", "html"]
+    if format.lower() not in valid_formats:
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Invalid format. Use: csv, json, or html"}
+        )
+
+    try:
+        # Validar hours
+        if hours < 1 or hours > 720:  # Max 30 days
+            hours = 24
+
+        # Generar export
+        if format.lower() == "csv":
+            content = metrics_db.export_to_csv(
+                endpoint=endpoint if endpoint else None,
+                hours=hours
+            )
+            filename = (f"metrics_export_"
+                        f"{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv")
+            media_type = "text/csv"
+
+        elif format.lower() == "json":
+            export_dict = metrics_db.export_to_json(
+                endpoint=endpoint if endpoint else None,
+                hours=hours
+            )
+            content = json.dumps(export_dict, indent=2, default=str)
+            filename = (f"metrics_export_"
+                        f"{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json")
+            media_type = "application/json"
+
+        else:  # html
+            content = metrics_db.export_summary_report(hours=hours)
+            filename = (f"metrics_report_"
+                        f"{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.html")
+            media_type = "text/html"
+
+        # Return as downloadable payload.
+        body = content.encode("utf-8") if isinstance(content, str) else content
+        return Response(
+            content=body,
+            media_type=media_type,
+            headers={
+                "Content-Disposition": f"attachment; filename=\"{filename}\""
+            }
+        )
+
+    except Exception as e:
+        logger.error(f"Export error: {str(e)}")
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Export failed: {str(e)}"}
+        )
 
 
 @app.get("/dashboard")

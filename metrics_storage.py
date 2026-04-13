@@ -365,3 +365,189 @@ class MetricsDB:
             conn.close()
 
             return deleted
+
+    def export_to_csv(self, endpoint: Optional[str] = None,
+                      hours: int = 24) -> str:
+        """
+        Export metrics to CSV format.
+
+        Args:
+            endpoint: Optional endpoint filter (if None, exports all)
+            hours: Number of hours to look back
+
+        Returns:
+            CSV string with header row and data
+        """
+        history = self.get_history(hours=hours, endpoint=endpoint)
+
+        csv_lines = [
+            "timestamp,endpoint,request_count,error_count,"
+            "latency_avg_ms,latency_p95_ms,error_rate_pct"
+        ]
+
+        for ep in sorted(history.keys()):
+            for record in history[ep]:
+                csv_lines.append(
+                    f"{record['timestamp']},"
+                    f"{ep},"
+                    f"{record['request_count']},"
+                    f"{record['error_count']},"
+                    f"{record['latency_avg_ms']},"
+                    f"{record['latency_p95_ms']},"
+                    f"{record['error_rate_pct']}"
+                )
+
+        return "\n".join(csv_lines)
+
+    def export_to_json(self, endpoint: Optional[str] = None,
+                       hours: int = 24) -> Dict:
+        """
+        Export metrics to JSON format.
+
+        Args:
+            endpoint: Optional endpoint filter (if None, exports all)
+            hours: Number of hours to look back
+
+        Returns:
+            Dict with metadata and metrics array
+        """
+        history = self.get_history(hours=hours, endpoint=endpoint)
+
+        return {
+            "export_metadata": {
+                "export_timestamp": datetime.utcnow().isoformat(),
+                "period_hours": hours,
+                "endpoint_filter": endpoint,
+                "total_records": sum(len(records) for records
+                                     in history.values())
+            },
+            "metrics": history
+        }
+
+    def export_summary_report(self, hours: int = 24) -> str:
+        """
+        Export a summary report in HTML format with statistics.
+
+        Args:
+            hours: Number of hours to look back
+
+        Returns:
+            HTML string with summary table and key metrics
+        """
+        history = self.get_history(hours=hours)
+
+        if not history:
+            return ("<html><body><p>No metrics data available</p>"
+                    "</body></html>")
+
+        # Calculate summary statistics
+        total_requests = 0
+        total_errors = 0
+        avg_latency_values = []
+        p95_latency_values = []
+        error_rates = []
+
+        for endpoint_records in history.values():
+            for record in endpoint_records:
+                total_requests += record.get("request_count", 0)
+                total_errors += record.get("error_count", 0)
+                if record.get("latency_avg_ms") is not None:
+                    avg_latency_values.append(record["latency_avg_ms"])
+                if record.get("latency_p95_ms") is not None:
+                    p95_latency_values.append(record["latency_p95_ms"])
+                if record.get("error_rate_pct") is not None:
+                    error_rates.append(record["error_rate_pct"])
+
+        avg_latency = (sum(avg_latency_values) / len(avg_latency_values)
+                       if avg_latency_values else 0)
+        avg_p95_latency = (sum(p95_latency_values) /
+                           len(p95_latency_values)
+                           if p95_latency_values else 0)
+        avg_error_rate = (sum(error_rates) / len(error_rates)
+                          if error_rates else 0)
+
+        # Build HTML report
+        html = f"""<html>
+<head>
+    <title>Metrics Export Report</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; margin: 20px; }}
+        .summary {{ background-color: #f0f0f0; padding: 15px;
+                   border-radius: 5px; margin-bottom: 20px; }}
+        .metric {{ display: inline-block; margin-right: 30px; }}
+        .metric-value {{ font-size: 24px; font-weight: bold; color: #333; }}
+        .metric-label {{ font-size: 12px; color: #666; }}
+        table {{ border-collapse: collapse; width: 100%;
+                margin-top: 20px; }}
+        th {{ background-color: #4CAF50; color: white; padding: 10px;
+             text-align: left; }}
+        td {{ border: 1px solid #ddd; padding: 8px; }}
+        tr:nth-child(even) {{ background-color: #f9f9f9; }}
+        tr:hover {{ background-color: #f5f5f5; }}
+    </style>
+</head>
+<body>
+    <h1>Metrics Export Report</h1>
+    <p>Generated: {datetime.utcnow().isoformat()}</p>
+    <p>Period: Last {hours} hours</p>
+
+    <div class="summary">
+        <h2>Summary Statistics</h2>
+        <div class="metric">
+            <div class="metric-value">{total_requests}</div>
+            <div class="metric-label">Total Requests</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">{total_errors}</div>
+            <div class="metric-label">Total Errors</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">{avg_error_rate:.2f}%</div>
+            <div class="metric-label">Avg Error Rate</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">{avg_latency:.2f}ms</div>
+            <div class="metric-label">Avg Latency</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">{avg_p95_latency:.2f}ms</div>
+            <div class="metric-label">Avg P95 Latency</div>
+        </div>
+    </div>
+
+    <h2>Per-Endpoint Metrics</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Endpoint</th>
+                <th>Requests</th>
+                <th>Errors</th>
+                <th>Error Rate %</th>
+                <th>Avg Latency (ms)</th>
+                <th>P95 Latency (ms)</th>
+            </tr>
+        </thead>
+        <tbody>
+"""
+
+        for endpoint in sorted(history.keys()):
+            records = history[endpoint]
+            if records:
+                latest = records[-1]  # Most recent record
+                html += f"""            <tr>
+                <td>{endpoint}</td>
+                <td>{latest.get('request_count', 0)}</td>
+                <td>{latest.get('error_count', 0)}</td>
+                <td>{latest.get('error_rate_pct', 0):.2f}%</td>
+                <td>{latest.get('latency_avg_ms', 0):.2f}</td>
+                <td>{latest.get('latency_p95_ms', 0):.2f}</td>
+            </tr>
+"""
+
+        html += """        </tbody>
+    </table>
+</body>
+</html>
+"""
+
+        return html
