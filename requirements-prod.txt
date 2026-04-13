@@ -16,3 +16,6 @@ APScheduler==3.10.4
 
 # Rate limiting y seguridad
 slowapi==0.1.9
+
+# HTTP client (usado por bots/directory_connector.py)
+requests>=2.31.0
