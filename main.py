@@ -12,7 +12,7 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -34,11 +34,14 @@ MAX_ANALYTICS_DATA_CHARS = 8000
 MAX_SESSION_ID_LEN = 128
 STRICT_JSON_POST_PATHS = {"/api/query", "/api/analytics"}
 METRICS_WINDOW_SIZE = 200
+ALERT_ERROR_RATE_PCT = 20.0
+ALERT_P95_LATENCY_MS = 1500.0
 
 metrics_lock = threading.Lock()
 request_counts = defaultdict(int)
 error_counts = defaultdict(int)
 latency_samples = defaultdict(lambda: deque(maxlen=METRICS_WINDOW_SIZE))
+query_agent_counts = defaultdict(int)
 
 
 def sync_rss_feeds():
@@ -105,11 +108,105 @@ def get_metrics_snapshot() -> dict:
                 "samples": len(samples),
             }
 
+        top_query_agents = dict(
+            sorted(
+                query_agent_counts.items(),
+                key=lambda item: item[1],
+                reverse=True,
+            )
+        )
+
         return {
             "window_size": METRICS_WINDOW_SIZE,
             "endpoints": by_endpoint,
             "tracked_endpoints": len(by_endpoint),
+            "query_agents": top_query_agents,
         }
+
+
+def build_metric_alerts(metrics: dict) -> list[dict]:
+    """Genera alertas simples basadas en umbrales de error y latencia."""
+    alerts = []
+    for endpoint, values in metrics.get("endpoints", {}).items():
+        if values.get("requests", 0) < 5:
+            continue
+
+        if values.get("error_rate_pct", 0.0) >= ALERT_ERROR_RATE_PCT:
+            alerts.append({
+                "type": "error_rate",
+                "severity": "high",
+                "endpoint": endpoint,
+                "value": values.get("error_rate_pct", 0.0),
+                "threshold": ALERT_ERROR_RATE_PCT,
+                "message": (
+                    f"Error rate alto en {endpoint}: "
+                    f"{values.get('error_rate_pct', 0.0)}%"
+                ),
+            })
+
+        if values.get("latency_p95_ms", 0.0) >= ALERT_P95_LATENCY_MS:
+            alerts.append({
+                "type": "latency_p95",
+                "severity": "medium",
+                "endpoint": endpoint,
+                "value": values.get("latency_p95_ms", 0.0),
+                "threshold": ALERT_P95_LATENCY_MS,
+                "message": (
+                    f"Latencia p95 alta en {endpoint}: "
+                    f"{values.get('latency_p95_ms', 0.0)} ms"
+                ),
+            })
+
+    return alerts
+
+
+def build_prometheus_metrics(metrics: dict) -> str:
+    """Convierte métricas internas al formato de texto Prometheus."""
+    lines = [
+        "# HELP revista_api_requests_total Total requests by endpoint",
+        "# TYPE revista_api_requests_total counter",
+    ]
+
+    for endpoint, values in metrics.get("endpoints", {}).items():
+        safe_endpoint = endpoint.replace('"', "\\\"")
+        lines.append(
+            f'revista_api_requests_total{{endpoint="{safe_endpoint}"}} '
+            f'{values.get("requests", 0)}'
+        )
+
+    lines.extend([
+        "# HELP revista_api_errors_total Total error responses by endpoint",
+        "# TYPE revista_api_errors_total counter",
+    ])
+    for endpoint, values in metrics.get("endpoints", {}).items():
+        safe_endpoint = endpoint.replace('"', "\\\"")
+        lines.append(
+            f'revista_api_errors_total{{endpoint="{safe_endpoint}"}} '
+            f'{values.get("errors", 0)}'
+        )
+
+    lines.extend([
+        "# HELP revista_api_latency_avg_ms Average API latency in ms",
+        "# TYPE revista_api_latency_avg_ms gauge",
+    ])
+    for endpoint, values in metrics.get("endpoints", {}).items():
+        safe_endpoint = endpoint.replace('"', "\\\"")
+        lines.append(
+            f'revista_api_latency_avg_ms{{endpoint="{safe_endpoint}"}} '
+            f'{values.get("latency_avg_ms", 0.0)}'
+        )
+
+    lines.extend([
+        "# HELP revista_query_agent_total Query count by resolved agent",
+        "# TYPE revista_query_agent_total counter",
+    ])
+    for agent, count in metrics.get("query_agents", {}).items():
+        safe_agent = str(agent).replace('"', "\\\"")
+        lines.append(
+            f'revista_query_agent_total{{agent="{safe_agent}"}} {count}'
+        )
+
+    return "\n".join(lines) + "\n"
 
 
 @asynccontextmanager
@@ -211,7 +308,7 @@ async def collect_api_metrics(request: Request, call_next):
         # Re-raise para mantener comportamiento actual de error handling.
         raise
     finally:
-        if path.startswith("/api/") and path != "/api/metrics":
+        if path.startswith("/api/") and not path.startswith("/api/metrics"):
             elapsed_ms = (time.perf_counter() - start) * 1000
             with metrics_lock:
                 request_counts[path] += 1
@@ -262,11 +359,23 @@ def health_check():
 @app.get("/api/metrics")
 def get_metrics():
     """Expone métricas simples de latencia/errores por endpoint API."""
+    metrics = get_metrics_snapshot()
     return {
         "status": "ok",
         "generated_at": datetime.utcnow().isoformat(),
-        "metrics": get_metrics_snapshot(),
+        "metrics": metrics,
+        "alerts": build_metric_alerts(metrics),
     }
+
+
+@app.get("/api/metrics/prometheus")
+def get_prometheus_metrics():
+    """Expone métricas en formato Prometheus text exposition."""
+    metrics = get_metrics_snapshot()
+    return PlainTextResponse(
+        content=build_prometheus_metrics(metrics),
+        media_type="text/plain; version=0.0.4",
+    )
 
 
 @app.get("/api/categories")
@@ -359,6 +468,11 @@ async def handle_query(request: Request,
             f"Response: agent={response_data.get('agente')} "
             f"total={response_data.get('total_results')}"
         )
+
+        with metrics_lock:
+            agent_name = response_data.get("agente") or "unknown"
+            query_agent_counts[str(agent_name)] += 1
+
         return response_data
 
     except ValueError as e:
