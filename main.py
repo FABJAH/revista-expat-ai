@@ -2,6 +2,9 @@
 import json
 import os
 import threading
+import time
+from collections import defaultdict
+from collections import deque
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
@@ -30,6 +33,12 @@ orchestrator_lock = threading.Lock()
 MAX_ANALYTICS_DATA_CHARS = 8000
 MAX_SESSION_ID_LEN = 128
 STRICT_JSON_POST_PATHS = {"/api/query", "/api/analytics"}
+METRICS_WINDOW_SIZE = 200
+
+metrics_lock = threading.Lock()
+request_counts = defaultdict(int)
+error_counts = defaultdict(int)
+latency_samples = defaultdict(lambda: deque(maxlen=METRICS_WINDOW_SIZE))
 
 
 def sync_rss_feeds():
@@ -59,6 +68,48 @@ def get_orchestrator() -> Orchestrator:
             orchestrator = Orchestrator()
             logger.info("Orquestador inicializado correctamente.")
     return orchestrator
+
+
+def get_metrics_snapshot() -> dict:
+    """Genera una fotografía consistente de las métricas en memoria."""
+    with metrics_lock:
+        endpoints = set(request_counts.keys())
+        endpoints.update(error_counts.keys())
+        endpoints.update(latency_samples.keys())
+
+        by_endpoint = {}
+        for endpoint in sorted(endpoints):
+            samples = list(latency_samples.get(endpoint, []))
+            avg_latency = (
+                round(sum(samples) / len(samples), 2) if samples else 0.0
+            )
+            p95_latency = 0.0
+            if samples:
+                ordered = sorted(samples)
+                idx = int(0.95 * (len(ordered) - 1))
+                p95_latency = round(ordered[idx], 2)
+
+            total_requests = request_counts.get(endpoint, 0)
+            total_errors = error_counts.get(endpoint, 0)
+            error_rate = (
+                round((total_errors / total_requests) * 100, 2)
+                if total_requests else 0.0
+            )
+
+            by_endpoint[endpoint] = {
+                "requests": total_requests,
+                "errors": total_errors,
+                "error_rate_pct": error_rate,
+                "latency_avg_ms": avg_latency,
+                "latency_p95_ms": p95_latency,
+                "samples": len(samples),
+            }
+
+        return {
+            "window_size": METRICS_WINDOW_SIZE,
+            "endpoints": by_endpoint,
+            "tracked_endpoints": len(by_endpoint),
+        }
 
 
 @asynccontextmanager
@@ -145,6 +196,29 @@ async def enforce_json_post_content_type(request: Request, call_next):
         )
     return await call_next(request)
 
+
+@app.middleware("http")
+async def collect_api_metrics(request: Request, call_next):
+    """Recolecta métricas de latencia/errores para endpoints API."""
+    path = request.url.path
+    start = time.perf_counter()
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        return response
+    except Exception:
+        # Re-raise para mantener comportamiento actual de error handling.
+        raise
+    finally:
+        if path.startswith("/api/") and path != "/api/metrics":
+            elapsed_ms = (time.perf_counter() - start) * 1000
+            with metrics_lock:
+                request_counts[path] += 1
+                if status_code >= 400:
+                    error_counts[path] += 1
+                latency_samples[path].append(elapsed_ms)
+
 # Middleware: Rate Limiting
 limiter = Limiter(key_func=get_remote_address,
                   default_limits=["100/minute"])
@@ -182,6 +256,16 @@ def health_check():
         "status": "healthy",
         "version": "1.0.0",
         "service": "Revista Expats AI API"
+    }
+
+
+@app.get("/api/metrics")
+def get_metrics():
+    """Expone métricas simples de latencia/errores por endpoint API."""
+    return {
+        "status": "ok",
+        "generated_at": datetime.utcnow().isoformat(),
+        "metrics": get_metrics_snapshot(),
     }
 
 
